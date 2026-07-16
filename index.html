@@ -1154,6 +1154,48 @@
     }
   }
 
+  // Ленивая загрузка html2canvas (только когда реально нужно сделать
+  // изображение чека — не тормозим загрузку страницы им заранее).
+  let html2canvasLoadPromise = null;
+  function ensureHtml2Canvas(){
+    if (window.html2canvas) return Promise.resolve();
+    if (html2canvasLoadPromise) return html2canvasLoadPromise;
+    html2canvasLoadPromise = new Promise((resolve, reject)=>{
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = ()=>resolve();
+      script.onerror = ()=>reject(new Error('Не удалось загрузить библиотеку рендера изображения (нет интернета?)'));
+      document.head.appendChild(script);
+    });
+    return html2canvasLoadPromise;
+  }
+
+  // Рендерит DOM-элемент чека в PNG-файл, загружает его на Google Диск через
+  // уже существующий канал (тот же, что для вложений в чате/задачах), и
+  // отправляет получившуюся ссылку в Telegram методом sendPhoto — так надёжнее,
+  // чем слать файл напрямую из браузера в Telegram (там строже с CORS для
+  // multipart-запросов, а GET-запрос с URL картинки — простой и всегда проходит).
+  async function sendReceiptImageToTelegram(){
+    if (!telegramConfigured_()) throw new Error('Telegram не настроен — укажите токен бота и chat_id в разделе «Сотрудники»');
+    if (!sheetApiConfigured_()) throw new Error('Синхронизация с таблицей не настроена — она же используется для загрузки картинки');
+    await ensureHtml2Canvas();
+    const receiptEl = document.querySelector('#view-day .receipt');
+    if (!receiptEl) throw new Error('Не нашёл чек на странице');
+    const canvas = await window.html2canvas(receiptEl, { backgroundColor: getComputedStyle(receiptEl).backgroundColor || '#ffffff', scale: 2 });
+    const blob = await new Promise(resolve=> canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Не удалось сформировать изображение чека');
+    const file = new File([blob], 'chek-' + state.currentDate + '.png', { type: 'image/png' });
+    const uploaded = await uploadFileToSheet(file);
+
+    let url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendPhoto'
+      + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID)
+      + '&photo=' + encodeURIComponent(uploaded.url)
+      + '&caption=' + encodeURIComponent('Чек дня · ' + state.currentDate);
+    if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
+    try { await fetch(url, { method: 'GET' }); }
+    catch(e){ console.warn('Telegram sendPhoto warning (фото могло всё же отправиться):', e); }
+  }
+
   async function loadMonth(mk){
     if (loadedMonths[mk]) return;
     loadedMonths[mk] = true;
@@ -1508,7 +1550,7 @@
       + '</div>';
 
     html += '<div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">'
-      + '<button class="btn" id="send-telegram-btn">📤 Отправить чек в Telegram</button>'
+      + '<button class="btn" id="send-telegram-btn">🖼️ Отправить чек в Telegram (картинкой)</button>'
       + '<span id="telegram-send-status" style="font-size:11.5px;color:var(--ink-soft);"></span>'
       + '</div>';
 
@@ -1547,10 +1589,10 @@
         statusEl.style.color = 'var(--red)';
         return;
       }
-      statusEl.textContent = 'Отправка…';
+      statusEl.textContent = 'Рисую и отправляю изображение…';
       statusEl.style.color = 'var(--ink-soft)';
       try {
-        await sendTextToTelegram(lastReceiptText);
+        await sendReceiptImageToTelegram();
         statusEl.textContent = 'Отправлено ✓';
         statusEl.style.color = 'var(--green)';
       } catch(err){
