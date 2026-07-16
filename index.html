@@ -390,6 +390,7 @@
      МОБИЛЬНАЯ АДАПТАЦИЯ
   ========================================================= */
   @media (max-width: 720px) {
+    html { overflow-x: hidden; }
     body { overflow-x: hidden; }
     #payroll-root {
       max-width: 100%;
@@ -438,7 +439,7 @@
     /* Строки сотрудников — сумма не должна прилипать к правому краю без отступа */
     #payroll-root .emp-row { padding: 10px; gap: 8px; }
     #payroll-root .emp-row .name { min-width: 100%; }
-    #payroll-root .pay-amount { margin-left: 0; min-width: 0; }
+    #payroll-root .pay-amount { min-width: 0; }
     #payroll-root .chip { padding: 7px 12px; font-size: 12.5px; }
 
     /* Кнопки и поля — увеличенные тап-зоны для пальца */
@@ -470,7 +471,7 @@
        "теряет" перерисовку части экрана — блоки пропадают и появляются только
        после тача/скролла/перезагрузки. На мобильных отключаем и fixed, и саму
        анимацию — водяной знак остаётся, просто статичный, без движения. */
-    body::before { position: absolute !important; animation: none !important; }
+    body::before { animation: none !important; }
     #payroll-root::before { animation: none !important; }
   }
 </style>
