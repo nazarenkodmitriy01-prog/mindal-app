@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Миндаль — учёт смен и зарплаты</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Миндаль">
+<meta name="theme-color" content="#141311">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #EEF0EC; transition: background 0.2s ease; position: relative; min-height: 100vh; overflow-x: hidden; }
+  body.theme-dark { background: #141311; }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -140px;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28161%2C92%2C51%2C0.18%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 170px 95px;
+    animation: mindalDrift 34s linear infinite;
+  }
+  body.theme-dark::before {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28214%2C148%2C102%2C0.16%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
+  }
+  #payroll-root { position: relative; z-index: 1; }
+  #payroll-root {
+    --ink: #1C1F1D;
+    --ink-soft: #5A5F5A;
+    --paper: #EEF0EC;
+    --card: #FFFFFF;
+    --line: #DAD8D2;
+    --rust: #A15C33;
+    --rust-soft: #EADACD;
+    --green: #3F6B4A;
+    --green-soft: #E1EBE3;
+    --red: #B23A34;
+    --red-soft: #F4DEDC;
+    --c-bar: #5C6B73;
+    --c-waiters: #8A6D3B;
+    --c-hookah: #6B4E71;
+    --c-hostess: #5C7A6B;
+    --c-wash: #4E7A8A;
+    --c-kitchen: #7A5138;
+    --c-mgmt: #4A4A4A;
+
+    --border-card: #E2E0D5;
+    --border-input: #D8D6CC;
+    --bg-highlight: #F8F7F2;
+    --bg-input: #FCFCFA;
+    --bg-subtle: #F3F2EC;
+    --border-subtle: #F0EFE8;
+    --bg-chip-off: #EFEDE3;
+    --border-row: #EEEDE6;
+    --border-dashed: #C9C7BB;
+    --text-faint: #B7B5A9;
+
+    transition: background 0.2s ease, color 0.2s ease;
+    font-family: 'Roboto', -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 18px;
+    border-radius: 10px;
+    max-width: 1020px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+  /* ---- Диагональный водяной знак MINDAL, плывущий по фону ---- */
+  #payroll-root::before {
+    content: "";
+    position: absolute;
+    inset: -140px;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28161%2C92%2C51%2C0.18%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 170px 95px;
+    animation: mindalDrift 34s linear infinite;
+    will-change: background-position;
+  }
+  #payroll-root.theme-dark::before {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28214%2C148%2C102%2C0.16%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
+  }
+  @keyframes mindalDrift {
+    from { background-position: 0 0; }
+    to   { background-position: 340px 190px; }
+  }
+  #payroll-root * { box-sizing: border-box; }
+  #payroll-root input, #payroll-root select, #payroll-root textarea, #payroll-root button {
+    color: inherit;
+    font-family: inherit;
+    background-color: transparent;
+  }
+  #payroll-root select {
+    background-color: var(--card);
+  }
+  #payroll-root select option {
+    background-color: var(--card);
+    color: var(--ink);
+  }
+  #payroll-root .display { font-family: 'Roboto', -apple-system, sans-serif; }
+  #payroll-root .mono { font-family: 'IBM Plex Mono', 'Courier New', monospace; }
+  #payroll-root .topbar {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  #payroll-root h1 { font-size: 23px; margin: 0; letter-spacing: 0.2px; }
+  #payroll-root .sub { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  #payroll-root .sync-widget {
+    display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-soft);
+    background: var(--card); border: 1px solid var(--border-card); border-radius: 20px; padding: 5px 12px 5px 10px;
+    white-space: nowrap;
+  }
+  #payroll-root .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border-dashed); flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  #payroll-root .sync-dot.saving { background: var(--rust); animation: sync-pulse 1s infinite ease-in-out; }
+  #payroll-root .sync-dot.synced { background: var(--green); }
+  #payroll-root .sync-dot.error { background: var(--red); }
+  #payroll-root .sync-dot.off { background: var(--border-dashed); }
+  @keyframes sync-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  #payroll-root .sync-retry {
+    border: none; background: none; cursor: pointer; font-size: 14px; color: var(--rust);
+    padding: 0; line-height: 1; font-weight: 700;
+  }
+  #payroll-root .sync-widget-wrap { position: relative; }
+  #payroll-root .sync-gear {
+    border: none; background: none; cursor: pointer; font-size: 14px; color: var(--ink-soft);
+    padding: 0; line-height: 1; margin-left: 2px;
+  }
+  #payroll-root .sync-gear:hover { color: var(--ink); }
+  #payroll-root .sync-config-panel {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 20;
+    background: var(--card); border: 1px solid var(--border-card); border-radius: 8px;
+    padding: 14px; width: 320px; box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  #payroll-root .sync-config-panel label {
+    display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  #payroll-root .sync-config-panel input {
+    display: block; width: 100%; margin-top: 5px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px;
+    text-transform: none; letter-spacing: normal; background: var(--bg-input);
+  }
+  #payroll-root .sync-config-actions { display: flex; gap: 8px; margin-top: 4px; }
+  #payroll-root .sync-config-actions .btn { flex: 1; text-align: center; font-size: 13px; padding: 7px 10px; }
+  #payroll-root .sync-config-note { font-size: 11.5px; color: var(--ink-soft); margin-top: 9px; line-height: 1.4; }
+  #payroll-root .tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 2px solid var(--border-input); }
+  #payroll-root .tab {
+    padding: 8px 16px; font-size: 14.5px; font-weight: 600;
+    cursor: pointer; color: var(--ink-soft); border-bottom: 2px solid transparent;
+    margin-bottom: -2px; user-select: none;
+  }
+  #payroll-root .tab.active { color: var(--rust); border-bottom-color: var(--rust); }
+  #payroll-root .datebar {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    background: var(--card); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-card);
+  }
+  #payroll-root .datebar button.nav {
+    background: none; border: 1px solid #CFCDC0; border-radius: 6px;
+    width: 30px; height: 30px; cursor: pointer; font-size: 15px; color: var(--ink);
+  }
+  #payroll-root .datebar input[type=date] {
+    font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: none;
+    background: transparent; font-weight: 600;
+  }
+  #payroll-root .datebar .weekday { font-size: 13px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; }
+  #payroll-root .revenue-inputs { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  #payroll-root .revenue-box { flex: 1; min-width: 220px; background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 12px 14px; }
+  #payroll-root .revenue-box label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+  #payroll-root .revenue-box input { width: 100%; font-family: 'IBM Plex Mono', monospace; font-size: 21px; font-weight: 600; border: none; background: transparent; color: var(--ink); padding: 0; }
+  #payroll-root .revenue-box input:focus { outline: none; }
+  #payroll-root .revenue-box.hookah { background: var(--rust-soft); }
+
+  #payroll-root .dept-card { background: var(--card); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-card); overflow: hidden; }
+  #payroll-root .dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.3px; }
+  #payroll-root .dept-head .rule { font-weight: 400; opacity: 0.85; font-size: 12px; }
+  #payroll-root .emp-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
+  #payroll-root .emp-row .name { flex: 1; min-width: 140px; font-size: 14.5px; font-weight: 500; }
+  #payroll-root .chip { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; user-select: none; border: 1px solid transparent; white-space: nowrap; }
+  #payroll-root .chip.off { background: var(--bg-chip-off); color: var(--ink-soft); }
+  #payroll-root .chip.on { background: var(--green-soft); color: var(--green); border-color: #BFD8C6; }
+  #payroll-root .time-inputs { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); }
+  #payroll-root .time-inputs input[type=time] { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; border: 1px solid var(--border-input); border-radius: 5px; padding: 3px 5px; background: var(--bg-input); }
+  #payroll-root .hours-badge { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-soft); background: var(--bg-subtle); padding: 3px 8px; border-radius: 5px; }
+  #payroll-root .pay-amount { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 15.5px; font-weight: 700; color: var(--green); min-width: 90px; text-align: right; }
+  #payroll-root .pay-amount.zero { color: var(--text-faint); font-weight: 500; }
+  #payroll-root .pay-note { margin-left: auto; font-size: 12px; color: var(--ink-soft); font-style: italic; }
+  #payroll-root .chef-extra { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+  #payroll-root .chef-extra input[type=number] { width: 54px; font-family: 'IBM Plex Mono', monospace; border: 1px solid var(--border-input); border-radius: 5px; padding: 3px 6px; }
+  #payroll-root .bonus-row { display: flex; gap: 14px; padding: 8px 14px 12px; flex-wrap: wrap; border-top: 1px solid var(--border-row); }
+  #payroll-root .bonus-row label { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--ink-soft); cursor: pointer; }
+
+  #payroll-root .receipt { background: var(--card); border: 1px solid var(--border-card); border-radius: 4px 4px 0 0; margin-top: 22px; padding: 18px 22px 14px; font-family: 'IBM Plex Mono', monospace; position: relative; }
+  #payroll-root .receipt::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 18px;
+    background: linear-gradient(-45deg, var(--paper) 9px, transparent 0), linear-gradient(45deg, var(--paper) 9px, transparent 0);
+    background-size: 18px 18px; background-repeat: repeat-x; background-color: var(--card);
+  }
+  #payroll-root .receipt h3 { font-family: 'Roboto', sans-serif; font-size: 15px; text-align: center; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+  #payroll-root .receipt .line { display: flex; font-size: 13.5px; margin-bottom: 4px; align-items: baseline; }
+  #payroll-root .receipt .line .ln { flex: 1; overflow: hidden; white-space: nowrap; }
+  #payroll-root .receipt .line .ln span.dots { display: inline-block; overflow: hidden; letter-spacing: 2px; color: var(--border-dashed); }
+  #payroll-root .receipt .line .amt { font-weight: 700; }
+  #payroll-root .receipt .line.sub { font-size: 11.5px; color: var(--ink-soft); margin: -2px 0 8px 10px; font-style: italic; }
+  #payroll-root .receipt .line.sub .ln { white-space: normal; }
+  #payroll-root .receipt .total { border-top: 1px dashed var(--border-dashed); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; font-size: 15.5px; font-weight: 700; }
+
+  #payroll-root .month-select { font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 6px 10px; border: 1px solid var(--border-input); border-radius: 6px; background: var(--card); margin-bottom: 14px; }
+  #payroll-root table.month-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; font-size: 13.5px; border: 1px solid var(--border-card); }
+  #payroll-root table.month-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: var(--ink-soft); padding: 8px 8px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-card); }
+  #payroll-root table.month-table td { padding: 7px 8px; border-bottom: 1px solid var(--border-subtle); }
+  #payroll-root table.month-table td.num, table.month-table th.num { text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  #payroll-root table.month-table tr.total-row td { font-weight: 700; background: var(--bg-highlight); }
+  #payroll-root table.month-table.schedule-table { table-layout: fixed; width: 100%; }
+  #payroll-root table.schedule-table th, #payroll-root table.schedule-table td { padding: 4px 3px; overflow: hidden; }
+  #payroll-root table.schedule-table select.sched-cell {
+    width: 100%; min-width: 0; font-size: 11.5px; padding: 4px 2px; border: 1px solid var(--border-input); border-radius: 4px;
+  }
+  #payroll-root table.schedule-table .sched-slot-label,
+  #payroll-root table.schedule-table .sched-slot-time { min-width: 0; }
+
+  /* ---- Задачи и чат руководителей ---- */
+  #payroll-root .task-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+  #payroll-root .task-column { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; min-width: 0; }
+  #payroll-root .task-column h4 { margin: 0 0 8px; font-size: 13px; }
+  #payroll-root .task-card { background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 9px; margin-bottom: 8px; }
+  #payroll-root .task-card-title { font-weight: 600; font-size: 12.5px; }
+  #payroll-root .task-card-desc { font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; white-space: pre-wrap; }
+  #payroll-root .task-status { width: 100%; padding: 4px 6px; border: 1px solid; border-radius: 5px; font-size: 11px; }
+  #payroll-root .task-card-meta { font-size: 10px; color: var(--text-faint); margin-top: 6px; }
+  #payroll-root .chat-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; background: var(--bg-subtle); }
+  #payroll-root .chat-msg { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+  #payroll-root .chat-msg:last-child { border-bottom: none; margin-bottom: 0; }
+  #payroll-root .chat-msg-meta { font-size: 10.5px; color: var(--ink-soft); margin-bottom: 2px; }
+  #payroll-root .chat-msg-text { font-size: 13px; white-space: pre-wrap; }
+
+  #payroll-root table.month-table td.topay { color: var(--rust); font-weight: 700; }
+  #payroll-root .dept-tag { display: inline-block; font-size: 11px; color: white; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
+  #payroll-root .kpi-panel { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .kpi-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
+  #payroll-root .bracket-ladder { display: flex; gap: 3px; margin-bottom: 8px; }
+  #payroll-root .bracket { flex: 1; padding: 6px 4px; text-align: center; font-size: 11px; border-radius: 4px; background: var(--border-subtle); color: var(--ink-soft); border: 1px solid #E5E3D8; }
+  #payroll-root .bracket.active { background: var(--rust); color: white; font-weight: 700; }
+  #payroll-root .progress-track { height: 8px; background: var(--bg-chip-off); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+  #payroll-root .progress-fill { height: 100%; background: var(--rust); }
+  #payroll-root .assumption-note { font-size: 12.5px; color: var(--ink-soft); background: var(--bg-subtle); border-radius: 6px; padding: 8px 10px; margin-top: 8px; line-height: 1.4; }
+  #payroll-root .plan-input { font-family: 'IBM Plex Mono', monospace; font-size: 14px; border: 1px solid var(--border-input); border-radius: 5px; padding: 4px 8px; width: 140px; }
+
+  #payroll-root .adj-panel { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-top: 18px; }
+  #payroll-root .adj-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
+  #payroll-root .adj-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  #payroll-root .adj-form select, .adj-form input { font-size: 13.5px; padding: 5px 8px; border: 1px solid var(--border-input); border-radius: 5px; background: var(--bg-input); }
+  #payroll-root .adj-form input[type=number] { width: 110px; font-family: 'IBM Plex Mono', monospace; }
+  #payroll-root .adj-form input[type=text] { width: 160px; }
+  #payroll-root .adj-form button, #payroll-root .btn {
+    font-size: 13.5px; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--rust);
+    background: var(--rust); color: white; cursor: pointer; font-weight: 600;
+  }
+  #payroll-root .btn.secondary { background: transparent; color: var(--rust); }
+  #payroll-root .btn.ghost { background: transparent; color: var(--ink-soft); border-color: var(--border-input); }
+  #payroll-root .adj-list { display: flex; flex-direction: column; gap: 6px; }
+  #payroll-root .adj-item { display: flex; align-items: center; gap: 10px; font-size: 13.5px; padding: 6px 10px; background: var(--bg-highlight); border-radius: 6px; }
+  #payroll-root .adj-item .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  #payroll-root .adj-item .badge.advance { background: #E1EBE3; color: var(--green); }
+  #payroll-root .adj-item .badge.deduction { background: var(--red-soft); color: var(--red); }
+  #payroll-root .adj-item .note { color: var(--ink-soft); flex: 1; }
+  #payroll-root .adj-item .amt { font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
+  #payroll-root .adj-item .del { cursor: pointer; color: var(--text-faint); font-weight: 700; padding: 0 4px; }
+  #payroll-root .adj-item .del:hover { color: var(--red); }
+
+  /* Settings tab */
+  #payroll-root .settings-dept { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  #payroll-root .settings-dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; }
+  #payroll-root .settings-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
+  #payroll-root .settings-row.inactive { opacity: 0.5; }
+  #payroll-root .settings-row input[type=text] { font-size: 14px; padding: 5px 8px; border: 1px solid var(--border-input); border-radius: 5px; min-width: 160px; }
+  #payroll-root .settings-row select { font-size: 13.5px; padding: 5px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
+  #payroll-root .settings-row .field-group { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--ink-soft); }
+  #payroll-root .settings-row .field-group input[type=number] { width: 78px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 4px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
+  #payroll-root .add-emp-card { background: var(--card); border: 2px dashed var(--border-input); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .add-emp-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
+  #payroll-root .add-emp-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  #payroll-root .add-emp-form input, .add-emp-form select { font-size: 13.5px; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px; }
+
+  #payroll-root .footer-note { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 26px; }
+
+  /* Closing shift report */
+  #payroll-root .closing-card { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
+  #payroll-root .closing-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
+  #payroll-root .cash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 12px; }
+  #payroll-root .cash-field label { display: block; font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+  #payroll-root .cash-field input[type=number] { width: 100%; font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; border: 1px solid var(--border-input); border-radius: 6px; padding: 6px 8px; background: var(--bg-input); }
+  #payroll-root .cash-field .readonly { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 700; padding: 6px 0; color: var(--rust); }
+  #payroll-root .mini-list { display: flex; flex-direction: column; gap: 5px; margin: 8px 0; }
+  #payroll-root .mini-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 5px 9px; background: var(--bg-highlight); border-radius: 5px; }
+  #payroll-root .mini-item .note { flex: 1; color: var(--ink-soft); }
+  #payroll-root .mini-item .amt { font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
+  #payroll-root .mini-item .del { cursor: pointer; color: var(--text-faint); font-weight: 700; padding: 0 3px; }
+  #payroll-root .mini-item .del:hover { color: var(--red); }
+  #payroll-root .mini-add-form { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 4px; }
+  #payroll-root .mini-add-form input { font-size: 13px; padding: 5px 7px; border: 1px solid var(--border-input); border-radius: 5px; }
+  #payroll-root .mini-add-form input[type=text] { flex: 1; min-width: 120px; }
+  #payroll-root .mini-add-form input[type=number] { width: 100px; font-family: 'IBM Plex Mono', monospace; }
+  #payroll-root .staff-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  #payroll-root .staff-chip { font-size: 11.5px; padding: 3px 9px; border-radius: 12px; background: var(--border-subtle); color: var(--ink-soft); }
+  #payroll-root .adj-item .badge.bonus { background: #E5E1F0; color: #5B4B8A; }
+  #payroll-root .receipt .line.section-head { font-weight: 700; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.5px; color: var(--ink-soft); border-top: 1px dashed #DAD8D0; margin-top: 8px; padding-top: 8px; }
+
+  /* P&L tab */
+  #payroll-root table.pnl-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; font-size: 14px; border: 1px solid var(--border-card); }
+  #payroll-root table.pnl-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: var(--ink-soft); padding: 8px; background: var(--bg-subtle); border-bottom: 1px solid var(--border-card); }
+  #payroll-root table.pnl-table td { padding: 7px 8px; border-bottom: 1px solid var(--border-subtle); }
+  #payroll-root table.pnl-table td.num { text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  #payroll-root table.pnl-table tr.auto-row td { background: var(--bg-highlight); font-weight: 600; }
+  #payroll-root table.pnl-table tr.profit-row td { background: var(--green-soft); color: var(--green); font-weight: 700; font-size: 15px; }
+  #payroll-root table.pnl-table input[type=text] { font-size: 14px; border: 1px solid var(--border-input); border-radius: 5px; padding: 4px 7px; width: 100%; }
+  #payroll-root table.pnl-table input[type=number] { font-size: 14px; font-family: 'IBM Plex Mono', monospace; border: 1px solid var(--border-input); border-radius: 5px; padding: 4px 7px; width: 120px; text-align: right; }
+  #payroll-root table.pnl-table .pct { color: var(--ink-soft); font-size: 12px; }
+  #payroll-root .pnl-add-form { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  #payroll-root .pnl-add-form input[type=text] { flex: 1; min-width: 160px; font-size: 13.5px; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px; }
+  #payroll-root .pnl-add-form input[type=number] { width: 130px; font-size: 13.5px; font-family: 'IBM Plex Mono', monospace; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px; }
+
+  /* ---- Шапка: логотип и название ---- */
+  #payroll-root .brand { display: flex; align-items: center; gap: 14px; }
+  #payroll-root .brand-logo { height: 46px; width: auto; border-radius: 6px; display: block; }
+
+  /* ---- Кнопка переключения темы ---- */
+  #payroll-root .theme-toggle {
+    background: none; border: 1px solid var(--border-input); border-radius: 6px;
+    width: 30px; height: 30px; cursor: pointer; font-size: 15px; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* =========================================================
+     ТЁМНАЯ ТЕМА
+     Переопределяем переменные — весь остальной CSS их уже использует,
+     так что менять больше ничего не нужно.
+  ========================================================= */
+  #payroll-root.theme-dark {
+    color-scheme: dark;
+    --ink: #EDEBE4;
+    --ink-soft: #A9A69A;
+    --paper: #141311;
+    --card: #201E1B;
+    --line: #38352F;
+    --rust: #D69466;
+    --rust-soft: #3A2A1E;
+    --green: #7FBC8E;
+    --green-soft: #1E2E22;
+    --red: #E08079;
+    --red-soft: #3A201E;
+    --c-bar: #7A8B93;
+    --c-waiters: #B08C52;
+    --c-hookah: #9179A0;
+    --c-hostess: #7FA491;
+    --c-wash: #6FA1B4;
+    --c-kitchen: #A16E4C;
+    --c-mgmt: #7A7A7A;
+
+    --border-card: #3A362F;
+    --border-input: #46423A;
+    --bg-highlight: #262420;
+    --bg-input: #1C1A17;
+    --bg-subtle: #221F1C;
+    --border-subtle: #2C2924;
+    --bg-chip-off: #2A2723;
+    --border-row: #2C2924;
+    --border-dashed: #4A463D;
+    --text-faint: #6E6A60;
+  }
+  #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
+  #payroll-root.theme-dark .month-select,
+  #payroll-root.theme-dark table.month-table th { background: var(--bg-subtle); }
+  #payroll-root.theme-dark img.brand-logo { filter: none; }
+  #payroll-root.theme-dark .adj-item .badge.bonus { background: #2E2740; color: #B7A6E8; }
+
+  /* =========================================================
+     МОБИЛЬНАЯ АДАПТАЦИЯ
+  ========================================================= */
+  @media (max-width: 720px) {
+    body { overflow-x: hidden; }
+    #payroll-root {
+      max-width: 100%;
+      padding: 10px 10px 22px;
+      border-radius: 0;
+      min-height: 100vh;
+    }
+
+    /* Шапка — логотип и виджет синхронизации переносятся, не сжимаются в кашу */
+    #payroll-root .topbar { gap: 10px; }
+    #payroll-root .brand { gap: 10px; }
+    #payroll-root .brand-logo { height: 34px; }
+    #payroll-root .sub { font-size: 11.5px; }
+    #payroll-root .sync-widget { font-size: 12px; padding: 5px 10px 5px 8px; }
+
+    /* Панели настроек (шестерёнка / замок) — не должны вылезать за край экрана */
+    #payroll-root .sync-config-panel {
+      position: fixed; left: 10px; right: 10px; top: auto; width: auto;
+      max-width: none; margin-top: 6px;
+    }
+
+    /* Вкладки — горизontальная прокрутка вместо переноса/сжатия в нечитаемое */
+    #payroll-root .tabs {
+      flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; padding-bottom: 2px;
+    }
+    #payroll-root .tabs::-webkit-scrollbar { display: none; }
+    #payroll-root .tab { padding: 9px 12px; font-size: 13.5px; white-space: nowrap; flex-shrink: 0; }
+
+    /* Таблицы — горизонтальная прокрутка внутри каждой вкладки, если не влезает */
+    #view-month, #view-timesheet, #view-revenue, #view-pnl, #view-outsource {
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    #payroll-root table.month-table:not(.schedule-table) { font-size: 12.5px; }
+
+    /* Дата и переключатель дня — крупнее тап-зоны */
+    #payroll-root .datebar { padding: 8px 10px; flex-wrap: wrap; }
+    #payroll-root .datebar button.nav { width: 36px; height: 36px; font-size: 17px; }
+    #payroll-root .datebar input[type=date] { font-size: 14px; }
+
+    /* Выручка — блоки в один столбец */
+    #payroll-root .revenue-inputs { gap: 8px; }
+    #payroll-root .revenue-box { min-width: 100%; padding: 10px 12px; }
+    #payroll-root .revenue-box input { font-size: 18px; }
+
+    /* Строки сотрудников — сумма не должна прилипать к правому краю без отступа */
+    #payroll-root .emp-row { padding: 10px; gap: 8px; }
+    #payroll-root .emp-row .name { min-width: 100%; }
+    #payroll-root .pay-amount { margin-left: 0; min-width: 0; }
+    #payroll-root .chip { padding: 7px 12px; font-size: 12.5px; }
+
+    /* Кнопки и поля — увеличенные тап-зоны для пальца */
+    #payroll-root .btn, #payroll-root .adj-form button { padding: 9px 14px; font-size: 13.5px; }
+    #payroll-root .adj-form select, #payroll-root .adj-form input { font-size: 14px; padding: 7px 9px; }
+    #payroll-root .adj-form input[type=text], #payroll-root .adj-form input[type=number] { width: 100%; }
+    #payroll-root .adj-form { flex-direction: column; align-items: stretch; }
+
+    /* Доска задач — уже адаптивная сетка (auto-fit), просто сузим минимальную ширину колонки */
+    #payroll-root .task-board { grid-template-columns: 1fr; }
+
+    /* Чат — сообщения и поле ввода на всю ширину */
+    #payroll-root .chat-log { max-height: 260px; }
+
+    /* Расписание/график: если совсем не влезает на очень узких экранах — даём скролл */
+    @media (max-width: 420px) {
+      #view-schedule { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      #payroll-root table.schedule-table { min-width: 560px; }
+    }
+
+    /* Настройки сотрудников — карточки в один столбец */
+    #payroll-root .field-group { flex-direction: column; align-items: stretch; }
+
+    #payroll-root .kpi-panel, #payroll-root .adj-panel { padding: 12px; }
+    #payroll-root h1, #payroll-root .display { font-size: 19px; }
+
+    /* Известный баг мобильных браузеров (iOS Safari/Chrome): position:fixed фон
+       вместе с непрерывной CSS-анимацией background-position периодически
+       "теряет" перерисовку части экрана — блоки пропадают и появляются только
+       после тача/скролла/перезагрузки. На мобильных отключаем и fixed, и саму
+       анимацию — водяной знак остаётся, просто статичный, без движения. */
+    body::before { position: absolute !important; animation: none !important; }
+    #payroll-root::before { animation: none !important; }
+  }
+</style>
+<link rel="manifest" href="./manifest.json">
+</head>
+<body>
+
+<div id="payroll-root">
+  <div class="topbar">
+    <div class="brand">
+      <img class="brand-logo" src="data:image/png;base64,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" alt="Миндаль Lounge & Bar">
+      <div>
+        <div class="sub">ФОТ · Учёт смен и расчёт зарплаты</div>
+      </div>
+    </div>
+    <div class="sync-widget-wrap">
+      <div class="sync-widget" id="sync-widget">
+        <button class="theme-toggle" id="access-lock-btn" title="Уровень доступа">🔒</button>
+        <button class="theme-toggle" id="theme-toggle" title="Светлая/тёмная тема">🌙</button>
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-text">—</span>
+        <button class="sync-retry" id="sync-retry" title="Повторить синхронизацию" style="display:none">↻</button>
+        <button class="sync-gear" id="sync-gear" title="Настроить подключение">⚙</button>
+      </div>
+      <div class="sync-config-panel" id="access-panel" style="display:none">
+        <div id="access-panel-body"></div>
+      </div>
+      <div class="sync-config-panel" id="sync-config-panel" style="display:none">
+        <label>Ссылка на Apps Script (веб-приложение)
+          <input type="text" id="sync-cfg-url" placeholder="https://script.google.com/macros/s/.../exec">
+        </label>
+        <div class="sync-config-actions">
+          <button class="btn" id="sync-cfg-save">Сохранить и подключить</button>
+          <button class="btn ghost" id="sync-cfg-cancel">Отмена</button>
+        </div>
+        <div class="sync-config-note">Сохраняется только в этом браузере на этом устройстве.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="day">Сегодня</div>
+    <div class="tab" data-tab="revenue">Выручка</div>
+    <div class="tab" data-tab="month">Месяц</div>
+    <div class="tab" data-tab="timesheet">Табель</div>
+    <div class="tab" data-tab="schedule">График</div>
+    <div class="tab" data-tab="teamwork">Задачи и чат</div>
+    <div class="tab" data-tab="outsource">Аутсорс КАЛЬЯН</div>
+    <div class="tab" data-tab="pnl">П&amp;Л</div>
+    <div class="tab" data-tab="settings">Сотрудники</div>
+  </div>
+
+  <div id="view-day"></div>
+  <div id="view-revenue" style="display:none"></div>
+  <div id="view-month" style="display:none"></div>
+  <div id="view-timesheet" style="display:none"></div>
+  <div id="view-schedule" style="display:none"></div>
+  <div id="view-teamwork" style="display:none"></div>
+  <div id="view-outsource" style="display:none"></div>
+  <div id="view-pnl" style="display:none"></div>
+  <div id="view-settings" style="display:none"></div>
+
+  <div class="footer-note">Прототип интерфейса · формулы можно уточнять и пересчитывать в реальном времени</div>
+</div>
+
+<script>
+(function(){
+
+  // ---------- Подключение к Google Таблице ----------
+  // Можно задать значения по умолчанию прямо здесь (тогда они будут одинаковыми
+  // для всех, кому вы раздадите этот файл), либо оставить пустыми и ввести
+  // ссылку/ключ через шестерёнку ⚙ в интерфейсе — тогда они сохранятся
+  // только в браузере конкретного устройства.
+  let SHEET_API_URL = '';
+
+  // Запасной вариант хранения на случай, если localStorage недоступен
+  // (например, в некоторых встроенных/песочничных браузерах)
+  let memoryConfigFallback = {};
+
+  function localGet_(key){
+    try { return window.localStorage.getItem(key); }
+    catch(e){ return memoryConfigFallback[key] !== undefined ? memoryConfigFallback[key] : null; }
+  }
+  function localSet_(key, value){
+    try { window.localStorage.setItem(key, value); }
+    catch(e){ memoryConfigFallback[key] = value; }
+  }
+
+  (function loadSavedConnection_(){
+    const savedUrl = localGet_('payroll-sheet-url');
+    if (savedUrl) SHEET_API_URL = savedUrl;
+  })();
+
+  // ---------- Индикатор синхронизации ----------
+  let syncState = { status: 'off', lastSync: null, lastError: null };
+
+  function setSyncStatus(status, extra){
+    syncState.status = status;
+    extra = extra || {};
+    if (extra.error !== undefined) syncState.lastError = extra.error;
+    if (status === 'synced') syncState.lastSync = new Date();
+    renderSyncStatus();
+  }
+
+  function renderSyncStatus(){
+    const dot = document.getElementById('sync-dot');
+    const text = document.getElementById('sync-text');
+    const retryBtn = document.getElementById('sync-retry');
+    if (!dot || !text || !retryBtn) return;
+    dot.className = 'sync-dot ' + syncState.status;
+    retryBtn.style.display = syncState.status === 'error' ? '' : 'none';
+    const timeStr = syncState.lastSync
+      ? syncState.lastSync.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+      : null;
+    if (syncState.status === 'off') text.textContent = 'Не подключено — нажмите ⚙';
+    else if (syncState.status === 'saving') text.textContent = 'Синхронизация…';
+    else if (syncState.status === 'synced') text.textContent = 'Сохранено' + (timeStr ? ' в ' + timeStr : '');
+    else if (syncState.status === 'error') text.textContent = 'Ошибка синхронизации' + (syncState.lastError ? ' (' + syncState.lastError + ')' : '');
+    if (retryBtn.title === undefined || retryBtn.title === '') retryBtn.title = 'Повторить синхронизацию';
+  }
+
+  function sheetApiConfigured_(){
+    return !!(SHEET_API_URL && SHEET_API_URL.trim());
+  }
+
+  // Обёртка над Apps Script API с тем же интерфейсом, что был у window.storage,
+  // чтобы весь остальной код приложения остался без изменений.
+  async function storageGet(key){
+    if (!sheetApiConfigured_()){
+      setSyncStatus('off');
+      return null;
+    }
+    setSyncStatus('saving');
+    try {
+      const url = SHEET_API_URL + '?key=' + encodeURIComponent(key);
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setSyncStatus('synced');
+      if (data.value === null || data.value === undefined || data.value === '') return null;
+      return { key: data.key, value: data.value };
+    } catch(err){
+      setSyncStatus('error', { error: err.message });
+      throw err;
+    }
+  }
+
+  async function storageSet(key, value){
+    if (!sheetApiConfigured_()){
+      setSyncStatus('off');
+      return null;
+    }
+    setSyncStatus('saving');
+    try {
+      // Content-Type: text/plain специально, чтобы браузер не слал preflight OPTIONS-запрос,
+      // который Apps Script веб-приложения не обрабатывают.
+      const res = await fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ key: key, value: value })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setSyncStatus('synced');
+      return data;
+    } catch(err){
+      setSyncStatus('error', { error: err.message });
+      throw err;
+    }
+  }
+
+  // ---------- Default data (used only if nothing saved yet) ----------
+  const DEFAULT_EMPLOYEES = [
+    {id:'bar_ivan',   name:'Иван Старченко',        dept:'bar',      role:'oclad_percent', oclad:45000, percent:0.013, active:true},
+    {id:'bar_karina', name:'Карина Корпушенко',     dept:'bar',      role:'oclad_percent', oclad:45000, percent:0.013, active:true},
+    {id:'off_polina', name:'Полина Косач',          dept:'waiters',  role:'oclad_percent', oclad:40000, percent:0.013, active:true},
+    {id:'off_ulyana', name:'Ульяна Митяева',        dept:'waiters',  role:'oclad_percent', oclad:40000, percent:0.013, active:true},
+    {id:'off_yulia',  name:'Юлия Ноговицына',       dept:'waiters',  role:'oclad_percent', oclad:40000, percent:0.013, active:true},
+    {id:'off_ksenia', name:'Ксения Сметанина',      dept:'waiters',  role:'oclad_percent', oclad:40000, percent:0.013, active:true},
+    {id:'km_sasha',   name:'Александр Полухин',     dept:'hookah',   role:'kpi_hookah', active:true},
+    {id:'km_misha',   name:'Михаил Арефкин',        dept:'hookah',   role:'kpi_hookah', active:true},
+    {id:'km_maksim',  name:'Максим Герман',         dept:'hookah',   role:'kpi_hookah', active:true},
+    {id:'km_ivan',    name:'Иван Бояковский',       dept:'hookah',   role:'kpi_hookah', active:true},
+    {id:'km_evg',     name:'Евгений',               dept:'hookah',   role:'kpi_hookah', active:true},
+    {id:'out_andrey', name:'Андрей',                dept:'hookah',   role:'outsource_hookah', active:true},
+    {id:'out_alisa',  name:'Алиса',                 dept:'hookah',   role:'outsource_hookah', active:true},
+    {id:'out_misha',  name:'Миша',                  dept:'hookah',   role:'outsource_hookah', active:true},
+    {id:'out_evg',    name:'Евгений (аутсорс)',     dept:'hookah',   role:'outsource_hookah', active:true},
+    {id:'host_vika',  name:'Виктория Вылегжанина',  dept:'hostess',  role:'fixed_shift', amount:3000, active:true},
+    {id:'host_anna',  name:'Анна Пушкарева',        dept:'hostess',  role:'fixed_shift', amount:3000, active:true},
+    {id:'wash_h',     name:'Хурсандой Эгамназарова',dept:'wash',     role:'hourly', rate:270, active:true},
+    {id:'cook_fedor', name:'Фёдор Девятых',         dept:'kitchen',  role:'hourly', rate:370, active:true},
+    {id:'cook_sabuhi',name:'Сабухи',                dept:'kitchen',  role:'hourly', rate:370, active:true},
+    {id:'cook_timur', name:'Тимур',                 dept:'kitchen',  role:'hourly', rate:370, active:true},
+    {id:'chef',       name:'Сергей Душницкий',      dept:'chef',     role:'chef', oclad:90000, coverRate:370,
+                       bonuses:{reviews:5000, stock:5000, menu:10000}, active:true},
+    {id:'uprav',      name:'Дмитрий Назаренко',     dept:'management', role:'oclad_shift', amount:130000, active:true},
+    {id:'manager',    name:'Иван Кайгородов',       dept:'management', role:'oclad_shift', amount:100000, active:true},
+  ];
+
+  let EMPLOYEES = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
+
+  const DEPTS = {
+    bar:        {label:'Бар',            color:'var(--c-bar)',     rule:'оклад + 1,3% от дневной выручки'},
+    waiters:    {label:'Официанты',      color:'var(--c-waiters)', rule:'оклад + 1,3% от дневной выручки'},
+    hookah:     {label:'КАЛЬЯН',      color:'var(--c-hookah)',  rule:'общий план по выручке КАЛЬЯН, делится по сменам'},
+    hostess:    {label:'Хостес',         color:'var(--c-hostess)', rule:'фикс за смену'},
+    wash:       {label:'Мойка',          color:'var(--c-wash)',    rule:'почасовая по факту времени'},
+    kitchen:    {label:'Кухня',          color:'var(--c-kitchen)', rule:'почасовая по факту времени'},
+    chef:       {label:'Шеф-повар',      color:'var(--c-kitchen)', rule:'оклад + KPI-бонусы + % прибыли (позже) + почасовая подмена'},
+    management: {label:'Управление',     color:'var(--c-mgmt)',    rule:'фикс. оклад, учитывается только присутствие'},
+  };
+  const DEPT_ORDER = ['bar','waiters','hookah','hostess','wash','kitchen','chef','management'];
+
+  // ---------- Задачи и чат руководителей ----------
+  // Отдельная, более крупная группировка "по цехам" — специально для постановки задач,
+  // не привязана к ролям сотрудников из ФОТ.
+  const TASK_DEPTS = [
+    {id:'kitchen',    label:'Кухня'},
+    {id:'bar',        label:'Бар'},
+    {id:'hall',       label:'Зал'},
+    {id:'hookah',     label:'КАЛЬЯН'},
+    {id:'management', label:'Управление'},
+  ];
+  const TASK_STATUSES = [
+    {id:'in_progress', label:'В работе',     color:'#5C7A6B'},
+    {id:'done',        label:'Выполнено',    color:'#3F6B4A'},
+    {id:'urgent',      label:'Срочно',       color:'#B23A34'},
+    {id:'failed',      label:'Не выполнено', color:'#8A6D3B'},
+  ];
+  function taskStatusMeta(id){ return TASK_STATUSES.find(s=>s.id===id) || TASK_STATUSES[0]; }
+
+  // ---------- Уровень доступа (полный / менеджер) ----------
+  // Простое разграничение на уровне интерфейса конкретного устройства — НЕ
+  // полноценная защита данных (данные в таблице всё равно доступны тому, у
+  // кого есть ссылка на неё), а способ убрать лишние вкладки с рабочего
+  // компьютера менеджера. Пароль хранится прямо в этом файле — чтобы сменить
+  // его, откройте payroll_app.html в текстовом редакторе и поменяйте строку
+  // ниже.
+  const ACCESS_PASSWORD = 'mindal2026';
+  const RESTRICTED_TABS = ['month', 'pnl', 'settings'];
+  function getAccessMode(){
+    try { return window.localStorage.getItem('payroll-access-mode') || 'full'; }
+    catch(e){ return 'full'; }
+  }
+  function setAccessModeStorage(mode){
+    try { window.localStorage.setItem('payroll-access-mode', mode); } catch(e){}
+  }
+
+  // ---------- Аутсорс-точки КАЛЬЯН ----------
+  const OUTSOURCE_LOCATIONS = [
+    {id:'malysheva', label:'СК Малышева'},
+    {id:'lenina',    label:'СК Ленина'},
+    {id:'veermall',  label:'СК Веермолл'},
+  ];
+  const OUTSOURCE_HOOKAH_PRICE = 1600;   // цена одного кальяна
+  const OUTSOURCE_NET_SHARE = 0.6;       // наша чистая прибыль — 60% от выручки точки
+  const OUTSOURCE_SHIFT_RATE = 1000;     // фикс сотруднику за выход
+  const OUTSOURCE_SALE_RATE = 250;       // + за каждую продажу кальяна
+  function outsourceEmployees(){ return EMPLOYEES.filter(e=>e.role==='outsource_hookah'); }
+  let outsourceCollapsed = {};
+  // Сумма к выплате конкретному сотруднику за конкретный день по всем точкам, где он был назначен в этот день
+  function outsourceDailyPayForEmployee(empId, dateStr){
+    const dayData = state.outsourceDays[dateStr];
+    if (!dayData) return 0;
+    let sum = 0;
+    OUTSOURCE_LOCATIONS.forEach(loc=>{
+      const entry = dayData[loc.id];
+      if (entry && entry.employeeId === empId){
+        sum += OUTSOURCE_SHIFT_RATE + (Number(entry.sales)||0)*OUTSOURCE_SALE_RATE;
+      }
+    });
+    return sum;
+  }
+  function getOutsourceDay(dateStr){
+    if (!state.outsourceDays[dateStr]) state.outsourceDays[dateStr] = {};
+    const d = state.outsourceDays[dateStr];
+    OUTSOURCE_LOCATIONS.forEach(loc=>{ if (!d[loc.id]) d[loc.id] = { employeeId:'', sales:0 }; });
+    return d;
+  }
+  const BREAKAGE_DEPTS = ['bar','waiters','kitchen','wash','hookah'];
+  const DEFAULT_BREAKAGE_AMOUNT = 1000;
+  const ROLE_LABELS = {
+    oclad_percent: 'Оклад + % от выручки',
+    kpi_hookah:    'KPI по выручке КАЛЬЯН',
+    fixed_shift:   'Фикс за смену',
+    hourly:        'Почасовая',
+    chef:          'Шеф-повар (оклад + бонусы)',
+    oclad_shift:   'Фикс. оклад (присутствие)',
+    outsource_hookah: 'Аутсорс КАЛЬЯН (выход + продажи)',
+  };
+
+  // Kalyan KPI brackets are stored as an ascending chain of "threshold" points.
+  // Each bracket's effective range is [threshold, nextBracket.threshold) — the upper
+  // bound is simply the NEXT bracket's threshold, never stored separately. This is what
+  // makes editing self-consistent: change one threshold and every later boundary is
+  // derived from it automatically, nothing to keep in sync by hand.
+  const DEFAULT_KALYAN_BRACKETS = [
+    {threshold:0,       type:'fixed',   value:45000},
+    {threshold:2050000, type:'fixed',   value:75000},
+    {threshold:2250000, type:'fixed',   value:85000},
+    {threshold:2350000, type:'fixed',   value:90000},
+    {threshold:2550000, type:'percent', value:0.12},
+    {threshold:2750000, type:'percent', value:0.13},
+    {threshold:3000000, type:'percent', value:0.13},
+  ];
+  let KALYAN_BRACKETS = JSON.parse(JSON.stringify(DEFAULT_KALYAN_BRACKETS));
+
+  function findBracketIndex(revenue){
+    let idx = 0;
+    for (let i=0;i<KALYAN_BRACKETS.length;i++){ if (revenue >= KALYAN_BRACKETS[i].threshold) idx=i; else break; }
+    return idx;
+  }
+  function bracketLabel(i){
+    const cur = KALYAN_BRACKETS[i], next = KALYAN_BRACKETS[i+1];
+    if (i===0 && next) return 'до '+money(next.threshold);
+    if (!next) return 'от '+money(cur.threshold);
+    return money(cur.threshold)+' – '+money(next.threshold);
+  }
+  // Editing a threshold shifts every later threshold by the same delta, so the width
+  // of the later tiers is preserved instead of being left overlapping or with gaps.
+  function updateBracketThreshold(index, rawValue){
+    if (index===0) return; // the first tier always starts at 0
+    const minAllowed = KALYAN_BRACKETS[index-1].threshold + 1;
+    const newValue = Math.max(Math.round(Number(rawValue)||0), minAllowed);
+    const delta = newValue - KALYAN_BRACKETS[index].threshold;
+    for (let j=index;j<KALYAN_BRACKETS.length;j++){ KALYAN_BRACKETS[j].threshold += delta; }
+  }
+  function addKalyanBracket(){
+    const last = KALYAN_BRACKETS[KALYAN_BRACKETS.length-1];
+    KALYAN_BRACKETS.push({threshold:last.threshold+200000, type:last.type, value:last.value});
+  }
+  function removeKalyanBracket(){
+    if (KALYAN_BRACKETS.length>1) KALYAN_BRACKETS.pop();
+  }
+
+  // ---------- Расписание (график смен на неделю) ----------
+  // Слоты — это позиции/локации, которые нужно закрыть; ячейка на пересечении со
+  // днём — свободный текст (имя, при необходимости с уточнением времени, "х" — выходной и т.п.),
+  // ровно как в исходной Excel-таблице.
+  const DEFAULT_SCHEDULE_SLOTS = [
+    {id:'wait1',            label:'Официант',            time:'11:00'},
+    {id:'wait2',            label:'Официант',            time:'13:50'},
+    {id:'bar',              label:'Бар',                 time:'11:50'},
+    {id:'hookah_malysheva', label:'СК Малышева',         time:''},
+    {id:'hookah_lenina',    label:'СК Ленина',           time:''},
+    {id:'hookah_veer',      label:'СК Веер',             time:''},
+    {id:'hookah_extra',     label:'КМ Мастера Миндаль',  time:'12:00–14:00'},
+    {id:'hostess',          label:'Хостес',              time:'13:00'},
+    {id:'manager1',         label:'Руководитель',        time:'11:00'},
+    {id:'manager2',         label:'Руководитель',        time:'16:00'},
+    {id:'cook1',            label:'Повар',               time:'11:00'},
+    {id:'cook2',            label:'Повар',               time:''},
+    {id:'wash',             label:'Мойка',               time:'14:00'},
+  ];
+  let SCHEDULE_SLOTS = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_SLOTS));
+
+  const DEFAULT_REVENUE_PLAN = 5500000;
+
+  // ---------- State ----------
+  const today = new Date();
+  function fmtDate(d){
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+  function monthKeyOf(dateStr){ return dateStr.slice(0,7); }
+  function daysInMonth(mk){ const [y,m]=mk.split('-').map(Number); return new Date(y,m,0).getDate(); }
+
+  let state = { currentDate: fmtDate(today), days: {}, plan: {}, adjustments: {}, breakageAmount: {}, chefProfitBonus: {}, pnl: {}, scheduleWeeks: {}, tasksWeeks: {}, chatMessages: null, outsourceDays: {} };
+  // state.plan: { 'YYYY-MM': number }
+  // state.adjustments: { 'YYYY-MM': { empId: [ {id,type,amount,note,tag?} ] } }
+  // state.breakageAmount: { 'YYYY-MM': number } — last amount used for the recurring monthly deduction
+  // state.chefProfitBonus: { 'YYYY-MM': {amount:number, confirmed:boolean} } — manual 5% kitchen-profit bonus
+  // state.pnl: { 'YYYY-MM': [ {id,name,amount} ] } — manually managed P&L expense categories (revenue & ФОТ are computed, not stored here)
+
+  const DEFAULT_PNL_CATEGORIES = [
+    'Себестоимость бара', 'Себестоимость кухни', 'Себестоимость КАЛЬЯН',
+    'Аренда и коммунальные услуги', 'Логистика (такси, развоз)', 'Маркетинг и реклама',
+    'Административные расходы', 'Налоги', 'Банковское обслуживание',
+  ];
+  function getPnl(mk){
+    if (!state.pnl[mk]){
+      state.pnl[mk] = DEFAULT_PNL_CATEGORIES.map(name=>({id:uid(), name, amount:0}));
+    }
+    return state.pnl[mk];
+  }
+  function getChefProfitBonus(mk){
+    if (!state.chefProfitBonus[mk]) state.chefProfitBonus[mk] = {amount:0, confirmed:false};
+    return state.chefProfitBonus[mk];
+  }
+
+  let activeTab = 'day';
+  let timesheetEmpId = null;
+  let scheduleAnchor = fmtDate(today);
+  let loadedScheduleWeeks = {};
+  let taskAnchor = fmtDate(today);
+  let loadedTaskWeeks = {};
+  let chatLoaded = false;
+  let pendingTaskFile = null;
+  let pendingChatFile = null;
+  function getAuthorName(){
+    try { return window.localStorage.getItem('payroll-author-name') || ''; } catch(e){ return ''; }
+  }
+  function setAuthorName(name){
+    try { window.localStorage.setItem('payroll-author-name', name); } catch(e){}
+  }
+  function mondayOf(dateStr){
+    const d = new Date(dateStr+'T00:00:00');
+    const wd = d.getDay();
+    const diff = (wd===0 ? -6 : 1-wd);
+    d.setDate(d.getDate()+diff);
+    return fmtDate(d);
+  }
+  let loadedMonths = {};
+  let configLoaded = false;
+
+  const DEFAULT_CHANGE_FUND = 15000;
+  function emptyDay(){
+    return {
+      totalRevenue:0, hookahRevenue:0, shifts:{},
+      cashIP:0, cashOOO:0, changeFund: DEFAULT_CHANGE_FUND, closerName:'',
+      dailyExpenses: [], // [{id,name,amount}] — cash-register expenses during the day
+      substitutes: [],   // [{id,name,amount}] — Мойка "подмена", paid in cash, excluded from ФОТ
+    };
+  }
+  function emptyShift(emp){
+    const s = {worked:false};
+    if (emp.role === 'hourly'){ s.timeIn=''; s.timeOut=''; }
+    if (emp.role === 'chef'){ s.coverWorked=false; s.coverStart=''; s.coverEnd=''; s.coverHours=0; s.bonusReviews=false; s.bonusStock=false; s.bonusMenu=false; }
+    return s;
+  }
+  function getDay(dateStr){
+    if (!state.days[dateStr]) state.days[dateStr] = emptyDay();
+    const d = state.days[dateStr];
+    EMPLOYEES.forEach(e=>{ if (!d.shifts[e.id]) d.shifts[e.id] = emptyShift(e); });
+    if (d.cashIP===undefined) d.cashIP=0;
+    if (d.cashOOO===undefined) d.cashOOO=0;
+    if (d.changeFund===undefined) d.changeFund=DEFAULT_CHANGE_FUND;
+    if (d.closerName===undefined) d.closerName='';
+    if (!d.dailyExpenses) d.dailyExpenses=[];
+    if (!d.substitutes) d.substitutes=[];
+    return d;
+  }
+  function getAdjustments(mk){
+    if (!state.adjustments[mk]) state.adjustments[mk] = {};
+    return state.adjustments[mk];
+  }
+  function applyMonthlyBreakage(mk, amount){
+    const adj = getAdjustments(mk);
+    // clear any previously auto-applied entries for this month, then re-apply fresh —
+    // this makes the action safe to repeat/adjust without piling up duplicates.
+    Object.keys(adj).forEach(empId=>{
+      adj[empId] = adj[empId].filter(item=>item.tag!=='monthly_breakage');
+    });
+    EMPLOYEES.filter(e=>e.active && BREAKAGE_DEPTS.includes(e.dept)).forEach(e=>{
+      if (!adj[e.id]) adj[e.id]=[];
+      adj[e.id].push({id:uid(), type:'deduction', amount, note:'Бой посуды (ежемесячно)', tag:'monthly_breakage'});
+    });
+    state.breakageAmount[mk] = amount;
+  }
+  function applyBulkAdvance(mk, amount, deptFilter){
+    const adj = getAdjustments(mk);
+    Object.keys(adj).forEach(empId=>{
+      adj[empId] = adj[empId].filter(item=>item.tag!=='bulk_advance');
+    });
+    const targets = EMPLOYEES.filter(e=>e.active && (deptFilter==='all' || e.dept===deptFilter));
+    targets.forEach(e=>{
+      if (!adj[e.id]) adj[e.id]=[];
+      adj[e.id].push({id:uid(), type:'advance', amount, note:'Аванс (массово)', tag:'bulk_advance'});
+    });
+  }
+
+  // ---------- Storage ----------
+  let _lastLoadedConfigExtra = {};
+  async function loadConfig(){
+    if (configLoaded) return;
+    configLoaded = true;
+    let needsResave = false;
+    try {
+      const res = await storageGet('payroll-config');
+      if (res && res.value){
+        const parsed = JSON.parse(res.value);
+
+        if (parsed.employees && parsed.employees.length){
+          // knownEmployeeIds — все id сотрудников по умолчанию, которые пользователю
+          // УЖЕ когда-либо предлагались (неважно, оставил он их или удалил).
+          // Добавляем автоматически только тех, кого пользователь ещё вообще не видел —
+          // то есть новых сотрудников, появившихся в коде уже ПОСЛЕ его последней
+          // синхронизации. Если сотрудник когда-то был предложен и удалён — он
+          // остаётся удалённым навсегда и не будет "воскресать" при следующем запуске.
+          const knownIds = new Set(parsed.knownEmployeeIds || parsed.employees.map(e=>e.id));
+          const newDefaults = DEFAULT_EMPLOYEES.filter(e=>!knownIds.has(e.id));
+          EMPLOYEES = parsed.employees.concat(newDefaults);
+          const updatedKnownIds = Array.from(new Set([...knownIds, ...DEFAULT_EMPLOYEES.map(e=>e.id)]));
+          if (newDefaults.length || !parsed.knownEmployeeIds) needsResave = true;
+          parsed.knownEmployeeIds = updatedKnownIds;
+        }
+
+        if (parsed.kalyanBrackets && parsed.kalyanBrackets.length) KALYAN_BRACKETS = parsed.kalyanBrackets;
+
+        if (parsed.scheduleSlots && parsed.scheduleSlots.length){
+          // Та же логика, что и для сотрудников выше — см. комментарий там.
+          // Важное отличие: если knownScheduleSlotIds ещё ни разу не сохранялись
+          // (первая загрузка после этого исправления), считаем ВСЕ текущие
+          // дефолтные слоты уже "известными" — иначе те, что пользователь
+          // осознанно удалил (как в этом случае), считались бы новыми и
+          // воскресали бы заново при каждом запуске.
+          const knownIds = new Set(parsed.knownScheduleSlotIds || DEFAULT_SCHEDULE_SLOTS.map(s=>s.id));
+          const newDefaults = DEFAULT_SCHEDULE_SLOTS.filter(s=>!knownIds.has(s.id));
+          let merged = parsed.scheduleSlots.concat(newDefaults);
+
+          // Отдельно схлопываем дубли, которые уже успели накопиться в самой
+          // сохранённой таблице от прошлых запусков (одна и та же позиция под
+          // разными id) — разовая чистка данных, испорченных прежней версией.
+          const seenLabelTimeKeys = new Set();
+          const deduped = [];
+          merged.forEach(s=>{
+            const key = (s.label||'')+'|'+(s.time||'');
+            if (seenLabelTimeKeys.has(key)) return;
+            seenLabelTimeKeys.add(key);
+            deduped.push(s);
+          });
+
+          const updatedKnownIds = Array.from(new Set([...knownIds, ...DEFAULT_SCHEDULE_SLOTS.map(s=>s.id)]));
+          if (newDefaults.length || deduped.length !== parsed.scheduleSlots.length || !parsed.knownScheduleSlotIds) needsResave = true;
+          SCHEDULE_SLOTS = deduped;
+          parsed.knownScheduleSlotIds = updatedKnownIds;
+        }
+
+        _lastLoadedConfigExtra = { knownEmployeeIds: parsed.knownEmployeeIds, knownScheduleSlotIds: parsed.knownScheduleSlotIds };
+      }
+    } catch(e){ /* use defaults */ }
+    if (needsResave) scheduleSaveConfig();
+  }
+  let configSaveTimer=null;
+  function scheduleSaveConfig(){ clearTimeout(configSaveTimer); configSaveTimer=setTimeout(saveConfig,250); }
+  async function saveConfig(){
+    const knownEmployeeIds = Array.from(new Set([
+      ...(_lastLoadedConfigExtra.knownEmployeeIds || []),
+      ...EMPLOYEES.map(e=>e.id),
+      ...DEFAULT_EMPLOYEES.map(e=>e.id)
+    ]));
+    const knownScheduleSlotIds = Array.from(new Set([
+      ...(_lastLoadedConfigExtra.knownScheduleSlotIds || []),
+      ...SCHEDULE_SLOTS.map(s=>s.id),
+      ...DEFAULT_SCHEDULE_SLOTS.map(s=>s.id)
+    ]));
+    _lastLoadedConfigExtra = { knownEmployeeIds, knownScheduleSlotIds };
+    try {
+      await storageSet('payroll-config', JSON.stringify({
+        employees: EMPLOYEES,
+        kalyanBrackets: KALYAN_BRACKETS,
+        scheduleSlots: SCHEDULE_SLOTS,
+        knownEmployeeIds,
+        knownScheduleSlotIds
+      }));
+    }
+    catch(e){ console.error('config save failed', e); }
+  }
+
+  async function loadScheduleWeek(weekKey){
+    if (loadedScheduleWeeks[weekKey]) return;
+    loadedScheduleWeeks[weekKey] = true;
+    try {
+      const res = await storageGet('payroll-schedule-week:'+weekKey);
+      if (res && res.value){
+        const parsed = JSON.parse(res.value);
+        state.scheduleWeeks[weekKey] = { cells: parsed.cells || {} };
+      }
+    } catch(e){ /* nothing saved yet for this week */ }
+    if (!state.scheduleWeeks[weekKey]) state.scheduleWeeks[weekKey] = { cells: {} };
+  }
+  let scheduleWeekSaveTimer=null;
+  function scheduleSaveWeek(weekKey){
+    clearTimeout(scheduleWeekSaveTimer);
+    scheduleWeekSaveTimer = setTimeout(()=>{
+      const wk = state.scheduleWeeks[weekKey] || { cells:{} };
+      storageSet('payroll-schedule-week:'+weekKey, JSON.stringify(wk)).catch(e=>console.error('schedule save failed', e));
+    }, 250);
+  }
+
+  async function loadTasksWeek(weekKey){
+    if (loadedTaskWeeks[weekKey]) return;
+    loadedTaskWeeks[weekKey] = true;
+    try {
+      const res = await storageGet('payroll-tasks-week:'+weekKey);
+      if (res && res.value){
+        const parsed = JSON.parse(res.value);
+        state.tasksWeeks[weekKey] = { tasks: parsed.tasks || [] };
+      }
+    } catch(e){ /* nothing saved yet for this week */ }
+    if (!state.tasksWeeks[weekKey]) state.tasksWeeks[weekKey] = { tasks: [] };
+  }
+  let taskWeekSaveTimer=null;
+  function saveTasksWeek(weekKey){
+    clearTimeout(taskWeekSaveTimer);
+    taskWeekSaveTimer = setTimeout(()=>{
+      const wk = state.tasksWeeks[weekKey] || { tasks: [] };
+      storageSet('payroll-tasks-week:'+weekKey, JSON.stringify(wk)).catch(e=>console.error('tasks save failed', e));
+    }, 250);
+  }
+
+  async function loadChat(){
+    if (chatLoaded) return;
+    chatLoaded = true;
+    try {
+      const res = await storageGet('payroll-chat');
+      if (res && res.value){
+        const parsed = JSON.parse(res.value);
+        state.chatMessages = parsed.messages || [];
+      }
+    } catch(e){ /* nothing saved yet */ }
+    if (!state.chatMessages) state.chatMessages = [];
+  }
+  let chatSaveTimer=null;
+  function saveChat(){
+    clearTimeout(chatSaveTimer);
+    chatSaveTimer = setTimeout(()=>{
+      storageSet('payroll-chat', JSON.stringify({messages: state.chatMessages || []})).catch(e=>console.error('chat save failed', e));
+    }, 250);
+  }
+
+  // Загружает выбранный файл на Google Диск через Apps Script и возвращает
+  // {name, mimeType, size, url, viewUrl} — url годится для скачивания, viewUrl для просмотра в браузере.
+  function fileToBase64_(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result.split(',')[1] || '');
+      reader.onerror = ()=> reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+  async function uploadFileToSheet(file){
+    if (!sheetApiConfigured_()) throw new Error('Синхронизация с таблицей не настроена');
+    const dataBase64 = await fileToBase64_(file);
+    const res = await fetch(SHEET_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action:'uploadFile', filename:file.name, mimeType:file.type||'application/octet-stream', dataBase64 })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.message || data.error);
+    return data;
+  }
+
+  async function loadMonth(mk){
+    if (loadedMonths[mk]) return;
+    loadedMonths[mk] = true;
+    try {
+      const res = await storageGet('payroll-month:'+mk);
+      if (res && res.value){
+        const parsed = JSON.parse(res.value);
+        Object.keys(parsed.days||{}).forEach(dt=>{ state.days[dt]=parsed.days[dt]; });
+        if (typeof parsed.plan === 'number') state.plan[mk] = parsed.plan;
+        if (parsed.adjustments) state.adjustments[mk] = parsed.adjustments;
+        if (typeof parsed.breakageAmount === 'number') state.breakageAmount[mk] = parsed.breakageAmount;
+        if (parsed.chefProfitBonus) state.chefProfitBonus[mk] = parsed.chefProfitBonus;
+        if (parsed.pnl && parsed.pnl.length) state.pnl[mk] = parsed.pnl;
+        Object.keys(parsed.outsourceDays||{}).forEach(dt=>{ state.outsourceDays[dt]=parsed.outsourceDays[dt]; });
+      }
+    } catch(e){ /* nothing saved yet for this month */ }
+  }
+  let saveTimer=null;
+  function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveMonth,250); }
+  async function saveMonth(){
+    const mk = monthKeyOf(state.currentDate);
+    const monthDays = {};
+    Object.keys(state.days).forEach(dt=>{ if (monthKeyOf(dt)===mk) monthDays[dt]=state.days[dt]; });
+    const monthOutsourceDays = {};
+    Object.keys(state.outsourceDays).forEach(dt=>{ if (monthKeyOf(dt)===mk) monthOutsourceDays[dt]=state.outsourceDays[dt]; });
+    try {
+      await storageSet('payroll-month:'+mk, JSON.stringify({
+        days: monthDays,
+        plan: state.plan[mk],
+        adjustments: state.adjustments[mk] || {},
+        breakageAmount: state.breakageAmount[mk],
+        chefProfitBonus: state.chefProfitBonus[mk],
+        pnl: state.pnl[mk] || [],
+        outsourceDays: monthOutsourceDays
+      }));
+    } catch(e){ console.error('save failed', e); }
+  }
+
+
+  // ---------- Calculations ----------
+  function parseTimeToMinutes(t){ if (!t) return null; const [h,m]=t.split(':').map(Number); return h*60+m; }
+  function hoursBetween(timeIn,timeOut){
+    const a=parseTimeToMinutes(timeIn), b=parseTimeToMinutes(timeOut);
+    if (a===null||b===null) return 0;
+    let diff=b-a; if (diff<=0) diff+=24*60;
+    return Math.round((diff/60)*100)/100;
+  }
+  function dailyPay(emp, day, curKmBracket, dateStr){
+    const s = day.shifts[emp.id];
+    if (!s) return null;
+    if (emp.role === 'oclad_percent') return s.worked ? Math.round(day.totalRevenue*emp.percent*100)/100 : 0;
+    if (emp.role === 'fixed_shift')   return s.worked ? emp.amount : 0;
+    if (emp.role === 'hourly')        return s.worked ? Math.round(hoursBetween(s.timeIn,s.timeOut)*emp.rate*100)/100 : 0;
+    if (emp.role === 'chef')          { const ch = hoursBetween(s.coverStart, s.coverEnd); return (s.coverWorked && ch>0) ? Math.round(ch*emp.coverRate*100)/100 : 0; }
+    if (emp.role === 'outsource_hookah') return dateStr ? outsourceDailyPayForEmployee(emp.id, dateStr) : 0;
+    if (emp.role === 'kpi_hookah'){
+      // Fixed KPI tiers (45,000 / 75,000 / 85,000 / 90,000) are a monthly oclad — no daily figure.
+      // Once the monthly hookah revenue reaches a percent tier (12%/13%), the oclad is cancelled
+      // and each master earns that percent of THAT DAY's hookah revenue on days they worked.
+      if (curKmBracket && curKmBracket.type === 'percent'){
+        return s.worked ? Math.round((Number(day.hookahRevenue)||0) * curKmBracket.value * 100)/100 : 0;
+      }
+      return null;
+    }
+    return null; // oclad_shift => monthly only
+  }
+  function monthlyHookahRevenue(mk){
+    let sum = 0;
+    monthDatesFor(mk).forEach(dt=>{ sum += Number(state.days[dt].hookahRevenue)||0; });
+    return sum;
+  }
+  function monthDatesFor(mk){ return Object.keys(state.days).filter(dt=>monthKeyOf(dt)===mk).sort(); }
+
+  function computeAdjustmentTotals(mk){
+    const adj = getAdjustments(mk);
+    const result = {};
+    EMPLOYEES.forEach(e=>{
+      const list = adj[e.id] || [];
+      let advance=0, deduction=0, bonus=0;
+      list.forEach(item=>{
+        if (item.type==='advance') advance += Number(item.amount)||0;
+        else if (item.type==='bonus') bonus += Number(item.amount)||0;
+        else deduction += Number(item.amount)||0;
+      });
+      result[e.id] = {advance, deduction, bonus};
+    });
+    return result;
+  }
+
+  function computeMonthTotals(mk){
+    const dates = monthDatesFor(mk);
+    const totals = {};
+    EMPLOYEES.forEach(e=> totals[e.id] = {oclad:0, variable:0, bonuses:0, shiftsWorked:0});
+
+    let hookahRevenueSum = 0, totalRevenueSum = 0, substituteCashTotal = 0;
+    dates.forEach(dt=>{
+      const day = state.days[dt];
+      hookahRevenueSum += Number(day.hookahRevenue)||0;
+      totalRevenueSum  += Number(day.totalRevenue)||0;
+      (day.substitutes||[]).forEach(sub=>{ substituteCashTotal += Number(sub.amount)||0; });
+      EMPLOYEES.forEach(e=>{
+        const s = day.shifts[e.id]; if (!s) return;
+        if (e.role === 'oclad_percent'){ if (s.worked){ totals[e.id].variable += day.totalRevenue*e.percent; totals[e.id].shiftsWorked++; } }
+        else if (e.role === 'fixed_shift'){ if (s.worked){ totals[e.id].variable += e.amount; totals[e.id].shiftsWorked++; } }
+        else if (e.role === 'hourly'){ if (s.worked){ totals[e.id].variable += hoursBetween(s.timeIn,s.timeOut)*e.rate; totals[e.id].shiftsWorked++; } }
+        else if (e.role === 'chef'){ const ch = hoursBetween(s.coverStart, s.coverEnd); if (s.coverWorked && ch>0) totals[e.id].variable += ch*e.coverRate; }
+        else if (e.role === 'kpi_hookah'){ if (s.worked) totals[e.id].shiftsWorked++; }
+        else if (e.role === 'oclad_shift'){ if (s.worked) totals[e.id].shiftsWorked++; }
+      });
+    });
+
+    // Аутсорс-точки КАЛЬЯН хранятся отдельно от state.days (за них не обязательно
+    // заходить на вкладку «Сегодня»), поэтому считаем их по всем дням месяца отдельно.
+    Object.keys(state.outsourceDays).filter(dt=>monthKeyOf(dt)===mk).forEach(dt=>{
+      outsourceEmployees().forEach(e=>{
+        const p = outsourceDailyPayForEmployee(e.id, dt);
+        if (p>0){ totals[e.id].variable += p; totals[e.id].shiftsWorked++; }
+      });
+    });
+
+    const chef = EMPLOYEES.find(e=>e.id==='chef');
+    if (chef){
+      let flags = {reviews:false, stock:false, menu:false};
+      dates.forEach(dt=>{ const s=state.days[dt].shifts.chef; if(!s) return;
+        if (s.bonusReviews) flags.reviews=true; if (s.bonusStock) flags.stock=true; if (s.bonusMenu) flags.menu=true; });
+      let bonusTotal=0;
+      if (flags.reviews) bonusTotal += chef.bonuses.reviews;
+      if (flags.stock)   bonusTotal += chef.bonuses.stock;
+      if (flags.menu)    bonusTotal += chef.bonuses.menu;
+      const profitBonus = getChefProfitBonus(mk);
+      if (profitBonus.confirmed) bonusTotal += (Number(profitBonus.amount)||0);
+      totals.chef.bonuses = bonusTotal;
+      totals.chef.chefFlags = flags;
+    }
+
+    EMPLOYEES.forEach(e=>{
+      if (e.role==='oclad_percent') totals[e.id].oclad = e.oclad;
+      if (e.role==='chef')          totals[e.id].oclad = e.oclad;
+      if (e.role==='oclad_shift')   totals[e.id].oclad = e.amount;
+    });
+
+    const kalyanEmps = EMPLOYEES.filter(e=>e.role==='kpi_hookah');
+    const curKmBracket = KALYAN_BRACKETS[findBracketIndex(hookahRevenueSum)];
+    if (curKmBracket.type === 'fixed'){
+      // Fixed tier: the bracket value IS each master's oclad for the month — nothing extra accrues.
+      kalyanEmps.forEach(e=>{
+        totals[e.id].oclad = curKmBracket.value;
+        totals[e.id].variable = 0;
+        totals[e.id].kmLevelPct = null;
+      });
+    } else {
+      // Percent tier: oclad is cancelled. Each master earns curKmBracket.value % of THAT DAY's
+      // hookah revenue, for every day they worked (accumulated across the month).
+      kalyanEmps.forEach(e=>{ totals[e.id].oclad = 0; totals[e.id].kmLevelPct = curKmBracket.value; });
+      dates.forEach(dt=>{
+        const day = state.days[dt];
+        kalyanEmps.forEach(e=>{
+          const s = day.shifts[e.id];
+          if (s && s.worked) totals[e.id].variable += (Number(day.hookahRevenue)||0) * curKmBracket.value;
+        });
+      });
+    }
+
+    const adjTotals = computeAdjustmentTotals(mk);
+    // Manual bonus adjustments (премии) add on top of any role-specific bonuses computed above.
+    EMPLOYEES.forEach(e=>{
+      const b = (adjTotals[e.id] && adjTotals[e.id].bonus) || 0;
+      if (b) totals[e.id].bonuses = (totals[e.id].bonuses||0) + b;
+    });
+
+    return {totals, hookahRevenueSum, totalRevenueSum, curKmBracket, dates, adjTotals, substituteCashTotal};
+  }
+
+  // ---------- Render helpers ----------
+  function money(n){ if (n===null||n===undefined) return '—'; return Math.round(n).toLocaleString('ru-RU')+' ₽'; }
+  function weekdayShort(dateStr){ const days=['вс','пн','вт','ср','чт','пт','сб']; return days[new Date(dateStr+'T00:00:00').getDay()]; }
+  function uid(){ return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+  // ---------- Day view ----------
+  function renderDayView(){
+    const day = getDay(state.currentDate);
+    const mk = monthKeyOf(state.currentDate);
+    const curKmBracket = KALYAN_BRACKETS[findBracketIndex(monthlyHookahRevenue(mk))];
+    let html = '';
+    html += '<div class="datebar"><button class="nav" data-act="prevday">‹</button>'
+      + '<input type="date" id="date-input" value="'+state.currentDate+'"/>'
+      + '<span class="weekday">'+weekdayShort(state.currentDate)+'</span>'
+      + '<button class="nav" data-act="nextday">›</button></div>';
+
+    html += '<div class="revenue-inputs">'
+      + '<div class="revenue-box"><label>Общая выручка за день</label>'
+      + '<input type="number" id="rev-total" value="'+(day.totalRevenue||'')+'" placeholder="0"/></div>'
+      + '<div class="revenue-box hookah"><label>Выручка КАЛЬЯН за день</label>'
+      + '<input type="number" id="rev-hookah" value="'+(day.hookahRevenue||'')+'" placeholder="0"/></div>'
+      + '</div>';
+
+    // ---- Closing shift report ----
+    // Order: выручка дня → наличные ООО/ИП/итого → расходы → наличные с учётом трат →
+    // остаток размена → ФИО закрывающего. (Список смены за день не дублируется здесь — он ниже, по карточкам.)
+    const totalCash = (Number(day.cashOOO)||0) + (Number(day.cashIP)||0);
+    const expensesSum = (day.dailyExpenses||[]).reduce((s,x)=>s+(Number(x.amount)||0),0);
+    const cashAfterExpenses = totalCash - expensesSum;
+    html += '<div class="closing-card"><h4>Отчёт закрытия смены</h4>'
+      + '<div class="cash-grid">'
+      + '<div class="cash-field"><label>Выручка за день</label><div class="readonly">'+money(day.totalRevenue)+'</div></div>'
+      + '<div class="cash-field"><label>Наличные, приход ООО</label><input type="number" id="cash-ooo" value="'+(day.cashOOO||'')+'" placeholder="0"/></div>'
+      + '<div class="cash-field"><label>Наличные, приход ИП</label><input type="number" id="cash-ip" value="'+(day.cashIP||'')+'" placeholder="0"/></div>'
+      + '<div class="cash-field"><label>Общее количество наличных</label><div class="readonly">'+money(totalCash)+'</div></div>'
+      + '</div>';
+
+    html += '<div style="font-size:13px;color:var(--ink-soft);margin-bottom:4px;">Расходы за день из кассы (магазины и проч.)</div>';
+    if ((day.dailyExpenses||[]).length){
+      html += '<div class="mini-list">' + day.dailyExpenses.map(x=>{
+        return '<div class="mini-item"><span class="note">'+x.name+'</span><span class="amt">'+money(x.amount)+'</span>'
+          + '<span class="del" data-act="del-expense" data-id="'+x.id+'">✕</span></div>';
+      }).join('') + '</div>';
+    }
+    html += '<div class="mini-add-form">'
+      + '<input type="text" id="expense-name" placeholder="назначение (напр. магазин)"/>'
+      + '<input type="number" id="expense-amount" placeholder="сумма, ₽"/>'
+      + '<button id="expense-add" class="btn secondary">+ Добавить расход</button>'
+      + '</div>';
+
+    html += '<div class="cash-grid" style="margin-top:10px;">'
+      + '<div class="cash-field"><label>Наличные с учётом трат</label><div class="readonly">'+money(cashAfterExpenses)+'</div></div>'
+      + '<div class="cash-field"><label>Остаток размена в кассе</label><input type="number" id="change-fund" value="'+day.changeFund+'" placeholder="15000"/></div>'
+      + '</div>';
+
+    html += '<div style="margin-top:6px;">'
+      + '<label style="display:block;font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px;">ФИО закрывающего лица</label>'
+      + '<select id="closer-name" style="width:100%;font-size:15px;padding:6px 8px;border:1px solid var(--border-input);border-radius:6px;">'
+      + '<option value=""'+(!day.closerName?' selected':'')+'>— выбрать —</option>'
+      + '<option value="Дмитрий Н"'+(day.closerName==='Дмитрий Н'?' selected':'')+'>Дмитрий Н</option>'
+      + '<option value="Иван К"'+(day.closerName==='Иван К'?' selected':'')+'>Иван К</option>'
+      + '</select>'
+      + '</div>';
+    html += '</div>';
+
+    const receiptLines = [];
+
+    DEPT_ORDER.forEach(deptKey=>{
+      const dept = DEPTS[deptKey];
+      const emps = EMPLOYEES.filter(e=>e.dept===deptKey && e.active);
+      if (!emps.length && deptKey!=='wash') return;
+      html += '<div class="dept-card"><div class="dept-head" style="background:'+dept.color+'">'
+        + '<span>'+dept.label+'</span><span class="rule">'+dept.rule+'</span></div>';
+
+      emps.forEach(e=>{
+        const s = day.shifts[e.id];
+        const pay = dailyPay(e, day, curKmBracket, state.currentDate);
+        html += '<div class="emp-row" data-emp="'+e.id+'"><div class="name">'+e.name+'</div>'
+          + '<div class="chip '+(s.worked?'on':'off')+'" data-act="toggle-shift" data-emp="'+e.id+'">'+(s.worked?'Смена':'Выходной')+'</div>';
+
+        if (e.role === 'hourly' && s.worked){
+          const h = hoursBetween(s.timeIn, s.timeOut);
+          html += '<div class="time-inputs">'
+            + '<input type="time" data-field="timeIn" data-emp="'+e.id+'" value="'+s.timeIn+'"/> — '
+            + '<input type="time" data-field="timeOut" data-emp="'+e.id+'" value="'+s.timeOut+'"/>'
+            + '<span class="hours-badge">'+(h>0?h+' ч':'—')+'</span></div>';
+        }
+        if (e.role === 'chef'){
+          const ch = hoursBetween(s.coverStart, s.coverEnd);
+          html += '<div class="chef-extra"><label><input type="checkbox" data-act="toggle-cover" data-emp="'+e.id+'" '+(s.coverWorked?'checked':'')+'/> замещал повара</label>'
+            + (s.coverWorked ?
+                '<div class="time-inputs">'
+                + '<input type="time" data-field="coverStart" data-emp="'+e.id+'" value="'+(s.coverStart||'')+'"/> — '
+                + '<input type="time" data-field="coverEnd" data-emp="'+e.id+'" value="'+(s.coverEnd||'')+'"/>'
+                + '<span class="hours-badge">'+(ch>0?ch+' ч':'—')+'</span></div>'
+              : '')
+            + '</div>';
+        }
+        if (e.role === 'kpi_hookah'){
+          html += '<div style="font-size:11.5px;color:var(--ink-soft)">'+(curKmBracket.type==='fixed'?'оклад уровня: '+money(curKmBracket.value)+'/мес':(curKmBracket.value*100)+'% от выручки КАЛЬЯН сегодня')+'</div>';
+        }
+        if (pay === null){
+          html += '<div class="pay-note">начисляется по итогам месяца</div>';
+          if (e.role === 'kpi_hookah' && s.worked){
+            receiptLines.push({label:dept.label+' — '+e.name, note:'смена (оклад по итогам месяца)'});
+          }
+        } else {
+          html += '<div class="pay-amount '+(pay===0?'zero':'')+'">'+(pay===0?'—':money(pay))+'</div>';
+          if (e.role === 'oclad_percent' && s.worked){
+            // Approximate total value of THIS shift, assuming 14–16 shifts/month for the oclad share.
+            const ocladPerShiftLow = e.oclad/16, ocladPerShiftHigh = e.oclad/14;
+            const low = ocladPerShiftLow + pay, high = ocladPerShiftHigh + pay;
+            const sub = 'оценка при 14–16 сменах/мес (оклад/смену ≈ '+money(ocladPerShiftLow)+'–'+money(ocladPerShiftHigh)+' + 1,3% от сегодняшней выручки); точный расчёт — во вкладке «Месяц»';
+            receiptLines.push({label:dept.label+' — '+e.name, low:low, high:high, sub:sub});
+          } else if (pay>0){
+            receiptLines.push({label:dept.label+' — '+e.name, low:pay, high:pay});
+          }
+        }
+        html += '</div>';
+      });
+
+      if (deptKey === 'chef'){
+        const chefEmp = EMPLOYEES.find(x=>x.id==='chef');
+        const s = day.shifts.chef;
+        if (chefEmp && s){
+          html += '<div class="bonus-row">'
+            + '<label><input type="checkbox" data-act="toggle-bonus" data-field="bonusReviews" data-emp="chef" '+(s.bonusReviews?'checked':'')+'/> отзывы (+'+money(chefEmp.bonuses.reviews)+'/мес)</label>'
+            + '<label><input type="checkbox" data-act="toggle-bonus" data-field="bonusStock" data-emp="chef" '+(s.bonusStock?'checked':'')+'/> товарный остаток (+'+money(chefEmp.bonuses.stock)+'/мес)</label>'
+            + '<label><input type="checkbox" data-act="toggle-bonus" data-field="bonusMenu" data-emp="chef" '+(s.bonusMenu?'checked':'')+'/> меню/документация (+'+money(chefEmp.bonuses.menu)+'/мес)</label>'
+            + '</div><div class="assumption-note">Отметки бонусов — на месяц целиком. 5% от чистой прибыли кухни — на вкладке «Месяц».</div>';
+        }
+      }
+
+      if (deptKey === 'wash'){
+        html += '<div class="bonus-row" style="flex-direction:column;align-items:stretch;">'
+          + '<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;">Подмена (наличными, не входит в ФОТ — переносится в П&amp;Л)</div>';
+        if ((day.substitutes||[]).length){
+          html += '<div class="mini-list">' + day.substitutes.map(x=>{
+            return '<div class="mini-item"><span class="note">'+x.name+'</span><span class="amt">'+money(x.amount)+'</span>'
+              + '<span class="del" data-act="del-substitute" data-id="'+x.id+'">✕</span></div>';
+          }).join('') + '</div>';
+        }
+        html += '<div class="mini-add-form">'
+          + '<input type="text" id="substitute-name" placeholder="имя подменного сотрудника"/>'
+          + '<input type="number" id="substitute-amount" value="3000" placeholder="сумма, ₽"/>'
+          + '<button id="substitute-add" class="btn secondary">+ Добавить подмену</button>'
+          + '</div></div>';
+      }
+      html += '</div>';
+    });
+
+    const substituteTotal = (day.substitutes||[]).reduce((s,x)=>s+(Number(x.amount)||0),0);
+    let totalLow = receiptLines.reduce((s,l)=>s+(l.note?0:l.low),0) + substituteTotal;
+    let totalHigh = receiptLines.reduce((s,l)=>s+(l.note?0:l.high),0) + substituteTotal;
+    function fmtLine(low, high){ return low===high ? money(low) : '≈ '+money(low)+'–'+money(high); }
+
+    html += '<div class="receipt"><h3 class="display">Чек дня · '+state.currentDate+'</h3>'
+      + receiptLines.map(l=>{ const dots='.'.repeat(Math.max(3,46-l.label.length));
+        const amtHtml = l.note ? '<span style="font-family:inherit;font-size:12px;color:var(--ink-soft);">'+l.note+'</span>' : fmtLine(l.low,l.high);
+        let row = '<div class="line"><div class="ln">'+l.label+' <span class="dots">'+dots+'</span></div><div class="amt">'+amtHtml+'</div></div>';
+        if (l.sub) row += '<div class="line sub"><div class="ln">'+l.sub+'</div></div>';
+        return row; }).join('');
+
+    if ((day.substitutes||[]).length){
+      html += '<div class="line section-head">Подмена Мойка (нал., вне ФОТ)</div>'
+        + day.substitutes.map(x=>'<div class="line"><div class="ln">'+x.name+' <span class="dots">'+'.'.repeat(Math.max(3,40-x.name.length))+'</span></div><div class="amt">'+money(x.amount)+'</div></div>').join('');
+    }
+
+    html += '<div class="total"><span>ИТОГО'+(substituteTotal>0?' (с учётом подмены)':'')+'</span><span>'+fmtLine(totalLow,totalHigh)+'</span></div>';
+
+    html += '<div class="line section-head">Закрытие смены</div>'
+      + '<div class="line"><div class="ln">Выручка за день</div><div class="amt">'+money(day.totalRevenue)+'</div></div>'
+      + '<div class="line"><div class="ln">Наличные ООО / ИП</div><div class="amt">'+money(day.cashOOO)+' / '+money(day.cashIP)+'</div></div>'
+      + '<div class="line"><div class="ln">Итого наличных</div><div class="amt">'+money(totalCash)+'</div></div>'
+      + '<div class="line"><div class="ln">Расходы за день</div><div class="amt">-'+money(expensesSum)+'</div></div>'
+      + '<div class="line"><div class="ln"><b>Наличные с учётом трат</b></div><div class="amt"><b>'+money(cashAfterExpenses)+'</b></div></div>'
+      + '<div class="line"><div class="ln">Остаток размена в кассе</div><div class="amt">'+money(day.changeFund)+'</div></div>'
+      + '<div class="line"><div class="ln">Закрывающий</div><div class="amt" style="font-family:inherit;">'+(day.closerName||'—')+'</div></div>'
+      + '</div>';
+
+    document.getElementById('view-day').innerHTML = html;
+    attachDayHandlers();
+  }
+
+  function attachDayHandlers(){
+    const root = document.getElementById('view-day');
+    root.querySelector('#rev-total').addEventListener('change', e=>{ getDay(state.currentDate).totalRevenue=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
+    root.querySelector('#rev-hookah').addEventListener('change', e=>{ getDay(state.currentDate).hookahRevenue=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
+    root.querySelector('#date-input').addEventListener('change', async e=>{ state.currentDate=e.target.value; await loadMonth(monthKeyOf(state.currentDate)); renderDayView(); });
+
+    root.querySelector('#cash-ip').addEventListener('change', e=>{ getDay(state.currentDate).cashIP=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
+    root.querySelector('#cash-ooo').addEventListener('change', e=>{ getDay(state.currentDate).cashOOO=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
+    root.querySelector('#change-fund').addEventListener('change', e=>{ getDay(state.currentDate).changeFund=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
+    root.querySelector('#closer-name').addEventListener('change', e=>{ getDay(state.currentDate).closerName=e.target.value; scheduleSave(); renderDayView(); });
+    root.querySelector('#expense-add').addEventListener('click', ()=>{
+      const name = root.querySelector('#expense-name').value.trim();
+      const amount = Number(root.querySelector('#expense-amount').value)||0;
+      if (!name || amount<=0) return;
+      getDay(state.currentDate).dailyExpenses.push({id:uid(), name, amount});
+      scheduleSave(); renderDayView();
+    });
+    root.querySelectorAll('[data-act="del-expense"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const d = getDay(state.currentDate);
+        d.dailyExpenses = d.dailyExpenses.filter(x=>x.id!==el.dataset.id);
+        scheduleSave(); renderDayView();
+      });
+    });
+    const subAddBtn = root.querySelector('#substitute-add');
+    if (subAddBtn){
+      subAddBtn.addEventListener('click', ()=>{
+        const name = root.querySelector('#substitute-name').value.trim();
+        const amount = Number(root.querySelector('#substitute-amount').value)||0;
+        if (!name || amount<=0) return;
+        getDay(state.currentDate).substitutes.push({id:uid(), name, amount});
+        scheduleSave(); renderDayView();
+      });
+    }
+    root.querySelectorAll('[data-act="del-substitute"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const d = getDay(state.currentDate);
+        d.substitutes = d.substitutes.filter(x=>x.id!==el.dataset.id);
+        scheduleSave(); renderDayView();
+      });
+    });
+
+    root.querySelectorAll('[data-act="toggle-shift"]').forEach(el=>{
+      el.addEventListener('click', ()=>{ const s=getDay(state.currentDate).shifts[el.dataset.emp]; s.worked=!s.worked; scheduleSave(); renderDayView(); });
+    });
+    root.querySelectorAll('[data-field="timeIn"],[data-field="timeOut"]').forEach(el=>{
+      el.addEventListener('change', ()=>{ const s=getDay(state.currentDate).shifts[el.dataset.emp]; s[el.dataset.field]=el.value; scheduleSave(); renderDayView(); });
+    });
+    root.querySelectorAll('[data-act="toggle-cover"]').forEach(el=>{
+      el.addEventListener('click', ()=>{ const s=getDay(state.currentDate).shifts[el.dataset.emp]; s.coverWorked=el.checked; scheduleSave(); renderDayView(); });
+    });
+    root.querySelectorAll('[data-field="coverStart"],[data-field="coverEnd"]').forEach(el=>{
+      el.addEventListener('change', ()=>{ const s=getDay(state.currentDate).shifts[el.dataset.emp]; s[el.dataset.field]=el.value; scheduleSave(); renderDayView(); });
+    });
+    root.querySelectorAll('[data-act="toggle-bonus"]').forEach(el=>{
+      el.addEventListener('click', ()=>{ const s=getDay(state.currentDate).shifts[el.dataset.emp]; s[el.dataset.field]=el.checked; scheduleSave(); renderDayView(); });
+    });
+    root.querySelector('[data-act="prevday"]').addEventListener('click', async ()=>{
+      const d=new Date(state.currentDate+'T00:00:00'); d.setDate(d.getDate()-1); state.currentDate=fmtDate(d);
+      await loadMonth(monthKeyOf(state.currentDate)); renderDayView();
+    });
+    root.querySelector('[data-act="nextday"]').addEventListener('click', async ()=>{
+      const d=new Date(state.currentDate+'T00:00:00'); d.setDate(d.getDate()+1); state.currentDate=fmtDate(d);
+      await loadMonth(monthKeyOf(state.currentDate)); renderDayView();
+    });
+  }
+
+  function sumGrandFot(totals){
+    let sum=0;
+    EMPLOYEES.forEach(e=>{ const t=totals[e.id]; sum += (t.oclad||0)+(t.variable||0)+(t.bonuses||0); });
+    return sum;
+  }
+
+  // ---------- P&L view ----------
+  function renderPnlView(){
+    const mk = monthKeyOf(state.currentDate);
+    const {totals, totalRevenueSum, substituteCashTotal} = computeMonthTotals(mk);
+    const fot = sumGrandFot(totals);
+    const categories = getPnl(mk);
+    const revenue = totalRevenueSum;
+
+    function pct(amount){ return revenue>0 ? (amount/revenue*100).toFixed(1)+'%' : '—'; }
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="pnl-month-input" value="'+mk+'"/></div>';
+
+    let expenseSum = 0;
+    categories.forEach(c=>{ expenseSum += Number(c.amount)||0; });
+    const netProfit = revenue - fot - substituteCashTotal - expenseSum;
+
+    html += '<table class="pnl-table"><thead><tr><th>Статья</th><th class="num">Сумма</th><th class="num">% от выручки</th><th></th></tr></thead><tbody>';
+    html += '<tr class="auto-row"><td>Общая выручка (автоматически)</td><td class="num">'+money(revenue)+'</td><td class="num pct">100%</td><td></td></tr>';
+    html += '<tr class="auto-row"><td>Зарплатный фонд, ФОТ (автоматически)</td><td class="num">'+money(fot)+'</td><td class="num pct">'+pct(fot)+'</td><td></td></tr>';
+    if (substituteCashTotal>0){
+      html += '<tr class="auto-row"><td>Подмены Мойка, нал. (автоматически)</td><td class="num">'+money(substituteCashTotal)+'</td><td class="num pct">'+pct(substituteCashTotal)+'</td><td></td></tr>';
+    }
+    categories.forEach(c=>{
+      html += '<tr data-cat="'+c.id+'">'
+        + '<td><input type="text" data-field="name" value="'+c.name+'"/></td>'
+        + '<td class="num"><input type="number" data-field="amount" value="'+(c.amount||'')+'" placeholder="0"/></td>'
+        + '<td class="num pct">'+pct(Number(c.amount)||0)+'</td>'
+        + '<td><span class="del" data-act="del-pnl-cat" data-id="'+c.id+'" style="cursor:pointer;color:var(--text-faint);">✕</span></td></tr>';
+    });
+    html += '<tr class="profit-row"><td>ЧИСТАЯ ПРИБЫЛЬ</td><td class="num">'+money(netProfit)+'</td><td class="num">'+pct(netProfit)+'</td><td></td></tr>';
+    html += '</tbody></table>';
+
+    html += '<div class="pnl-add-form">'
+      + '<input type="text" id="pnl-new-name" placeholder="Название статьи расхода"/>'
+      + '<input type="number" id="pnl-new-amount" placeholder="сумма, ₽"/>'
+      + '<button id="pnl-add" class="btn">Добавить статью</button>'
+      + '</div>';
+    html += '<div class="assumption-note">Выручка и ФОТ считаются автоматически из вкладок «Сегодня»/«Месяц». Остальные статьи — добавляются, редактируются и удаляются вручную.</div>';
+
+    document.getElementById('view-pnl').innerHTML = html;
+    attachPnlHandlers(mk);
+  }
+
+  function attachPnlHandlers(mk){
+    const root = document.getElementById('view-pnl');
+    root.querySelector('#pnl-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderPnlView();
+    });
+    root.querySelectorAll('[data-field="name"]').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const cat = getPnl(mk).find(c=>c.id===inp.closest('tr').dataset.cat);
+        cat.name = inp.value; scheduleSave(); renderPnlView();
+      });
+    });
+    root.querySelectorAll('[data-field="amount"]').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const cat = getPnl(mk).find(c=>c.id===inp.closest('tr').dataset.cat);
+        cat.amount = Number(inp.value)||0; scheduleSave(); renderPnlView();
+      });
+    });
+    root.querySelectorAll('[data-act="del-pnl-cat"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        state.pnl[mk] = getPnl(mk).filter(c=>c.id!==el.dataset.id);
+        scheduleSave(); renderPnlView();
+      });
+    });
+    root.querySelector('#pnl-add').addEventListener('click', ()=>{
+      const name = root.querySelector('#pnl-new-name').value.trim();
+      const amount = Number(root.querySelector('#pnl-new-amount').value)||0;
+      if (!name) return;
+      getPnl(mk).push({id:uid(), name, amount});
+      scheduleSave(); renderPnlView();
+    });
+  }
+  function renderMonthView(){
+    const mk = monthKeyOf(state.currentDate);
+    const {totals, hookahRevenueSum, totalRevenueSum, curKmBracket, adjTotals} = computeMonthTotals(mk);
+    const bIdx = findBracketIndex(hookahRevenueSum);
+    const curBracket = KALYAN_BRACKETS[bIdx];
+    const nextBracket = KALYAN_BRACKETS[bIdx+1];
+    const kProgress = nextBracket ? Math.min(100,(hookahRevenueSum-curBracket.threshold)/(nextBracket.threshold-curBracket.threshold)*100) : 100;
+
+    const plan = state.plan[mk];
+    const dates = monthDatesFor(mk);
+    const lastDay = dates.length ? Math.max.apply(null, dates.map(d=>Number(d.slice(8,10)))) : 0;
+    const remainToPlan = plan ? Math.max(0, plan-totalRevenueSum) : null;
+    const dailyTarget = plan ? plan/daysInMonth(mk) : null;
+    const expectedToDate = dailyTarget!==null ? dailyTarget*lastDay : null;
+    const shortfallToDate = expectedToDate!==null ? expectedToDate-totalRevenueSum : null;
+    const fotForPct = sumGrandFot(totals);
+    const fotPct = totalRevenueSum>0 ? (fotForPct/totalRevenueSum*100) : null;
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="month-input" value="'+mk+'"/></div>';
+
+    html += '<div class="kpi-panel"><h4>План по общей выручке ресторана</h4>';
+    if (plan){
+      const rProgress = Math.min(100, totalRevenueSum/plan*100);
+      html += '<div class="progress-track"><div class="progress-fill" style="width:'+rProgress+'%"></div></div>'
+        + '<div style="font-size:13.5px;color:var(--ink-soft)">Выручка за месяц: <b class="mono">'+money(totalRevenueSum)+'</b>'
+        + ' из плана <b class="mono">'+money(plan)+'</b> ('+rProgress.toFixed(0)+'%)'
+        + ' · осталось до конца месяца <b class="mono">'+money(remainToPlan)+'</b>'
+        + (shortfallToDate!==null
+            ? (shortfallToDate > 0
+                ? ' · <span style="color:var(--red);">общая недостача на сегодня: <b class="mono">'+money(shortfallToDate)+'</b></span>'
+                : ' · <span style="color:var(--green);">опережение графика на сегодня: <b class="mono">'+money(-shortfallToDate)+'</b></span>')
+            : '')
+        + '</div>';
+    } else {
+      html += '<div class="assumption-note">План на этот месяц ещё не задан.</div>';
+    }
+    html += '<div style="margin-top:10px;">План месяца, ₽: <input class="plan-input" type="number" id="plan-input" value="'+(plan||'')+'" placeholder="напр. 5500000"/></div>'
+      + '<div style="margin-top:10px;font-size:13.5px;color:var(--ink-soft);">Соотношение ФОТ к выручке: <b class="mono" style="color:var(--rust)">'+(fotPct!==null?fotPct.toFixed(1)+'%':'—')+'</b>'
+      + ' (ФОТ '+money(fotForPct)+' от выручки '+money(totalRevenueSum)+')</div></div>';
+
+    const kmModeText = curKmBracket.type==='fixed'
+      ? 'Текущий уровень: оклад <b class="mono">'+money(curKmBracket.value)+'</b> каждому КАЛЬЯН мастеру (месяц)'
+      : 'Текущий уровень: оклад отменён — <b class="mono">'+(curKmBracket.value*100)+'%</b> от дневной выручки КАЛЬЯН каждому мастеру за отработанные смены';
+    html += '<div class="kpi-panel"><h4>KPI КАЛЬЯН мастера — накопительная выручка КАЛЬЯН за месяц</h4>'
+      + '<div class="bracket-ladder">' + KALYAN_BRACKETS.map((b,i)=>'<div class="bracket '+(i===bIdx?'active':'')+'">'+bracketLabel(i)+'<br>'+(b.type==='fixed'?money(b.value):(b.value*100)+'%')+'</div>').join('') + '</div>'
+      + '<div class="progress-track"><div class="progress-fill" style="width:'+kProgress+'%"></div></div>'
+      + '<div style="font-size:13.5px;color:var(--ink-soft)">Выручка КАЛЬЯН за месяц: <b class="mono">'+money(hookahRevenueSum)+'</b>'
+      + (nextBracket ? ' · до следующего порога: '+money(nextBracket.threshold-hookahRevenueSum) : '') + '</div>'
+      + '<div class="assumption-note">'+kmModeText+'. На фикс. уровнях оклад начисляется полностью и не зависит от числа смен; при переходе на % — оклад отменяется, и каждый день с отметкой «Смена» приносит % от выручки КАЛЬЯН ИМЕННО за этот день.</div></div>';
+
+    const cpb = getChefProfitBonus(mk);
+    html += '<div class="kpi-panel"><h4>Шеф-повар — % от чистой прибыли кухни (вручную)</h4>'
+      + '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">'
+      + '<span style="font-size:13.5px;color:var(--ink-soft)">Сумма 5% за месяц, ₽:</span>'
+      + '<input class="plan-input" type="number" id="chef-profit-amount" value="'+(cpb.amount||'')+'" placeholder="0"/>'
+      + '<label style="font-size:13.5px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="chef-profit-confirm" '+(cpb.confirmed?'checked':'')+'/> подтвердить и включить в ЗП</label>'
+      + '</div><div class="assumption-note">Сумма считается вручную (по согласованной методике), пока не подключён автоматический расчёт чистой прибыли кухни. После подтверждения — попадает в столбец «Бонусы» шеф-повара.</div></div>';
+
+    html += '<table class="month-table"><thead><tr>'
+      + '<th>Сотрудник</th><th>Подразделение</th><th class="num">Смен</th><th class="num">Оклад</th>'
+      + '<th class="num">Начислено сверх оклада</th><th class="num">Бонусы</th><th class="num">Начислено всего</th>'
+      + '<th class="num">Аванс</th><th class="num">Вычеты</th><th class="num">К выплате</th></tr></thead><tbody>';
+
+    let grandOclad=0, grandVar=0, grandBonus=0, grandAdvance=0, grandDeduction=0, grandTotal=0, grandToPay=0;
+    DEPT_ORDER.forEach(deptKey=>{
+      EMPLOYEES.filter(e=>e.dept===deptKey).forEach(e=>{
+        const t = totals[e.id];
+        const hasHistory = t.shiftsWorked>0 || t.variable>0 || t.oclad>0;
+        if (!e.active && !hasHistory) return;
+        const adj = adjTotals[e.id] || {advance:0, deduction:0, bonus:0};
+        const total = (t.oclad||0)+(t.variable||0)+(t.bonuses||0);
+        const toPay = total - adj.advance - adj.deduction;
+        grandOclad += (t.oclad||0); grandVar += (t.variable||0); grandBonus += (t.bonuses||0);
+        grandAdvance += adj.advance; grandDeduction += adj.deduction;
+        grandTotal += total; grandToPay += toPay;
+        // KM masters: oclad is the real bracket-level amount on fixed tiers (already summed above).
+        // On percent tiers the oclad is genuinely 0/cancelled, so show the active % instead as context.
+        let ocladCell = t.oclad ? money(t.oclad) : (t.kmLevelPct ? (t.kmLevelPct*100)+'%' : '—');
+        if (e.role === 'kpi_hookah') ocladCell += ' <span style="font-size:10px;color:var(--ink-soft)">(KPI)</span>';
+        html += '<tr'+(!e.active?' style="opacity:0.55"':'')+'>'
+          + '<td>'+e.name+(!e.active?' <span style="font-size:11px;color:var(--ink-soft)">(архив)</span>':'')+'</td>'
+          + '<td><span class="dept-tag" style="background:'+DEPTS[deptKey].color+'">'+DEPTS[deptKey].label+'</span></td>'
+          + '<td class="num">'+t.shiftsWorked+'</td>'
+          + '<td class="num">'+ocladCell+'</td>'
+          + '<td class="num">'+money(t.variable)+'</td>'
+          + '<td class="num">'+(t.bonuses?money(t.bonuses):'—')+'</td>'
+          + '<td class="num"><b>'+money(total)+'</b></td>'
+          + '<td class="num">'+(adj.advance?money(adj.advance):'—')+'</td>'
+          + '<td class="num">'+(adj.deduction?money(adj.deduction):'—')+'</td>'
+          + '<td class="num topay">'+money(toPay)+'</td></tr>';
+      });
+    });
+    html += '<tr class="total-row"><td>ИТОГО ФОТ за месяц</td><td></td><td></td>'
+      + '<td class="num">'+money(grandOclad)+'</td>'
+      + '<td class="num">'+money(grandVar)+'</td>'
+      + '<td class="num">'+money(grandBonus)+'</td>'
+      + '<td class="num">'+money(grandTotal)+'</td>'
+      + '<td class="num">'+money(grandAdvance)+'</td>'
+      + '<td class="num">'+money(grandDeduction)+'</td>'
+      + '<td class="num">'+money(grandToPay)+'</td></tr>';
+    html += '</tbody></table>';
+
+    html += renderAdjustmentsPanel(mk, adjTotals);
+
+    document.getElementById('view-month').innerHTML = html;
+
+    document.getElementById('month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderMonthView();
+    });
+    document.getElementById('plan-input').addEventListener('change', ev=>{
+      state.plan[mk] = Number(ev.target.value)||0; scheduleSave(); renderMonthView();
+    });
+    document.getElementById('chef-profit-amount').addEventListener('change', ev=>{
+      getChefProfitBonus(mk).amount = Number(ev.target.value)||0; scheduleSave(); renderMonthView();
+    });
+    document.getElementById('chef-profit-confirm').addEventListener('click', ev=>{
+      getChefProfitBonus(mk).confirmed = ev.target.checked; scheduleSave(); renderMonthView();
+    });
+    attachAdjustmentHandlers(mk);
+  }
+
+  // ---------- Revenue (Выручка) view ----------
+  function todayStr_(){
+    const d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+
+  function renderRevenueView(){
+    const mk = monthKeyOf(state.currentDate);
+    const plan = state.plan[mk];
+    const totalDaysInMonth = daysInMonth(mk);
+    const today = todayStr_();
+    const isCurrentMonth = mk === today.slice(0,7);
+    const lastDayToShow = isCurrentMonth ? Number(today.slice(8,10)) : totalDaysInMonth;
+    const dailyTarget = plan ? plan / totalDaysInMonth : null;
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="revenue-month-input" value="'+mk+'"/></div>';
+
+    // ---- сводная панель по плану ----
+    let sumRevenue=0, sumCashOOO=0, sumCashIP=0;
+    const rows = [];
+    for (let day=1; day<=lastDayToShow; day++){
+      const dt = mk+'-'+String(day).padStart(2,'0');
+      const d = state.days[dt] || {};
+      const revenue = Number(d.totalRevenue)||0;
+      const cashOOO = Number(d.cashOOO)||0;
+      const cashIP = Number(d.cashIP)||0;
+      sumRevenue += revenue; sumCashOOO += cashOOO; sumCashIP += cashIP;
+      const cumRevenue = sumRevenue;
+      const cumTarget = dailyTarget ? dailyTarget*day : null;
+      const lag = cumTarget!==null ? cumRevenue-cumTarget : null;
+      rows.push({dt, day, revenue, cashOOO, cashIP, totalCash: cashOOO+cashIP, cumRevenue, cumTarget, lag, hasData: !!state.days[dt]});
+    }
+    const totalCash = sumCashOOO + sumCashIP;
+    const finalLag = rows.length ? rows[rows.length-1].lag : null;
+
+    html += '<div class="kpi-panel"><h4>План по выручке</h4>';
+    if (plan){
+      const rProgress = Math.min(100, sumRevenue/plan*100);
+      html += '<div class="progress-track"><div class="progress-fill" style="width:'+rProgress+'%"></div></div>'
+        + '<div style="font-size:13.5px;color:var(--ink-soft)">Выручка накоплено: <b class="mono">'+money(sumRevenue)+'</b>'
+        + ' из плана <b class="mono">'+money(plan)+'</b> ('+rProgress.toFixed(0)+'%)'
+        + ' · план на день <b class="mono">'+money(dailyTarget)+'</b>'
+        + (finalLag!==null ? (' · '+(finalLag>=0
+            ? '<span style="color:var(--green);font-weight:700">опережение плана на '+money(finalLag)+'</span>'
+            : '<span style="color:var(--red);font-weight:700">отставание от плана на '+money(-finalLag)+'</span>')) : '')
+        + '</div>';
+    } else {
+      html += '<div class="assumption-note">План на этот месяц ещё не задан. Задать его можно на вкладке «Месяц».</div>';
+    }
+    html += '</div>';
+
+    html += '<table class="month-table"><thead><tr>'
+      + '<th>Дата</th><th>День</th>'
+      + '<th class="num">Выручка</th><th class="num">Нал. ООО</th><th class="num">Нал. ИП</th><th class="num">Итого нал.</th>'
+      + '<th class="num">Накоплено</th><th class="num">План накопит.</th><th class="num">Отставание/опережение</th>'
+      + '</tr></thead><tbody>';
+
+    if (!rows.length){
+      html += '<tr><td colspan="9" style="text-align:center;color:var(--ink-soft);padding:16px;">Нет данных за этот месяц</td></tr>';
+    }
+
+    rows.forEach(r=>{
+      const lagCell = r.lag===null ? '—'
+        : (r.lag>=0
+            ? '<span style="color:var(--green);font-weight:700">+'+money(r.lag)+'</span>'
+            : '<span style="color:var(--red);font-weight:700">−'+money(-r.lag)+'</span>');
+      html += '<tr'+(!r.hasData?' style="opacity:0.5"':'')+'>'
+        + '<td>'+r.dt.slice(8,10)+'.'+r.dt.slice(5,7)+'</td>'
+        + '<td style="text-transform:uppercase;font-size:11.5px;color:var(--ink-soft)">'+weekdayShort(r.dt)+'</td>'
+        + '<td class="num">'+(r.hasData?money(r.revenue):'—')+'</td>'
+        + '<td class="num">'+(r.cashOOO?money(r.cashOOO):'—')+'</td>'
+        + '<td class="num">'+(r.cashIP?money(r.cashIP):'—')+'</td>'
+        + '<td class="num">'+(r.totalCash?money(r.totalCash):'—')+'</td>'
+        + '<td class="num">'+money(r.cumRevenue)+'</td>'
+        + '<td class="num">'+(r.cumTarget!==null?money(r.cumTarget):'—')+'</td>'
+        + '<td class="num">'+lagCell+'</td>'
+        + '</tr>';
+    });
+
+    html += '<tr class="total-row"><td>ИТОГО</td><td></td>'
+      + '<td class="num">'+money(sumRevenue)+'</td>'
+      + '<td class="num">'+money(sumCashOOO)+'</td>'
+      + '<td class="num">'+money(sumCashIP)+'</td>'
+      + '<td class="num">'+money(totalCash)+'</td>'
+      + '<td class="num">'+money(sumRevenue)+'</td>'
+      + '<td class="num">'+(dailyTarget!==null?money(dailyTarget*lastDayToShow):'—')+'</td>'
+      + '<td class="num">'+(finalLag!==null ? (finalLag>=0?'+':'−')+money(Math.abs(finalLag)) : '—')+'</td>'
+      + '</tr>';
+    html += '</tbody></table>';
+
+    if (isCurrentMonth && totalDaysInMonth > lastDayToShow){
+      html += '<div class="assumption-note" style="margin-top:10px;">Показаны дни по сегодняшний включительно. Оставшиеся '+(totalDaysInMonth-lastDayToShow)+' дн. месяца появятся в таблице по мере внесения выручки.</div>';
+    }
+
+    document.getElementById('view-revenue').innerHTML = html;
+
+    document.getElementById('revenue-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderRevenueView();
+    });
+  }
+
+
+  // ---------- Табель (Timesheet) view ----------
+  function renderTimesheetView(){
+    const mk = monthKeyOf(state.currentDate);
+
+    if (!timesheetEmpId || !EMPLOYEES.find(e=>e.id===timesheetEmpId)){
+      const firstActive = EMPLOYEES.find(e=>e.active) || EMPLOYEES[0];
+      timesheetEmpId = firstActive ? firstActive.id : null;
+    }
+    const emp = EMPLOYEES.find(e=>e.id===timesheetEmpId);
+
+    let html = '<div style="margin-bottom:14px;">'
+      + '<input class="month-select" type="month" id="timesheet-month-input" value="'+mk+'"/>'
+      + '</div>'
+      + '<div style="margin-bottom:14px;">'
+      + '<select id="timesheet-emp-select" class="month-select" style="min-width:240px;">'
+      + DEPT_ORDER.map(deptKey=>{
+          const list = EMPLOYEES.filter(e=>e.dept===deptKey);
+          if (!list.length) return '';
+          return '<optgroup label="'+DEPTS[deptKey].label+'">'
+            + list.map(e=>'<option value="'+e.id+'"'+(emp && e.id===emp.id?' selected':'')+'>'+e.name+(!e.active?' (архив)':'')+'</option>').join('')
+            + '</optgroup>';
+        }).join('')
+      + '</select>'
+      + '</div>';
+
+    if (!emp){
+      html += '<div class="assumption-note">Нет сотрудников для отображения.</div>';
+      document.getElementById('view-timesheet').innerHTML = html;
+      return;
+    }
+
+    const curKmBracket = KALYAN_BRACKETS[findBracketIndex(monthlyHookahRevenue(mk))];
+    const isHourly = emp.role === 'hourly';
+    const isChef = emp.role === 'chef';
+
+    let cols = '<th>Дата</th><th>День</th><th class="num">Смена</th>';
+    if (isHourly) cols += '<th>Начало</th><th>Конец</th><th class="num">Часы</th>';
+    if (isChef) cols += '<th class="num">Замещал повара</th><th>Начало подмены</th><th>Конец подмены</th><th class="num">Часы подмены</th>';
+    cols += '<th class="num">Сумма за день</th>';
+
+    html += '<table class="month-table"><thead><tr>'+cols+'</tr></thead><tbody>';
+
+    const dim = daysInMonth(mk);
+    let totalShifts=0, totalHours=0, totalCoverHours=0, totalSum=0;
+
+    for (let d=1; d<=dim; d++){
+      const dt = mk+'-'+String(d).padStart(2,'0');
+      const day = getDay(dt);
+      const s = day.shifts[emp.id];
+      const pay = dailyPay(emp, day, curKmBracket, dt);
+      const hrs = isHourly ? hoursBetween(s.timeIn, s.timeOut) : 0;
+      const coverHrs = isChef ? hoursBetween(s.coverStart, s.coverEnd) : 0;
+
+      if (s.worked) totalShifts++;
+      totalHours += hrs;
+      if (isChef && s.coverWorked) totalCoverHours += coverHrs;
+      if (pay!==null) totalSum += pay;
+
+      html += '<tr'+(!s.worked?' style="opacity:0.55"':'')+'>'
+        + '<td class="mono">'+dt.slice(8,10)+'.'+dt.slice(5,7)+'</td>'
+        + '<td style="text-transform:uppercase;font-size:11.5px;color:var(--ink-soft)">'+weekdayShort(dt)+'</td>'
+        + '<td class="num"><input type="checkbox" data-ts-field="worked" data-date="'+dt+'" '+(s.worked?'checked':'')+'/></td>';
+
+      if (isHourly){
+        html += '<td><input type="time" data-ts-field="timeIn" data-date="'+dt+'" value="'+(s.timeIn||'')+'" '+(!s.worked?'disabled':'')+'/></td>'
+          + '<td><input type="time" data-ts-field="timeOut" data-date="'+dt+'" value="'+(s.timeOut||'')+'" '+(!s.worked?'disabled':'')+'/></td>'
+          + '<td class="num mono">'+(hrs>0?hrs:'—')+'</td>';
+      }
+      if (isChef){
+        html += '<td class="num"><input type="checkbox" data-ts-field="coverWorked" data-date="'+dt+'" '+(s.coverWorked?'checked':'')+'/></td>'
+          + '<td><input type="time" data-ts-field="coverStart" data-date="'+dt+'" value="'+(s.coverStart||'')+'" '+(!s.coverWorked?'disabled':'')+'/></td>'
+          + '<td><input type="time" data-ts-field="coverEnd" data-date="'+dt+'" value="'+(s.coverEnd||'')+'" '+(!s.coverWorked?'disabled':'')+'/></td>'
+          + '<td class="num mono">'+(coverHrs>0?coverHrs:'—')+'</td>';
+      }
+
+      html += '<td class="num mono">'+(pay!==null?money(pay):'по итогам месяца')+'</td></tr>';
+    }
+
+    let totalCols = 3; // Дата, День, Смена
+    if (isHourly) totalCols += 3;
+    if (isChef) totalCols += 4;
+
+    html += '<tr class="total-row"><td colspan="'+totalCols+'">ИТОГО: смен — '+totalShifts
+      + (isHourly ? ', часов — '+totalHours.toFixed(2) : '')
+      + (isChef ? ', часов подмены — '+totalCoverHours.toFixed(2) : '')
+      + '</td><td class="num">'+money(totalSum)+'</td></tr>';
+
+    html += '</tbody></table>';
+    html += '<div class="assumption-note">Табель редактируемый: отметки и время можно менять прямо здесь для сверки перед расчётом зарплаты — изменения сохраняются автоматически и отражаются на вкладках «Сегодня» и «Месяц».</div>';
+
+    document.getElementById('view-timesheet').innerHTML = html;
+
+    document.getElementById('timesheet-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderTimesheetView();
+    });
+    document.getElementById('timesheet-emp-select').addEventListener('change', ev=>{
+      timesheetEmpId = ev.target.value; renderTimesheetView();
+    });
+
+    document.querySelectorAll('#view-timesheet [data-ts-field="worked"]').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        getDay(el.dataset.date).shifts[emp.id].worked = el.checked;
+        scheduleSave(); renderTimesheetView();
+      });
+    });
+    document.querySelectorAll('#view-timesheet [data-ts-field="timeIn"],#view-timesheet [data-ts-field="timeOut"]').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        getDay(el.dataset.date).shifts[emp.id][el.dataset.tsField] = el.value;
+        scheduleSave(); renderTimesheetView();
+      });
+    });
+    document.querySelectorAll('#view-timesheet [data-ts-field="coverWorked"]').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        getDay(el.dataset.date).shifts[emp.id].coverWorked = el.checked;
+        scheduleSave(); renderTimesheetView();
+      });
+    });
+    document.querySelectorAll('#view-timesheet [data-ts-field="coverStart"],#view-timesheet [data-ts-field="coverEnd"]').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        getDay(el.dataset.date).shifts[emp.id][el.dataset.tsField] = el.value;
+        scheduleSave(); renderTimesheetView();
+      });
+    });
+  }
+
+  // ---------- График смен на неделю ----------
+  function renderScheduleView(){
+    const monday = mondayOf(scheduleAnchor);
+    const weekKey = monday;
+    if (!state.scheduleWeeks[weekKey]) state.scheduleWeeks[weekKey] = { cells: {} };
+    const cells = state.scheduleWeeks[weekKey].cells;
+
+    const days = [];
+    for (let i=0;i<7;i++){
+      const d = new Date(monday+'T00:00:00'); d.setDate(d.getDate()+i);
+      days.push(fmtDate(d));
+    }
+
+    let html = '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">'
+      + '<button class="btn secondary" id="sched-prev-week">← Пред. неделя</button>'
+      + '<input class="month-select" type="date" id="sched-anchor-input" value="'+scheduleAnchor+'"/>'
+      + '<button class="btn secondary" id="sched-next-week">След. неделя →</button>'
+      + '<span style="font-size:13.5px;color:var(--ink-soft);">Неделя '+days[0].slice(8,10)+'.'+days[0].slice(5,7)+' – '+days[6].slice(8,10)+'.'+days[6].slice(5,7)+'</span>'
+      + '</div>';
+
+    html += '<table class="month-table schedule-table"><colgroup><col style="width:16%"/>'
+      + days.map(()=>'<col style="width:12%"/>').join('')
+      + '</colgroup><thead><tr><th>Позиция</th>';
+    days.forEach(dt=>{
+      html += '<th style="text-align:center;"><div>'+weekdayShort(dt).toUpperCase()+'</div>'
+        + '<div class="mono" style="font-weight:400;font-size:11px;">'+dt.slice(8,10)+'.'+dt.slice(5,7)+'</div></th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    SCHEDULE_SLOTS.forEach(slot=>{
+      html += '<tr>'
+        + '<td>'
+        + '<div style="display:flex;align-items:flex-start;gap:4px;">'
+        + '<div style="min-width:0;flex:1;">'
+        + '<input type="text" class="sched-slot-label" data-slot="'+slot.id+'" value="'+slot.label+'" style="width:100%;font-weight:600;border:none;background:transparent;padding:2px 0;"/>'
+        + '<input type="text" class="sched-slot-time" data-slot="'+slot.id+'" value="'+(slot.time||'')+'" placeholder="время" style="width:100%;font-size:11.5px;color:var(--ink-soft);border:none;background:transparent;padding:0;"/>'
+        + '</div>'
+        + '<span class="sched-del" data-slot="'+slot.id+'" style="cursor:pointer;color:var(--text-faint);font-weight:700;flex-shrink:0;padding:2px 0;" title="Удалить строку">✕</span>'
+        + '</div>'
+        + '</td>';
+      days.forEach(dt=>{
+        const key = slot.id+'__'+dt;
+        const val = cells[key] || '';
+        html += '<td><select class="sched-cell" data-key="'+key+'">'
+          + '<option value=""'+(!val?' selected':'')+'>—</option>'
+          + DEPT_ORDER.map(deptKey=>{
+              const list = EMPLOYEES.filter(e=>e.dept===deptKey && e.active);
+              if (!list.length) return '';
+              return '<optgroup label="'+DEPTS[deptKey].label+'">'
+                + list.map(e=>'<option value="'+e.id+'"'+(val===e.id?' selected':'')+'>'+e.name+'</option>').join('')
+                + '</optgroup>';
+            }).join('')
+          + '</select></td>';
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    html += '<div style="margin-top:10px;"><button class="btn secondary" id="sched-add-slot">+ Добавить строку</button></div>';
+    html += '<div class="assumption-note">Выберите сотрудника из списка на нужный день (список сгруппирован по подразделениям, доступны все активные сотрудники) — «—», если в этот день позиция не занята. Название и время позиции слева можно менять свободно. Всё сохраняется автоматически.</div>';
+
+    document.getElementById('view-schedule').innerHTML = html;
+
+    document.getElementById('sched-prev-week').addEventListener('click', async ()=>{
+      const d = new Date(scheduleAnchor+'T00:00:00'); d.setDate(d.getDate()-7); scheduleAnchor = fmtDate(d);
+      await loadScheduleWeek(mondayOf(scheduleAnchor)); renderScheduleView();
+    });
+    document.getElementById('sched-next-week').addEventListener('click', async ()=>{
+      const d = new Date(scheduleAnchor+'T00:00:00'); d.setDate(d.getDate()+7); scheduleAnchor = fmtDate(d);
+      await loadScheduleWeek(mondayOf(scheduleAnchor)); renderScheduleView();
+    });
+    document.getElementById('sched-anchor-input').addEventListener('change', async ev=>{
+      scheduleAnchor = ev.target.value;
+      await loadScheduleWeek(mondayOf(scheduleAnchor)); renderScheduleView();
+    });
+
+    document.querySelectorAll('.sched-cell').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        cells[el.dataset.key] = el.value;
+        scheduleSaveWeek(weekKey);
+      });
+    });
+    document.querySelectorAll('.sched-slot-label').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const slot = SCHEDULE_SLOTS.find(s=>s.id===el.dataset.slot);
+        if (slot){ slot.label = el.value; scheduleSaveConfig(); }
+      });
+    });
+    document.querySelectorAll('.sched-slot-time').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const slot = SCHEDULE_SLOTS.find(s=>s.id===el.dataset.slot);
+        if (slot){ slot.time = el.value; scheduleSaveConfig(); }
+      });
+    });
+    document.querySelectorAll('.sched-del').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        SCHEDULE_SLOTS = SCHEDULE_SLOTS.filter(s=>s.id!==el.dataset.slot);
+        scheduleSaveConfig();
+        renderScheduleView();
+      });
+    });
+    document.getElementById('sched-add-slot').addEventListener('click', ()=>{
+      SCHEDULE_SLOTS.push({id:uid(), label:'Новая позиция', time:''});
+      scheduleSaveConfig();
+      renderScheduleView();
+    });
+  }
+
+  // ---------- Задачи и чат руководителей ----------
+  function renderTeamworkView(){
+    const monday = mondayOf(taskAnchor);
+    const weekKey = monday;
+    if (!state.tasksWeeks[weekKey]) state.tasksWeeks[weekKey] = { tasks: [] };
+    if (!state.chatMessages) state.chatMessages = [];
+    const tasks = state.tasksWeeks[weekKey].tasks;
+    const authorName = getAuthorName();
+
+    const days = [];
+    for (let i=0;i<7;i++){ const d = new Date(monday+'T00:00:00'); d.setDate(d.getDate()+i); days.push(fmtDate(d)); }
+
+    let html = '<div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">'
+      + '<label style="font-size:12.5px;color:var(--ink-soft);">Ваше имя: <input type="text" id="tw-author" value="'+(authorName||'')+'" placeholder="Имя Фамилия" style="margin-left:6px;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;width:180px;"/></label>'
+      + '</div>';
+
+    html += '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">'
+      + '<button class="btn secondary" id="tw-prev-week">← Пред. неделя</button>'
+      + '<input class="month-select" type="date" id="tw-anchor-input" value="'+taskAnchor+'"/>'
+      + '<button class="btn secondary" id="tw-next-week">След. неделя →</button>'
+      + '<span style="font-size:12.5px;color:var(--ink-soft);">Неделя '+days[0].slice(8,10)+'.'+days[0].slice(5,7)+' – '+days[6].slice(8,10)+'.'+days[6].slice(5,7)+'</span>'
+      + '</div>';
+
+    // ---- Форма новой задачи ----
+    html += '<div class="kpi-panel"><h4>Новая задача</h4>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">'
+      + '<select id="tw-new-dept" class="month-select" style="min-width:140px;">'
+      + TASK_DEPTS.map(d=>'<option value="'+d.id+'">'+d.label+'</option>').join('')
+      + '</select>'
+      + '<input type="text" id="tw-new-title" placeholder="Что нужно сделать" style="flex:1;min-width:200px;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;"/>'
+      + '</div>'
+      + '<textarea id="tw-new-desc" placeholder="Подробности (необязательно)" style="width:100%;margin-top:8px;min-height:56px;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;font-family:inherit;"></textarea>'
+      + '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">'
+      + '<label class="btn secondary" style="cursor:pointer;">📎 Прикрепить файл<input type="file" id="tw-new-file" style="display:none"/></label>'
+      + '<span id="tw-new-file-status" style="font-size:11.5px;color:var(--ink-soft);"></span>'
+      + '<button class="btn" id="tw-new-add" style="margin-left:auto;">+ Добавить задачу</button>'
+      + '</div></div>';
+
+    // ---- Доска задач по цехам ----
+    html += '<div class="task-board">';
+    TASK_DEPTS.forEach(dept=>{
+      const deptTasks = tasks.filter(t=>t.dept===dept.id);
+      html += '<div class="task-column"><h4>'+dept.label+' <span style="font-weight:400;color:var(--ink-soft);font-size:11px;">('+deptTasks.length+')</span></h4>';
+      if (!deptTasks.length){
+        html += '<div class="assumption-note">Нет задач на эту неделю.</div>';
+      }
+      deptTasks.forEach(t=>{
+        const sm = taskStatusMeta(t.status);
+        html += '<div class="task-card">'
+          + '<div class="task-card-title">'+t.title+'</div>'
+          + (t.description ? '<div class="task-card-desc">'+t.description+'</div>' : '')
+          + '<div style="margin-top:6px;">'
+          + '<select class="task-status" data-id="'+t.id+'" style="background:'+sm.color+'22;color:'+sm.color+';border-color:'+sm.color+'55;font-weight:600;">'
+          + TASK_STATUSES.map(s=>'<option value="'+s.id+'"'+(s.id===t.status?' selected':'')+'>'+s.label+'</option>').join('')
+          + '</select></div>'
+          + (t.status==='failed' ? '<textarea class="task-fail-reason" data-id="'+t.id+'" placeholder="Причина невыполнения" style="width:100%;margin-top:6px;min-height:40px;padding:6px 8px;border:1px solid var(--red);border-radius:6px;font-family:inherit;font-size:12px;">'+(t.failReason||'')+'</textarea>' : '')
+          + (t.file ? '<div style="margin-top:6px;"><a href="'+t.file.url+'" target="_blank" rel="noopener" style="font-size:11.5px;">📎 '+t.file.name+'</a></div>' : '')
+          + '<div class="task-card-meta">'+(t.author||'—')+' · '+fmtDateTime_(t.createdAt)+' <span class="task-del" data-id="'+t.id+'" style="float:right;cursor:pointer;color:var(--text-faint);">✕</span></div>'
+          + '</div>';
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+
+    // ---- Чат руководителей ----
+    html += '<div class="kpi-panel" style="margin-top:18px;"><h4>Чат руководителей</h4>';
+    html += '<div class="chat-log" id="tw-chat-log">';
+    if (!state.chatMessages.length){
+      html += '<div class="assumption-note">Сообщений пока нет.</div>';
+    }
+    state.chatMessages.forEach(m=>{
+      html += '<div class="chat-msg">'
+        + '<div class="chat-msg-meta"><b>'+(m.author||'—')+'</b> · '+fmtDateTime_(m.createdAt)+'</div>'
+        + (m.text ? '<div class="chat-msg-text">'+m.text+'</div>' : '')
+        + (m.file ? '<div><a href="'+m.file.url+'" target="_blank" rel="noopener" style="font-size:11.5px;">📎 '+m.file.name+'</a></div>' : '')
+        + '</div>';
+    });
+    html += '</div>';
+    html += '<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;">'
+      + '<input type="text" id="tw-chat-text" placeholder="Написать сообщение…" style="flex:1;min-width:200px;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;"/>'
+      + '<label class="btn secondary" style="cursor:pointer;">📎<input type="file" id="tw-chat-file" style="display:none"/></label>'
+      + '<span id="tw-chat-file-status" style="font-size:11.5px;color:var(--ink-soft);"></span>'
+      + '<button class="btn" id="tw-chat-send">Отправить</button>'
+      + '</div></div>';
+
+    document.getElementById('view-teamwork').innerHTML = html;
+    const chatLogEl = document.getElementById('tw-chat-log');
+    chatLogEl.scrollTop = chatLogEl.scrollHeight;
+
+    // ---- Обработчики ----
+    document.getElementById('tw-author').addEventListener('change', ev=>{ setAuthorName(ev.target.value.trim()); });
+
+    document.getElementById('tw-prev-week').addEventListener('click', async ()=>{
+      const d = new Date(taskAnchor+'T00:00:00'); d.setDate(d.getDate()-7); taskAnchor = fmtDate(d);
+      await loadTasksWeek(mondayOf(taskAnchor)); renderTeamworkView();
+    });
+    document.getElementById('tw-next-week').addEventListener('click', async ()=>{
+      const d = new Date(taskAnchor+'T00:00:00'); d.setDate(d.getDate()+7); taskAnchor = fmtDate(d);
+      await loadTasksWeek(mondayOf(taskAnchor)); renderTeamworkView();
+    });
+    document.getElementById('tw-anchor-input').addEventListener('change', async ev=>{
+      taskAnchor = ev.target.value;
+      await loadTasksWeek(mondayOf(taskAnchor)); renderTeamworkView();
+    });
+
+    document.getElementById('tw-new-file').addEventListener('change', async ev=>{
+      const file = ev.target.files[0]; if (!file) return;
+      const statusEl = document.getElementById('tw-new-file-status');
+      statusEl.textContent = 'Загрузка файла…';
+      try { pendingTaskFile = await uploadFileToSheet(file); statusEl.textContent = '📎 '+pendingTaskFile.name; }
+      catch(err){ statusEl.textContent = 'Не удалось загрузить: '+err.message; pendingTaskFile = null; }
+    });
+    document.getElementById('tw-new-add').addEventListener('click', ()=>{
+      const dept = document.getElementById('tw-new-dept').value;
+      const title = document.getElementById('tw-new-title').value.trim();
+      if (!title) return;
+      const desc = document.getElementById('tw-new-desc').value.trim();
+      tasks.push({
+        id: uid(), dept, title, description: desc, status:'in_progress', failReason:'',
+        file: pendingTaskFile, author: getAuthorName(), createdAt: Date.now()
+      });
+      pendingTaskFile = null;
+      saveTasksWeek(weekKey);
+      renderTeamworkView();
+    });
+
+    document.querySelectorAll('.task-status').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const t = tasks.find(x=>x.id===el.dataset.id); if (!t) return;
+        t.status = el.value;
+        saveTasksWeek(weekKey);
+        renderTeamworkView();
+      });
+    });
+    document.querySelectorAll('.task-fail-reason').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const t = tasks.find(x=>x.id===el.dataset.id); if (!t) return;
+        t.failReason = el.value;
+        saveTasksWeek(weekKey);
+      });
+    });
+    document.querySelectorAll('.task-del').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = tasks.findIndex(x=>x.id===el.dataset.id);
+        if (idx!==-1) tasks.splice(idx,1);
+        saveTasksWeek(weekKey);
+        renderTeamworkView();
+      });
+    });
+
+    document.getElementById('tw-chat-file').addEventListener('change', async ev=>{
+      const file = ev.target.files[0]; if (!file) return;
+      const statusEl = document.getElementById('tw-chat-file-status');
+      statusEl.textContent = 'Загрузка файла…';
+      try { pendingChatFile = await uploadFileToSheet(file); statusEl.textContent = '📎 '+pendingChatFile.name; }
+      catch(err){ statusEl.textContent = 'Не удалось загрузить: '+err.message; pendingChatFile = null; }
+    });
+    document.getElementById('tw-chat-send').addEventListener('click', ()=>{
+      const textEl = document.getElementById('tw-chat-text');
+      const text = textEl.value.trim();
+      if (!text && !pendingChatFile) return;
+      state.chatMessages.push({ id: uid(), author: getAuthorName(), text, file: pendingChatFile, createdAt: Date.now() });
+      pendingChatFile = null;
+      saveChat();
+      renderTeamworkView();
+    });
+    document.getElementById('tw-chat-text').addEventListener('keydown', ev=>{
+      if (ev.key === 'Enter'){ document.getElementById('tw-chat-send').click(); }
+    });
+  }
+  function fmtDateTime_(ts){
+    if (!ts) return '';
+    const d = new Date(ts);
+    return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+
+  // ---------- Аутсорс-точки КАЛЬЯН ----------
+  function renderOutsourceView(){
+    const mk = monthKeyOf(state.currentDate);
+    const dim = daysInMonth(mk);
+    const emps = outsourceEmployees();
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="outsource-month-input" value="'+mk+'"/></div>';
+
+    let grandNetProfit = 0, grandRevenue = 0, grandSales = 0, grandPayroll = 0;
+    const perLocationTotals = {};
+
+    OUTSOURCE_LOCATIONS.forEach(loc=>{
+      let locSales=0, locRevenue=0, locNetProfit=0, locPayroll=0;
+
+      let rows = '';
+      for (let d=1; d<=dim; d++){
+        const dt = mk+'-'+String(d).padStart(2,'0');
+        const dayData = getOutsourceDay(dt);
+        const entry = dayData[loc.id];
+        const sales = Number(entry.sales)||0;
+        const revenue = sales*OUTSOURCE_HOOKAH_PRICE;
+        const netProfit = revenue*OUTSOURCE_NET_SHARE;
+        const salary = entry.employeeId ? (OUTSOURCE_SHIFT_RATE + sales*OUTSOURCE_SALE_RATE) : 0;
+        locSales += sales; locRevenue += revenue; locNetProfit += netProfit; locPayroll += salary;
+
+        rows += '<tr'+(!entry.employeeId?' style="opacity:0.55"':'')+'>'
+          + '<td class="mono">'+dt.slice(8,10)+'.'+dt.slice(5,7)+'</td>'
+          + '<td style="text-transform:uppercase;font-size:10px;color:var(--ink-soft)">'+weekdayShort(dt)+'</td>'
+          + '<td><select class="outs-emp" data-loc="'+loc.id+'" data-date="'+dt+'">'
+          + '<option value=""'+(!entry.employeeId?' selected':'')+'>—</option>'
+          + emps.map(e=>'<option value="'+e.id+'"'+(entry.employeeId===e.id?' selected':'')+'>'+e.name+'</option>').join('')
+          + '</select></td>'
+          + '<td class="num"><input type="number" class="outs-sales" data-loc="'+loc.id+'" data-date="'+dt+'" value="'+(sales||'')+'" min="0" style="width:100%;text-align:right;padding:4px 6px;border:1px solid var(--border-input);border-radius:5px;" '+(!entry.employeeId?'disabled':'')+'/></td>'
+          + '<td class="num mono">'+money(revenue)+'</td>'
+          + '<td class="num mono">'+money(netProfit)+'</td>'
+          + '<td class="num mono">'+(salary?money(salary):'—')+'</td>'
+          + '</tr>';
+      }
+
+      grandSales += locSales; grandRevenue += locRevenue; grandNetProfit += locNetProfit; grandPayroll += locPayroll;
+      perLocationTotals[loc.id] = {sales:locSales, revenue:locRevenue, netProfit:locNetProfit, payroll:locPayroll};
+
+      const isCollapsed = !!outsourceCollapsed[loc.id];
+      html += '<div class="kpi-panel">'
+        + '<h4 class="outs-loc-toggle" data-loc="'+loc.id+'" style="cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;">'
+        + '<span style="display:inline-block;transition:transform 0.15s;transform:rotate('+(isCollapsed?'-90deg':'0deg')+');">▾</span>'
+        + '<span>'+loc.label+'</span>'
+        + '<span style="font-weight:400;color:var(--ink-soft);font-size:11px;">(продано '+locSales+' · чистыми '+money(locNetProfit)+')</span>'
+        + '</h4>'
+        + (isCollapsed ? '' :
+          '<table class="month-table"><thead><tr>'
+          + '<th>Дата</th><th>День</th><th>Сотрудник</th><th class="num">Продажи</th>'
+          + '<th class="num">Выручка</th><th class="num">Чистая прибыль</th><th class="num">ЗП сотрудника</th></tr></thead><tbody>'
+          + rows
+          + '<tr class="total-row"><td colspan="3">ИТОГО по точке</td>'
+          + '<td class="num">'+locSales+'</td>'
+          + '<td class="num">'+money(locRevenue)+'</td>'
+          + '<td class="num">'+money(locNetProfit)+'</td>'
+          + '<td class="num">'+money(locPayroll)+'</td></tr>'
+          + '</tbody></table>')
+        + '</div>';
+    });
+
+    html += '<div class="kpi-panel"><h4>Итого по всем 3 точкам аутсорса КАЛЬЯН за месяц</h4>'
+      + '<div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px;">'
+      + '<div>Продано кальянов: <b class="mono">'+grandSales+'</b></div>'
+      + '<div>Общая выручка: <b class="mono">'+money(grandRevenue)+'</b></div>'
+      + '<div>ФОТ сотрудников аутсорса: <b class="mono">'+money(grandPayroll)+'</b></div>'
+      + '<div>Наша чистая прибыль (60%): <b class="mono" style="color:var(--rust);font-size:15px;">'+money(grandNetProfit)+'</b></div>'
+      + '</div>'
+      + '<div class="assumption-note">Цена кальяна — '+money(OUTSOURCE_HOOKAH_PRICE)+', наша доля — '+(OUTSOURCE_NET_SHARE*100)+'% от выручки точки. Зарплата сотрудника: '+money(OUTSOURCE_SHIFT_RATE)+' за выход + '+money(OUTSOURCE_SALE_RATE)+' за каждую продажу — попадает в общий ФОТ на вкладке «Месяц» автоматически.</div>'
+      + '</div>';
+
+    document.getElementById('view-outsource').innerHTML = html;
+
+    document.getElementById('outsource-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderOutsourceView();
+    });
+    document.querySelectorAll('.outs-loc-toggle').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const loc = el.dataset.loc;
+        outsourceCollapsed[loc] = !outsourceCollapsed[loc];
+        renderOutsourceView();
+      });
+    });
+    document.querySelectorAll('.outs-emp').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const dayData = getOutsourceDay(el.dataset.date);
+        dayData[el.dataset.loc].employeeId = el.value;
+        scheduleSave();
+        renderOutsourceView();
+      });
+    });
+    document.querySelectorAll('.outs-sales').forEach(el=>{
+      el.addEventListener('change', ()=>{
+        const dayData = getOutsourceDay(el.dataset.date);
+        dayData[el.dataset.loc].sales = Number(el.value)||0;
+        scheduleSave();
+        renderOutsourceView();
+      });
+    });
+  }
+
+  function renderAdjustmentsPanel(mk, adjTotals){
+    const adj = getAdjustments(mk);
+    const breakageVal = state.breakageAmount[mk] !== undefined ? state.breakageAmount[mk] : DEFAULT_BREAKAGE_AMOUNT;
+    let html = '<div class="adj-panel"><h4>Авансы и вычеты за месяц</h4>';
+
+    html += '<div class="adj-form" style="background:var(--bg-highlight);padding:10px;border-radius:6px;margin-bottom:14px;">'
+      + '<span style="font-size:13.5px;color:var(--ink-soft);width:100%;display:block;margin-bottom:6px;">'
+      + 'Ежемесячный вычет «бой посуды» — Бар, Официанты, Кухня, Мойка, КАЛЬЯН мастера</span>'
+      + '<input type="number" id="breakage-amount" value="'+breakageVal+'" placeholder="сумма, ₽"/>'
+      + '<button id="breakage-apply" class="btn secondary">Применить / обновить для всех</button>'
+      + '</div>';
+
+    html += '<div class="adj-form" style="background:var(--bg-highlight);padding:10px;border-radius:6px;margin-bottom:14px;">'
+      + '<span style="font-size:13.5px;color:var(--ink-soft);width:100%;display:block;margin-bottom:6px;">'
+      + 'Массовый аванс — на всех или по подразделению</span>'
+      + '<input type="number" id="bulk-advance-amount" placeholder="сумма, ₽"/>'
+      + '<select id="bulk-advance-dept"><option value="all">Все сотрудники</option>'
+      + DEPT_ORDER.map(d=>'<option value="'+d+'">'+DEPTS[d].label+'</option>').join('')
+      + '</select>'
+      + '<button id="bulk-advance-apply" class="btn secondary">Применить</button>'
+      + '</div>';
+
+    html += '<div class="adj-form" style="background:var(--bg-highlight);padding:10px;border-radius:6px;margin-bottom:14px;">'
+      + '<span style="font-size:13.5px;color:var(--ink-soft);width:100%;display:block;margin-bottom:6px;">'
+      + 'Бонусы (премии) — начислить сотруднику сверх ЗП</span>'
+      + '<select id="bonus-emp">' + EMPLOYEES.filter(e=>e.active).map(e=>'<option value="'+e.id+'">'+e.name+'</option>').join('') + '</select>'
+      + '<input type="number" id="bonus-amount" placeholder="сумма, ₽"/>'
+      + '<input type="text" id="bonus-note" placeholder="за что премия"/>'
+      + '<button id="bonus-add" class="btn secondary">Начислить премию</button>'
+      + '</div>';
+
+    html += '<div class="adj-form">'
+      + '<select id="adj-emp">' + EMPLOYEES.filter(e=>e.active).map(e=>'<option value="'+e.id+'">'+e.name+'</option>').join('') + '</select>'
+      + '<select id="adj-type"><option value="advance">Аванс</option><option value="deduction">Вычет (штраф)</option><option value="bonus">Премия</option></select>'
+      + '<input type="number" id="adj-amount" placeholder="сумма, ₽"/>'
+      + '<input type="text" id="adj-note" placeholder="комментарий (напр. бой посуды)"/>'
+      + '<button id="adj-add" class="btn">Добавить</button>'
+      + '</div>';
+
+    const rows = [];
+    EMPLOYEES.forEach(e=>{
+      (adj[e.id]||[]).forEach(item=>{
+        rows.push({emp:e, item});
+      });
+    });
+    if (rows.length){
+      html += '<div class="adj-list">' + rows.map(r=>{
+        const typeLabel = r.item.type==='advance'?'Аванс':(r.item.type==='bonus'?'Премия':'Вычет');
+        return '<div class="adj-item"><span class="badge '+r.item.type+'">'+typeLabel+'</span>'
+          + (r.item.tag==='monthly_breakage' ? '<span class="badge" style="background:var(--bg-chip-off);color:var(--ink-soft)">авто</span>' : '')
+          + (r.item.tag==='bulk_advance' ? '<span class="badge" style="background:var(--bg-chip-off);color:var(--ink-soft)">массово</span>' : '')
+          + '<span>'+r.emp.name+'</span>'
+          + '<span class="note">'+(r.item.note||'')+'</span>'
+          + '<span class="amt">'+money(r.item.amount)+'</span>'
+          + '<span class="del" data-act="del-adj" data-emp="'+r.emp.id+'" data-id="'+r.item.id+'">✕</span></div>';
+      }).join('') + '</div>';
+    } else {
+      html += '<div class="assumption-note">Записей пока нет.</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function attachAdjustmentHandlers(mk){
+    const root = document.getElementById('view-month');
+    const breakageBtn = root.querySelector('#breakage-apply');
+    if (breakageBtn){
+      breakageBtn.addEventListener('click', ()=>{
+        const amount = Number(root.querySelector('#breakage-amount').value)||0;
+        if (amount<=0) return;
+        applyMonthlyBreakage(mk, amount);
+        scheduleSave(); renderMonthView();
+      });
+    }
+    const bulkBtn = root.querySelector('#bulk-advance-apply');
+    if (bulkBtn){
+      bulkBtn.addEventListener('click', ()=>{
+        const amount = Number(root.querySelector('#bulk-advance-amount').value)||0;
+        const deptFilter = root.querySelector('#bulk-advance-dept').value;
+        if (amount<=0) return;
+        applyBulkAdvance(mk, amount, deptFilter);
+        scheduleSave(); renderMonthView();
+      });
+    }
+    const bonusBtn = root.querySelector('#bonus-add');
+    if (bonusBtn){
+      bonusBtn.addEventListener('click', ()=>{
+        const empId = root.querySelector('#bonus-emp').value;
+        const amount = Number(root.querySelector('#bonus-amount').value)||0;
+        const note = root.querySelector('#bonus-note').value;
+        if (amount<=0) return;
+        const adj = getAdjustments(mk);
+        if (!adj[empId]) adj[empId]=[];
+        adj[empId].push({id:uid(), type:'bonus', amount, note: note||'Премия'});
+        scheduleSave(); renderMonthView();
+      });
+    }
+    const addBtn = root.querySelector('#adj-add');
+    if (addBtn){
+      addBtn.addEventListener('click', ()=>{
+        const empId = root.querySelector('#adj-emp').value;
+        const type = root.querySelector('#adj-type').value;
+        const amount = Number(root.querySelector('#adj-amount').value)||0;
+        const note = root.querySelector('#adj-note').value;
+        if (amount<=0) return;
+        const adj = getAdjustments(mk);
+        if (!adj[empId]) adj[empId]=[];
+        adj[empId].push({id:uid(), type, amount, note});
+        scheduleSave(); renderMonthView();
+      });
+    }
+    root.querySelectorAll('[data-act="del-adj"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const adj = getAdjustments(mk);
+        const empId = el.dataset.emp;
+        adj[empId] = (adj[empId]||[]).filter(item=>item.id!==el.dataset.id);
+        scheduleSave(); renderMonthView();
+      });
+    });
+  }
+
+  // ---------- Settings (employees) view ----------
+  function roleFieldsHtml(emp){
+    if (emp.role === 'oclad_percent'){
+      return '<div class="field-group">Оклад <input type="number" data-field="oclad" value="'+emp.oclad+'"/></div>'
+        + '<div class="field-group">% от выручки <input type="number" step="0.01" data-field="percent_pct" value="'+(emp.percent*100)+'"/></div>';
+    }
+    if (emp.role === 'fixed_shift'){
+      return '<div class="field-group">Сумма/смена <input type="number" data-field="amount" value="'+emp.amount+'"/></div>';
+    }
+    if (emp.role === 'hourly'){
+      return '<div class="field-group">Ставка/час <input type="number" data-field="rate" value="'+emp.rate+'"/></div>';
+    }
+    if (emp.role === 'oclad_shift'){
+      return '<div class="field-group">Оклад/мес <input type="number" data-field="amount" value="'+emp.amount+'"/></div>';
+    }
+    if (emp.role === 'chef'){
+      return '<div class="field-group">Оклад <input type="number" data-field="oclad" value="'+emp.oclad+'"/></div>'
+        + '<div class="field-group">Подмена/час <input type="number" data-field="coverRate" value="'+emp.coverRate+'"/></div>'
+        + '<div class="field-group">Бонус отзывы <input type="number" data-field="bonuses.reviews" value="'+emp.bonuses.reviews+'"/></div>'
+        + '<div class="field-group">Бонус остаток <input type="number" data-field="bonuses.stock" value="'+emp.bonuses.stock+'"/></div>'
+        + '<div class="field-group">Бонус меню <input type="number" data-field="bonuses.menu" value="'+emp.bonuses.menu+'"/></div>';
+    }
+    if (emp.role === 'kpi_hookah'){
+      return '<div class="field-group" style="font-style:italic">участвует в общем фонде КАЛЬЯН</div>';
+    }
+    if (emp.role === 'outsource_hookah'){
+      return '<div class="field-group" style="font-style:italic">'+money(OUTSOURCE_SHIFT_RATE)+' за выход + '+money(OUTSOURCE_SALE_RATE)+' за продажу — задаётся на вкладке «Аутсорс КАЛЬЯН»</div>';
+    }
+    return '';
+  }
+
+  function defaultParamsForRole(role){
+    if (role==='oclad_percent') return {oclad:0, percent:0.013};
+    if (role==='fixed_shift')   return {amount:0};
+    if (role==='hourly')        return {rate:0};
+    if (role==='oclad_shift')   return {amount:0};
+    if (role==='chef')          return {oclad:0, coverRate:0, bonuses:{reviews:0,stock:0,menu:0}};
+    if (role==='kpi_hookah')    return {};
+    if (role==='outsource_hookah') return {};
+    return {};
+  }
+
+  let newEmpDraft = {name:'', dept:'bar', role:'oclad_percent'};
+
+  function renderSettingsView(){
+    let html = '<div class="add-emp-card"><h4>KPI КАЛЬЯН мастера — пороги выручки</h4>'
+      + '<div style="display:flex;flex-direction:column;gap:6px;">'
+      + KALYAN_BRACKETS.map((b,i)=>{
+          return '<div class="settings-row" data-bracket="'+i+'" style="padding:6px 0;border-top:'+(i===0?'none':'1px solid var(--border-row)')+'">'
+            + '<span style="font-size:12.5px;color:var(--ink-soft);min-width:70px;">Порог '+(i+1)+'</span>'
+            + (i===0
+                ? '<span class="hours-badge">от 0 ₽ (базовый)</span>'
+                : '<div class="field-group">от <input type="number" data-bracket-field="threshold" value="'+b.threshold+'"/> ₽</div>')
+            + '<select data-bracket-field="type"><option value="fixed" '+(b.type==='fixed'?'selected':'')+'>Фикс. сумма</option><option value="percent" '+(b.type==='percent'?'selected':'')+'>% от выручки</option></select>'
+            + (b.type==='fixed'
+                ? '<div class="field-group">Сумма <input type="number" data-bracket-field="value" value="'+b.value+'"/></div>'
+                : '<div class="field-group">% <input type="number" step="0.1" data-bracket-field="value_pct" value="'+(b.value*100)+'"/></div>')
+            + (i===KALYAN_BRACKETS.length-1 && KALYAN_BRACKETS.length>1 ? '<button class="btn ghost" data-act="remove-bracket">Удалить последний</button>' : '')
+            + '</div>';
+        }).join('')
+      + '</div>'
+      + '<div style="margin-top:10px;"><button class="btn secondary" id="add-bracket">+ Добавить порог</button></div>'
+      + '<div class="assumption-note">Изменение порога автоматически сдвигает все следующие пороги на ту же величину — ширина последующих ступеней сохраняется.</div>'
+      + '</div>';
+
+    html += '<div class="add-emp-card"><h4>Добавить сотрудника</h4><div class="add-emp-form">'
+      + '<input type="text" id="new-emp-name" placeholder="Имя" value="'+newEmpDraft.name+'"/>'
+      + '<select id="new-emp-dept">' + DEPT_ORDER.map(d=>'<option value="'+d+'" '+(d===newEmpDraft.dept?'selected':'')+'>'+DEPTS[d].label+'</option>').join('') + '</select>'
+      + '<select id="new-emp-role">' + Object.keys(ROLE_LABELS).map(r=>'<option value="'+r+'" '+(r===newEmpDraft.role?'selected':'')+'>'+ROLE_LABELS[r]+'</option>').join('') + '</select>'
+      + '<button id="new-emp-add" class="btn">Добавить</button>'
+      + '</div></div>';
+
+    DEPT_ORDER.forEach(deptKey=>{
+      const emps = EMPLOYEES.filter(e=>e.dept===deptKey);
+      if (!emps.length) return;
+      html += '<div class="settings-dept"><div class="settings-dept-head" style="background:'+DEPTS[deptKey].color+'">'+DEPTS[deptKey].label+'</div>';
+      emps.forEach(e=>{
+        html += '<div class="settings-row '+(e.active?'':'inactive')+'" data-emp="'+e.id+'">'
+          + '<input type="text" data-field="name" value="'+e.name+'"/>'
+          + '<select data-field="dept">'+DEPT_ORDER.map(d=>'<option value="'+d+'" '+(d===e.dept?'selected':'')+'>'+DEPTS[d].label+'</option>').join('')+'</select>'
+          + '<select data-field="role">'+Object.keys(ROLE_LABELS).map(r=>'<option value="'+r+'" '+(r===e.role?'selected':'')+'>'+ROLE_LABELS[r]+'</option>').join('')+'</select>'
+          + roleFieldsHtml(e)
+          + '<button class="btn ghost" data-act="toggle-active" data-emp="'+e.id+'">'+(e.active?'Архивировать':'Восстановить')+'</button>'
+          + '</div>';
+      });
+      html += '</div>';
+    });
+
+    document.getElementById('view-settings').innerHTML = html;
+    attachSettingsHandlers();
+  }
+
+  function setNested(obj, path, value){
+    const parts = path.split('.');
+    let cur = obj;
+    for (let i=0;i<parts.length-1;i++){ cur = cur[parts[i]]; }
+    cur[parts[parts.length-1]] = value;
+  }
+
+  function attachSettingsHandlers(){
+    const root = document.getElementById('view-settings');
+
+    root.querySelectorAll('[data-bracket]').forEach(row=>{
+      const idx = Number(row.dataset.bracket);
+      const thresholdInp = row.querySelector('[data-bracket-field="threshold"]');
+      if (thresholdInp){
+        thresholdInp.addEventListener('change', ()=>{
+          updateBracketThreshold(idx, thresholdInp.value);
+          scheduleSaveConfig(); renderSettingsView();
+        });
+      }
+      const typeSel = row.querySelector('[data-bracket-field="type"]');
+      typeSel.addEventListener('change', ()=>{
+        KALYAN_BRACKETS[idx].type = typeSel.value;
+        KALYAN_BRACKETS[idx].value = typeSel.value==='fixed' ? 45000 : 0.1;
+        scheduleSaveConfig(); renderSettingsView();
+      });
+      const valInp = row.querySelector('[data-bracket-field="value"]');
+      if (valInp) valInp.addEventListener('change', ()=>{ KALYAN_BRACKETS[idx].value = Number(valInp.value)||0; scheduleSaveConfig(); renderSettingsView(); });
+      const valPctInp = row.querySelector('[data-bracket-field="value_pct"]');
+      if (valPctInp) valPctInp.addEventListener('change', ()=>{ KALYAN_BRACKETS[idx].value = (Number(valPctInp.value)||0)/100; scheduleSaveConfig(); renderSettingsView(); });
+      const removeBtn = row.querySelector('[data-act="remove-bracket"]');
+      if (removeBtn) removeBtn.addEventListener('click', ()=>{ removeKalyanBracket(); scheduleSaveConfig(); renderSettingsView(); });
+    });
+    const addBracketBtn = root.querySelector('#add-bracket');
+    if (addBracketBtn) addBracketBtn.addEventListener('click', ()=>{ addKalyanBracket(); scheduleSaveConfig(); renderSettingsView(); });
+
+    root.querySelector('#new-emp-name').addEventListener('input', e=>{ newEmpDraft.name = e.target.value; });
+    root.querySelector('#new-emp-dept').addEventListener('change', e=>{ newEmpDraft.dept = e.target.value; });
+    root.querySelector('#new-emp-role').addEventListener('change', e=>{ newEmpDraft.role = e.target.value; });
+    root.querySelector('#new-emp-add').addEventListener('click', ()=>{
+      const name = newEmpDraft.name.trim();
+      if (!name) return;
+      const emp = Object.assign({id:uid(), name, dept:newEmpDraft.dept, role:newEmpDraft.role, active:true}, defaultParamsForRole(newEmpDraft.role));
+      EMPLOYEES.push(emp);
+      newEmpDraft = {name:'', dept:newEmpDraft.dept, role:newEmpDraft.role};
+      scheduleSaveConfig(); renderSettingsView();
+    });
+
+    root.querySelectorAll('.settings-row[data-emp]').forEach(row=>{
+      const empId = row.dataset.emp;
+      const emp = EMPLOYEES.find(x=>x.id===empId);
+
+      row.querySelector('[data-field="name"]').addEventListener('change', e=>{ emp.name=e.target.value; scheduleSaveConfig(); renderSettingsView(); });
+      row.querySelector('[data-field="dept"]').addEventListener('change', e=>{ emp.dept=e.target.value; scheduleSaveConfig(); renderSettingsView(); });
+      row.querySelector('[data-field="role"]').addEventListener('change', e=>{
+        const newRole = e.target.value;
+        Object.keys(emp).forEach(k=>{ if (!['id','name','dept','role','active'].includes(k)) delete emp[k]; });
+        Object.assign(emp, defaultParamsForRole(newRole));
+        emp.role = newRole;
+        scheduleSaveConfig(); renderSettingsView();
+      });
+      row.querySelectorAll('[data-field]').forEach(inp=>{
+        const field = inp.dataset.field;
+        if (['name','dept','role'].includes(field)) return;
+        inp.addEventListener('change', ()=>{
+          if (field==='percent_pct'){ emp.percent = (Number(inp.value)||0)/100; }
+          else { setNested(emp, field, Number(inp.value)||0); }
+          scheduleSaveConfig(); renderSettingsView();
+        });
+      });
+      const toggleBtn = row.querySelector('[data-act="toggle-active"]');
+      if (toggleBtn){
+        toggleBtn.addEventListener('click', ()=>{ emp.active = !emp.active; scheduleSaveConfig(); renderSettingsView(); });
+      }
+    });
+  }
+
+  // ---------- Tabs ----------
+  function switchTab(tab){
+    activeTab = tab;
+    document.querySelectorAll('#payroll-root .tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+    document.getElementById('view-day').style.display = tab==='day' ? '' : 'none';
+    document.getElementById('view-revenue').style.display = tab==='revenue' ? '' : 'none';
+    document.getElementById('view-month').style.display = tab==='month' ? '' : 'none';
+    document.getElementById('view-timesheet').style.display = tab==='timesheet' ? '' : 'none';
+    document.getElementById('view-schedule').style.display = tab==='schedule' ? '' : 'none';
+    document.getElementById('view-teamwork').style.display = tab==='teamwork' ? '' : 'none';
+    document.getElementById('view-outsource').style.display = tab==='outsource' ? '' : 'none';
+    document.getElementById('view-pnl').style.display = tab==='pnl' ? '' : 'none';
+    document.getElementById('view-settings').style.display = tab==='settings' ? '' : 'none';
+    if (tab==='day') renderDayView();
+    if (tab==='revenue') renderRevenueView();
+    if (tab==='month') renderMonthView();
+    if (tab==='timesheet') renderTimesheetView();
+    if (tab==='schedule') { loadScheduleWeek(mondayOf(scheduleAnchor)).then(renderScheduleView); }
+    if (tab==='teamwork') { Promise.all([loadTasksWeek(mondayOf(taskAnchor)), loadChat()]).then(renderTeamworkView); }
+    if (tab==='outsource') { loadMonth(monthKeyOf(state.currentDate)).then(renderOutsourceView); }
+    if (tab==='pnl') renderPnlView();
+    if (tab==='settings') renderSettingsView();
+  }
+  document.querySelectorAll('#payroll-root .tab').forEach(t=> t.addEventListener('click', ()=>switchTab(t.dataset.tab)));
+
+  // ---------- Индикатор синхронизации: кнопка повтора ----------
+  renderSyncStatus();
+  document.getElementById('sync-retry').addEventListener('click', ()=>{
+    saveConfig();
+    saveMonth();
+  });
+
+  // ---------- Панель настройки подключения к Google Таблице ----------
+  const syncCfgPanel = document.getElementById('sync-config-panel');
+  const syncCfgUrlInp = document.getElementById('sync-cfg-url');
+
+  document.getElementById('sync-gear').addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    const opening = syncCfgPanel.style.display === 'none';
+    syncCfgPanel.style.display = opening ? '' : 'none';
+    const accessPanelEl = document.getElementById('access-panel');
+    if (accessPanelEl) accessPanelEl.style.display = 'none';
+    if (opening){
+      syncCfgUrlInp.value = SHEET_API_URL || '';
+    }
+  });
+  document.getElementById('sync-cfg-cancel').addEventListener('click', ()=>{ syncCfgPanel.style.display = 'none'; });
+  document.addEventListener('click', (ev)=>{
+    if (syncCfgPanel.style.display !== 'none' && !syncCfgPanel.contains(ev.target) && ev.target.id !== 'sync-gear'){
+      syncCfgPanel.style.display = 'none';
+    }
+  });
+  document.getElementById('sync-cfg-save').addEventListener('click', async ()=>{
+    const url = syncCfgUrlInp.value.trim();
+    SHEET_API_URL = url;
+    localSet_('payroll-sheet-url', url);
+    syncCfgPanel.style.display = 'none';
+
+    // Перезагружаем данные из (нового) источника
+    configLoaded = false;
+    loadedMonths = {};
+    setSyncStatus(sheetApiConfigured_() ? 'saving' : 'off');
+    await loadConfig();
+    await loadMonth(monthKeyOf(state.currentDate));
+    if (activeTab === 'day') renderDayView();
+    if (activeTab === 'month') renderMonthView();
+    if (activeTab === 'timesheet') renderTimesheetView();
+    if (activeTab === 'schedule') { loadedScheduleWeeks = {}; await loadScheduleWeek(mondayOf(scheduleAnchor)); renderScheduleView(); }
+    if (activeTab === 'teamwork') { loadedTaskWeeks = {}; chatLoaded = false; await Promise.all([loadTasksWeek(mondayOf(taskAnchor)), loadChat()]); renderTeamworkView(); }
+    if (activeTab === 'outsource') { renderOutsourceView(); }
+    if (activeTab === 'pnl') renderPnlView();
+    if (activeTab === 'settings') renderSettingsView();
+  });
+
+  // ---------- Тема (светлая/тёмная) ----------
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  function applyTheme(theme){
+    const root = document.getElementById('payroll-root');
+    const isDark = theme === 'dark';
+    root.classList.toggle('theme-dark', isDark);
+    document.body.classList.toggle('theme-dark', isDark);
+    themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+  }
+  function initTheme(){
+    let saved = null;
+    try { saved = window.localStorage.getItem('payroll-theme'); } catch(e){}
+    if (!saved){
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(saved);
+  }
+  themeToggleBtn.addEventListener('click', ()=>{
+    const isDark = document.getElementById('payroll-root').classList.contains('theme-dark');
+    const next = isDark ? 'light' : 'dark';
+    applyTheme(next);
+    try { window.localStorage.setItem('payroll-theme', next); } catch(e){}
+  });
+  initTheme();
+
+  // ---------- Уровень доступа: применение и панель ----------
+  function applyAccessMode(){
+    const mode = getAccessMode();
+    document.querySelectorAll('#payroll-root .tab').forEach(t=>{
+      const hide = mode === 'manager' && RESTRICTED_TABS.includes(t.dataset.tab);
+      t.style.display = hide ? 'none' : '';
+    });
+    document.getElementById('access-lock-btn').textContent = mode === 'manager' ? '🔒' : '🔓';
+    // Если сейчас открыта именно та вкладка, которую только что скрыли — переключаемся на "Сегодня"
+    if (mode === 'manager' && RESTRICTED_TABS.includes(activeTab)){
+      switchTab('day');
+    }
+  }
+
+  const accessLockBtn = document.getElementById('access-lock-btn');
+  const accessPanel = document.getElementById('access-panel');
+  const accessPanelBody = document.getElementById('access-panel-body');
+
+  function renderAccessPanel(){
+    const mode = getAccessMode();
+    if (mode === 'full'){
+      accessPanelBody.innerHTML =
+        '<div style="font-size:12.5px;margin-bottom:8px;">Сейчас: <b>полный доступ</b>.</div>'
+        + '<button class="btn secondary" id="access-restrict-btn" style="width:100%;">Ограничить доступ (режим менеджера)</button>'
+        + '<div class="sync-config-note">Скроет вкладки «Месяц», «П&amp;Л» и «Сотрудники» на этом устройстве. Действует только здесь.</div>';
+      accessPanelBody.querySelector('#access-restrict-btn').addEventListener('click', ()=>{
+        setAccessModeStorage('manager');
+        applyAccessMode();
+        accessPanel.style.display = 'none';
+      });
+    } else {
+      accessPanelBody.innerHTML =
+        '<div style="font-size:12.5px;margin-bottom:8px;">Сейчас: <b>режим менеджера</b> (часть вкладок скрыта).</div>'
+        + '<label>Пароль для полного доступа<input type="password" id="access-password-input" placeholder="пароль"/></label>'
+        + '<div class="sync-config-actions">'
+        + '<button class="btn" id="access-unlock-btn">Открыть полный доступ</button>'
+        + '<button class="btn ghost" id="access-cancel-btn">Отмена</button>'
+        + '</div>'
+        + '<div class="sync-config-note" id="access-error-note"></div>';
+      accessPanelBody.querySelector('#access-cancel-btn').addEventListener('click', ()=>{ accessPanel.style.display = 'none'; });
+      accessPanelBody.querySelector('#access-unlock-btn').addEventListener('click', ()=>{
+        const val = accessPanelBody.querySelector('#access-password-input').value;
+        if (val === ACCESS_PASSWORD){
+          setAccessModeStorage('full');
+          applyAccessMode();
+          accessPanel.style.display = 'none';
+        } else {
+          accessPanelBody.querySelector('#access-error-note').textContent = 'Неверный пароль.';
+        }
+      });
+      accessPanelBody.querySelector('#access-password-input').addEventListener('keydown', ev=>{
+        if (ev.key === 'Enter') accessPanelBody.querySelector('#access-unlock-btn').click();
+      });
+    }
+  }
+
+  accessLockBtn.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    const opening = accessPanel.style.display === 'none';
+    accessPanel.style.display = opening ? '' : 'none';
+    document.getElementById('sync-config-panel').style.display = 'none';
+    if (opening) renderAccessPanel();
+  });
+  document.addEventListener('click', (ev)=>{
+    if (accessPanel.style.display !== 'none' && !accessPanel.contains(ev.target) && ev.target.id !== 'access-lock-btn'){
+      accessPanel.style.display = 'none';
+    }
+  });
+
+  applyAccessMode();
+
+  // ---------- Init ----------
+  (async function init(){
+    await loadConfig();
+    await loadMonth(monthKeyOf(state.currentDate));
+    if (state.plan[monthKeyOf(state.currentDate)] === undefined){
+      state.plan[monthKeyOf(state.currentDate)] = DEFAULT_REVENUE_PLAN;
+    }
+    renderDayView();
+  })();
+
+})();
+</script>
+<script>
+  // Регистрация service worker — вне основного IIFE, чтобы не зависеть от
+  // остальной логики приложения; если что-то пойдёт не так, приложение
+  // всё равно продолжит нормально работать без него.
+  if ('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+    });
+  }
+</script>
+</body>
+</html>

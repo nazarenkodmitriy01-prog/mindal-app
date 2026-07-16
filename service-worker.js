@@ -5,7 +5,7 @@
 // делается, это чисто техническое требование для "устанавливаемости".
 
 const CACHE_NAME = 'mindal-shell-v1';
-const SHELL_FILES = ['./payroll_app.html'];
+const SHELL_FILES = ['./index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

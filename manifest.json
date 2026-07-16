@@ -2,7 +2,7 @@
   "name": "Миндаль — учёт смен и зарплаты",
   "short_name": "Миндаль",
   "description": "Учёт смен, зарплат, графика, задач и выручки — Миндаль Lounge & Bar",
-  "start_url": "./payroll_app.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
