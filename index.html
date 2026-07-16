@@ -830,6 +830,7 @@
   let SCHEDULE_SLOTS = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_SLOTS));
   let TELEGRAM_BOT_TOKEN = '';
   let TELEGRAM_CHAT_ID = '';
+  let TELEGRAM_TOPIC_ID = '';
   let lastReceiptText = '';
 
   const DEFAULT_REVENUE_PLAN = 5500000;
@@ -1006,6 +1007,7 @@
 
         if (typeof parsed.telegramBotToken === 'string') TELEGRAM_BOT_TOKEN = parsed.telegramBotToken;
         if (typeof parsed.telegramChatId === 'string') TELEGRAM_CHAT_ID = parsed.telegramChatId;
+        if (typeof parsed.telegramTopicId === 'string') TELEGRAM_TOPIC_ID = parsed.telegramTopicId;
 
         _lastLoadedConfigExtra = { knownEmployeeIds: parsed.knownEmployeeIds, knownScheduleSlotIds: parsed.knownScheduleSlotIds };
       }
@@ -1034,7 +1036,8 @@
         knownEmployeeIds,
         knownScheduleSlotIds,
         telegramBotToken: TELEGRAM_BOT_TOKEN,
-        telegramChatId: TELEGRAM_CHAT_ID
+        telegramChatId: TELEGRAM_CHAT_ID,
+        telegramTopicId: TELEGRAM_TOPIC_ID
       }));
     }
     catch(e){ console.error('config save failed', e); }
@@ -1136,10 +1139,11 @@
   }
   async function sendTextToTelegram(text){
     if (!telegramConfigured_()) throw new Error('Telegram не настроен — укажите токен бота и chat_id в разделе «Сотрудники»');
-    const url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage'
+    let url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage'
       + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID)
       + '&parse_mode=HTML'
       + '&text=' + encodeURIComponent(text);
+    if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
     try {
       await fetch(url, { method: 'GET' });
     } catch(e){
@@ -2611,6 +2615,8 @@
       + '<input type="text" id="tg-bot-token" value="'+(TELEGRAM_BOT_TOKEN||'')+'" placeholder="123456789:AAExampleTokenHere" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
       + '<label style="font-size:12.5px;color:var(--ink-soft);">Chat ID (id группового чата или личного чата с ботом)'
       + '<input type="text" id="tg-chat-id" value="'+(TELEGRAM_CHAT_ID||'')+'" placeholder="-1001234567890" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
+      + '<label style="font-size:12.5px;color:var(--ink-soft);">ID темы (необязательно — только если в группе включены темы/топики и чек должен падать в конкретную)'
+      + '<input type="text" id="tg-topic-id" value="'+(TELEGRAM_TOPIC_ID||'')+'" placeholder="напр. 15" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
       + '<div><button class="btn secondary" id="tg-save-btn">Сохранить</button> <span id="tg-save-status" style="font-size:11.5px;color:var(--ink-soft);margin-left:8px;"></span></div>'
       + '</div>'
       + '<div class="assumption-note">Настраивается один раз — сохраняется в общей таблице и работает сразу на всех устройствах. Кнопка отправки чека появляется на вкладке «Сегодня».</div>'
@@ -2675,6 +2681,7 @@
     root.querySelector('#tg-save-btn').addEventListener('click', ()=>{
       TELEGRAM_BOT_TOKEN = root.querySelector('#tg-bot-token').value.trim();
       TELEGRAM_CHAT_ID = root.querySelector('#tg-chat-id').value.trim();
+      TELEGRAM_TOPIC_ID = root.querySelector('#tg-topic-id').value.trim();
       scheduleSaveConfig();
       const statusEl = root.querySelector('#tg-save-status');
       statusEl.textContent = 'Сохранено ✓';
