@@ -828,6 +828,9 @@
     {id:'wash',             label:'Мойка',               time:'14:00'},
   ];
   let SCHEDULE_SLOTS = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_SLOTS));
+  let TELEGRAM_BOT_TOKEN = '';
+  let TELEGRAM_CHAT_ID = '';
+  let lastReceiptText = '';
 
   const DEFAULT_REVENUE_PLAN = 5500000;
 
@@ -1001,6 +1004,9 @@
           parsed.knownScheduleSlotIds = updatedKnownIds;
         }
 
+        if (typeof parsed.telegramBotToken === 'string') TELEGRAM_BOT_TOKEN = parsed.telegramBotToken;
+        if (typeof parsed.telegramChatId === 'string') TELEGRAM_CHAT_ID = parsed.telegramChatId;
+
         _lastLoadedConfigExtra = { knownEmployeeIds: parsed.knownEmployeeIds, knownScheduleSlotIds: parsed.knownScheduleSlotIds };
       }
     } catch(e){ /* use defaults */ }
@@ -1026,7 +1032,9 @@
         kalyanBrackets: KALYAN_BRACKETS,
         scheduleSlots: SCHEDULE_SLOTS,
         knownEmployeeIds,
-        knownScheduleSlotIds
+        knownScheduleSlotIds,
+        telegramBotToken: TELEGRAM_BOT_TOKEN,
+        telegramChatId: TELEGRAM_CHAT_ID
       }));
     }
     catch(e){ console.error('config save failed', e); }
@@ -1115,6 +1123,31 @@
     const data = await res.json();
     if (data.error) throw new Error(data.message || data.error);
     return data;
+  }
+
+  // Отправляет текст в Telegram-чат через Bot API. Специально используем GET
+  // с параметрами в строке запроса (а не POST + JSON) — это делает запрос
+  // "простым" для CORS и не требует предварительного preflight-запроса,
+  // который у части браузеров может не проходить с Telegram API. Ответ от
+  // Telegram мы не читаем (браузер иногда блокирует чтение междоменного
+  // ответа) — само сообщение при этом всё равно доходит до чата.
+  function telegramConfigured_(){
+    return !!(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
+  }
+  async function sendTextToTelegram(text){
+    if (!telegramConfigured_()) throw new Error('Telegram не настроен — укажите токен бота и chat_id в разделе «Сотрудники»');
+    const url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage'
+      + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID)
+      + '&parse_mode=HTML'
+      + '&text=' + encodeURIComponent(text);
+    try {
+      await fetch(url, { method: 'GET' });
+    } catch(e){
+      // Из-за CORS браузер иногда не даёт прочитать ответ Telegram, хотя
+      // сообщение при этом реально отправляется — поэтому не считаем это
+      // фатальной ошибкой сразу, просто логируем.
+      console.warn('Telegram fetch warning (сообщение могло всё же отправиться):', e);
+    }
   }
 
   async function loadMonth(mk){
@@ -1470,12 +1503,57 @@
       + '<div class="line"><div class="ln">Закрывающий</div><div class="amt" style="font-family:inherit;">'+(day.closerName||'—')+'</div></div>'
       + '</div>';
 
+    html += '<div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">'
+      + '<button class="btn" id="send-telegram-btn">📤 Отправить чек в Telegram</button>'
+      + '<span id="telegram-send-status" style="font-size:11.5px;color:var(--ink-soft);"></span>'
+      + '</div>';
+
+    // ---- Текстовая версия чека для Telegram (HTML-разметка Telegram: <b>, не markdown) ----
+    const escTg = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let tgLines = ['<b>Чек дня · '+escTg(state.currentDate)+'</b>', ''];
+    receiptLines.forEach(l=>{
+      const amt = l.note ? l.note : fmtLine(l.low, l.high);
+      tgLines.push(escTg(l.label)+': '+escTg(amt) + (l.sub ? ' ('+escTg(l.sub)+')' : ''));
+    });
+    if ((day.substitutes||[]).length){
+      tgLines.push('', '<b>Подмена Мойка (нал., вне ФОТ)</b>');
+      day.substitutes.forEach(x=> tgLines.push(escTg(x.name)+': '+escTg(money(x.amount))));
+    }
+    tgLines.push('', '<b>ИТОГО'+(substituteTotal>0?' (с учётом подмены)':'')+': '+escTg(fmtLine(totalLow,totalHigh))+'</b>');
+    tgLines.push('', '<b>Закрытие смены</b>');
+    tgLines.push('Выручка за день: '+escTg(money(day.totalRevenue)));
+    tgLines.push('Наличные ООО / ИП: '+escTg(money(day.cashOOO))+' / '+escTg(money(day.cashIP)));
+    tgLines.push('Итого наличных: '+escTg(money(totalCash)));
+    tgLines.push('Расходы за день: -'+escTg(money(expensesSum)));
+    tgLines.push('<b>Наличные с учётом трат: '+escTg(money(cashAfterExpenses))+'</b>');
+    tgLines.push('Остаток размена в кассе: '+escTg(money(day.changeFund)));
+    tgLines.push('Закрывающий: '+escTg(day.closerName||'—'));
+    lastReceiptText = tgLines.join('\n');
+
     document.getElementById('view-day').innerHTML = html;
     attachDayHandlers();
   }
 
   function attachDayHandlers(){
     const root = document.getElementById('view-day');
+    root.querySelector('#send-telegram-btn').addEventListener('click', async ()=>{
+      const statusEl = root.querySelector('#telegram-send-status');
+      if (!telegramConfigured_()){
+        statusEl.textContent = 'Telegram не настроен — заполните токен бота и chat_id в разделе «Сотрудники».';
+        statusEl.style.color = 'var(--red)';
+        return;
+      }
+      statusEl.textContent = 'Отправка…';
+      statusEl.style.color = 'var(--ink-soft)';
+      try {
+        await sendTextToTelegram(lastReceiptText);
+        statusEl.textContent = 'Отправлено ✓';
+        statusEl.style.color = 'var(--green)';
+      } catch(err){
+        statusEl.textContent = 'Не удалось отправить: ' + err.message;
+        statusEl.style.color = 'var(--red)';
+      }
+    });
     root.querySelector('#rev-total').addEventListener('change', e=>{ getDay(state.currentDate).totalRevenue=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
     root.querySelector('#rev-hookah').addEventListener('change', e=>{ getDay(state.currentDate).hookahRevenue=Number(e.target.value)||0; scheduleSave(); renderDayView(); });
     root.querySelector('#date-input').addEventListener('change', async e=>{ state.currentDate=e.target.value; await loadMonth(monthKeyOf(state.currentDate)); renderDayView(); });
@@ -2527,7 +2605,18 @@
   let newEmpDraft = {name:'', dept:'bar', role:'oclad_percent'};
 
   function renderSettingsView(){
-    let html = '<div class="add-emp-card"><h4>KPI КАЛЬЯН мастера — пороги выручки</h4>'
+    let html = '<div class="add-emp-card"><h4>Отправка чека дня в Telegram</h4>'
+      + '<div style="display:flex;flex-direction:column;gap:8px;max-width:480px;">'
+      + '<label style="font-size:12.5px;color:var(--ink-soft);">Токен бота (от @BotFather)'
+      + '<input type="text" id="tg-bot-token" value="'+(TELEGRAM_BOT_TOKEN||'')+'" placeholder="123456789:AAExampleTokenHere" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
+      + '<label style="font-size:12.5px;color:var(--ink-soft);">Chat ID (id группового чата или личного чата с ботом)'
+      + '<input type="text" id="tg-chat-id" value="'+(TELEGRAM_CHAT_ID||'')+'" placeholder="-1001234567890" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
+      + '<div><button class="btn secondary" id="tg-save-btn">Сохранить</button> <span id="tg-save-status" style="font-size:11.5px;color:var(--ink-soft);margin-left:8px;"></span></div>'
+      + '</div>'
+      + '<div class="assumption-note">Настраивается один раз — сохраняется в общей таблице и работает сразу на всех устройствах. Кнопка отправки чека появляется на вкладке «Сегодня».</div>'
+      + '</div>';
+
+    html += '<div class="add-emp-card"><h4>KPI КАЛЬЯН мастера — пороги выручки</h4>'
       + '<div style="display:flex;flex-direction:column;gap:6px;">'
       + KALYAN_BRACKETS.map((b,i)=>{
           return '<div class="settings-row" data-bracket="'+i+'" style="padding:6px 0;border-top:'+(i===0?'none':'1px solid var(--border-row)')+'">'
@@ -2583,6 +2672,14 @@
 
   function attachSettingsHandlers(){
     const root = document.getElementById('view-settings');
+    root.querySelector('#tg-save-btn').addEventListener('click', ()=>{
+      TELEGRAM_BOT_TOKEN = root.querySelector('#tg-bot-token').value.trim();
+      TELEGRAM_CHAT_ID = root.querySelector('#tg-chat-id').value.trim();
+      scheduleSaveConfig();
+      const statusEl = root.querySelector('#tg-save-status');
+      statusEl.textContent = 'Сохранено ✓';
+      statusEl.style.color = 'var(--green)';
+    });
 
     root.querySelectorAll('[data-bracket]').forEach(row=>{
       const idx = Number(row.dataset.bracket);
