@@ -910,6 +910,7 @@
   function getDay(dateStr){
     if (!state.days[dateStr]) state.days[dateStr] = emptyDay();
     const d = state.days[dateStr];
+    if (!d.shifts) d.shifts = {};
     EMPLOYEES.forEach(e=>{ if (!d.shifts[e.id]) d.shifts[e.id] = emptyShift(e); });
     if (d.cashIP===undefined) d.cashIP=0;
     if (d.cashOOO===undefined) d.cashOOO=0;
@@ -952,7 +953,6 @@
   let _lastLoadedConfigExtra = {};
   async function loadConfig(){
     if (configLoaded) return;
-    configLoaded = true;
     let needsResave = false;
     try {
       const res = await storageGet('payroll-config');
@@ -1011,9 +1011,18 @@
 
         _lastLoadedConfigExtra = { knownEmployeeIds: parsed.knownEmployeeIds, knownScheduleSlotIds: parsed.knownScheduleSlotIds };
       }
-    } catch(e){ /* use defaults */ }
+      configLoaded = true;
+      lastConfigLoadError = null;
+    } catch(e){
+      // НЕ помечаем configLoaded=true при ошибке — иначе временный сбой сети
+      // навсегда "откатывал" бы список сотрудников/слотов к встроенным
+      // дефолтам на всю сессию, хотя реальные данные целы на сервере.
+      console.error('Не удалось загрузить конфигурацию (сотрудники/слоты/telegram):', e);
+      lastConfigLoadError = e.message;
+    }
     if (needsResave) scheduleSaveConfig();
   }
+  let lastConfigLoadError = null;
   let configSaveTimer=null;
   function scheduleSaveConfig(){ clearTimeout(configSaveTimer); configSaveTimer=setTimeout(saveConfig,250); }
   async function saveConfig(){
@@ -1045,15 +1054,21 @@
 
   async function loadScheduleWeek(weekKey){
     if (loadedScheduleWeeks[weekKey]) return;
-    loadedScheduleWeeks[weekKey] = true;
     try {
       const res = await storageGet('payroll-schedule-week:'+weekKey);
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.scheduleWeeks[weekKey] = { cells: parsed.cells || {} };
+      } else if (!state.scheduleWeeks[weekKey]){
+        state.scheduleWeeks[weekKey] = { cells: {} };
       }
-    } catch(e){ /* nothing saved yet for this week */ }
-    if (!state.scheduleWeeks[weekKey]) state.scheduleWeeks[weekKey] = { cells: {} };
+      loadedScheduleWeeks[weekKey] = true;
+    } catch(e){
+      // НЕ помечаем как загруженное и НЕ создаём пустышку при ошибке — иначе
+      // при временном сбое сети реальные данные графика на сервере рискуют
+      // быть стёрты пустыми при следующем автосохранении.
+      console.error('Не удалось загрузить график недели '+weekKey+':', e);
+    }
   }
   let scheduleWeekSaveTimer=null;
   function scheduleSaveWeek(weekKey){
@@ -1066,15 +1081,18 @@
 
   async function loadTasksWeek(weekKey){
     if (loadedTaskWeeks[weekKey]) return;
-    loadedTaskWeeks[weekKey] = true;
     try {
       const res = await storageGet('payroll-tasks-week:'+weekKey);
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.tasksWeeks[weekKey] = { tasks: parsed.tasks || [] };
+      } else if (!state.tasksWeeks[weekKey]){
+        state.tasksWeeks[weekKey] = { tasks: [] };
       }
-    } catch(e){ /* nothing saved yet for this week */ }
-    if (!state.tasksWeeks[weekKey]) state.tasksWeeks[weekKey] = { tasks: [] };
+      loadedTaskWeeks[weekKey] = true;
+    } catch(e){
+      console.error('Не удалось загрузить задачи недели '+weekKey+':', e);
+    }
   }
   let taskWeekSaveTimer=null;
   function saveTasksWeek(weekKey){
@@ -1087,15 +1105,18 @@
 
   async function loadChat(){
     if (chatLoaded) return;
-    chatLoaded = true;
     try {
       const res = await storageGet('payroll-chat');
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.chatMessages = parsed.messages || [];
+      } else if (!state.chatMessages){
+        state.chatMessages = [];
       }
-    } catch(e){ /* nothing saved yet */ }
-    if (!state.chatMessages) state.chatMessages = [];
+      chatLoaded = true;
+    } catch(e){
+      console.error('Не удалось загрузить чат:', e);
+    }
   }
   let chatSaveTimer=null;
   function saveChat(){
@@ -1196,9 +1217,9 @@
     catch(e){ console.warn('Telegram sendPhoto warning (фото могло всё же отправиться):', e); }
   }
 
+  let lastMonthLoadError = null;
   async function loadMonth(mk){
     if (loadedMonths[mk]) return;
-    loadedMonths[mk] = true;
     try {
       const res = await storageGet('payroll-month:'+mk);
       if (res && res.value){
@@ -1211,7 +1232,17 @@
         if (parsed.pnl && parsed.pnl.length) state.pnl[mk] = parsed.pnl;
         Object.keys(parsed.outsourceDays||{}).forEach(dt=>{ state.outsourceDays[dt]=parsed.outsourceDays[dt]; });
       }
-    } catch(e){ /* nothing saved yet for this month */ }
+      // Успех — теперь можно больше не перезагружать этот месяц за сессию.
+      loadedMonths[mk] = true;
+      lastMonthLoadError = null;
+    } catch(e){
+      // ВАЖНО: loadedMonths[mk] НЕ помечаем как true при ошибке — иначе при
+      // временном сбое сети приложение молча и навсегда "забывало" про
+      // реально существующие данные месяца до конца сессии, что выглядело
+      // как будто данные пропали, хотя они всё это время целы в таблице.
+      console.error('Не удалось загрузить данные месяца '+mk+':', e);
+      lastMonthLoadError = mk + ': ' + e.message;
+    }
   }
   let saveTimer=null;
   function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveMonth,250); }
@@ -1380,6 +1411,17 @@
     const mk = monthKeyOf(state.currentDate);
     const curKmBracket = KALYAN_BRACKETS[findBracketIndex(monthlyHookahRevenue(mk))];
     let html = '';
+
+    if ((lastMonthLoadError && lastMonthLoadError.startsWith(mk+':')) || lastConfigLoadError){
+      html += '<div style="background:#4A1F1C;color:#FFD7D2;border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;">'
+        + '⚠️ Не удалось загрузить сохранённые данные из таблицы (проблема с сетью или синхронизацией). '
+        + 'Показанное ниже может быть НЕ полным — это не значит, что данные удалены. '
+        + '<button class="btn secondary" id="retry-month-load-btn" style="margin-left:8px;">Повторить загрузку</button>'
+        + (lastMonthLoadError ? '<div style="margin-top:4px;opacity:0.8;">Месяц: '+lastMonthLoadError.split(': ').slice(1).join(': ')+'</div>' : '')
+        + (lastConfigLoadError ? '<div style="margin-top:4px;opacity:0.8;">Настройки: '+lastConfigLoadError+'</div>' : '')
+        + '</div>';
+    }
+
     html += '<div class="datebar"><button class="nav" data-act="prevday">‹</button>'
       + '<input type="date" id="date-input" value="'+state.currentDate+'"/>'
       + '<span class="weekday">'+weekdayShort(state.currentDate)+'</span>'
@@ -1582,6 +1624,15 @@
 
   function attachDayHandlers(){
     const root = document.getElementById('view-day');
+    const retryBtn = root.querySelector('#retry-month-load-btn');
+    if (retryBtn){
+      retryBtn.addEventListener('click', async ()=>{
+        retryBtn.textContent = 'Загрузка…';
+        retryBtn.disabled = true;
+        await Promise.all([loadMonth(monthKeyOf(state.currentDate)), loadConfig()]);
+        renderDayView();
+      });
+    }
     root.querySelector('#send-telegram-btn').addEventListener('click', async ()=>{
       const statusEl = root.querySelector('#telegram-send-status');
       if (!telegramConfigured_()){
