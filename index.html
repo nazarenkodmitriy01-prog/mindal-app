@@ -1307,29 +1307,41 @@
 
     // html2canvas не умеет рисовать backdrop-filter (эффект стекла) — если
     // оставить как есть, чек уходит в Telegram просто серым пятном. На время
-    // рендера картинки принудительно делаем фон чека однотонным и непрозрачным,
-    // а после — возвращаем как было, чтобы на экране всё осталось стеклянным.
+    // рендера картинки делаем чек чёрно-белым (без полутонов палитры): чёрный
+    // фон + белый текст в тёмной теме, белый фон + чёрный текст в светлой —
+    // и сразу после снимка возвращаем как было на экране.
     const rootEl = document.getElementById('payroll-root');
-    const solidBg = getComputedStyle(rootEl).getPropertyValue('--card').trim() || '#ffffff';
+    const isDark = rootEl.classList.contains('theme-dark');
+    const solidBg = isDark ? '#000000' : '#ffffff';
+    const solidFg = isDark ? '#ffffff' : '#000000';
     const prevStyle = {
       background: receiptEl.style.background,
+      color: receiptEl.style.color,
       backdropFilter: receiptEl.style.backdropFilter,
       webkitBackdropFilter: receiptEl.style.webkitBackdropFilter,
       boxShadow: receiptEl.style.boxShadow,
+      ink: receiptEl.style.getPropertyValue('--ink'),
+      inkSoft: receiptEl.style.getPropertyValue('--ink-soft'),
     };
     receiptEl.style.background = solidBg;
+    receiptEl.style.color = solidFg;
     receiptEl.style.backdropFilter = 'none';
     receiptEl.style.webkitBackdropFilter = 'none';
     receiptEl.style.boxShadow = 'none';
+    receiptEl.style.setProperty('--ink', solidFg);
+    receiptEl.style.setProperty('--ink-soft', isDark ? '#cccccc' : '#333333');
 
     let canvas;
     try {
       canvas = await window.html2canvas(receiptEl, { backgroundColor: solidBg, scale: 2 });
     } finally {
       receiptEl.style.background = prevStyle.background;
+      receiptEl.style.color = prevStyle.color;
       receiptEl.style.backdropFilter = prevStyle.backdropFilter;
       receiptEl.style.webkitBackdropFilter = prevStyle.webkitBackdropFilter;
       receiptEl.style.boxShadow = prevStyle.boxShadow;
+      receiptEl.style.setProperty('--ink', prevStyle.ink);
+      receiptEl.style.setProperty('--ink-soft', prevStyle.inkSoft);
     }
 
     const blob = await new Promise(resolve=> canvas.toBlob(resolve, 'image/png'));
