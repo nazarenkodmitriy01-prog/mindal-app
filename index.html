@@ -830,6 +830,10 @@
     if (!state.officialSalary[mk]) state.officialSalary[mk] = {};
     return state.officialSalary[mk];
   }
+  function getOfficialAdvanceMonth(mk){
+    if (!state.officialAdvance[mk]) state.officialAdvance[mk] = {};
+    return state.officialAdvance[mk];
+  }
   let outsourceCollapsed = {};
   // Сумма к выплате конкретному сотруднику за конкретный день по всем точкам, где он был назначен в этот день
   function outsourceDailyPayForEmployee(empId, dateStr){
@@ -942,7 +946,7 @@
   function monthKeyOf(dateStr){ return dateStr.slice(0,7); }
   function daysInMonth(mk){ const [y,m]=mk.split('-').map(Number); return new Date(y,m,0).getDate(); }
 
-  let state = { currentDate: fmtDate(today), days: {}, plan: {}, adjustments: {}, breakageAmount: {}, chefProfitBonus: {}, pnl: {}, scheduleWeeks: {}, tasksWeeks: {}, chatMessages: null, outsourceDays: {}, officialSalary: {} };
+  let state = { currentDate: fmtDate(today), days: {}, plan: {}, adjustments: {}, breakageAmount: {}, chefProfitBonus: {}, pnl: {}, scheduleWeeks: {}, tasksWeeks: {}, chatMessages: null, outsourceDays: {}, officialSalary: {}, officialAdvance: {} };
   // state.plan: { 'YYYY-MM': number }
   // state.adjustments: { 'YYYY-MM': { empId: [ {id,type,amount,note,tag?} ] } }
   // state.breakageAmount: { 'YYYY-MM': number } — last amount used for the recurring monthly deduction
@@ -1330,6 +1334,7 @@
         if (parsed.pnl && parsed.pnl.length) state.pnl[mk] = parsed.pnl;
         Object.keys(parsed.outsourceDays||{}).forEach(dt=>{ state.outsourceDays[dt]=parsed.outsourceDays[dt]; });
         if (parsed.officialSalary) state.officialSalary[mk] = parsed.officialSalary;
+        if (parsed.officialAdvance) state.officialAdvance[mk] = parsed.officialAdvance;
       }
       // Успех — теперь можно больше не перезагружать этот месяц за сессию.
       loadedMonths[mk] = true;
@@ -1360,7 +1365,8 @@
         chefProfitBonus: state.chefProfitBonus[mk],
         pnl: state.pnl[mk] || [],
         outsourceDays: monthOutsourceDays,
-        officialSalary: state.officialSalary[mk] || {}
+        officialSalary: state.officialSalary[mk] || {},
+        officialAdvance: state.officialAdvance[mk] || {}
       }));
     } catch(e){ console.error('save failed', e); }
   }
@@ -1955,13 +1961,29 @@
       + '<label style="font-size:13.5px;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="chef-profit-confirm" '+(cpb.confirmed?'checked':'')+'/> подтвердить и включить в ЗП</label>'
       + '</div><div class="assumption-note">Сумма считается вручную (по согласованной методике), пока не подключён автоматический расчёт чистой прибыли кухни. После подтверждения — попадает в столбец «Бонусы» шеф-повара.</div></div>';
 
+    const officialAdvanceMonth = getOfficialAdvanceMonth(mk);
+    const officialSalaryMonth = getOfficialSalaryMonth(mk);
+    html += '<div class="kpi-panel"><h4>Официальная часть ЗП (карта)</h4>'
+      + '<div class="assumption-note" style="margin-top:0;margin-bottom:10px;">Только для пятерых: Бояковский Иван, Девятых Фёдор, Душницкий Сергей, Эгамназарова Хурсандой, Назаренко Дмитрий — у них часть зарплаты официально проходит через банковскую карту, остальное наличными.</div>'
+      + OFFICIAL_SALARY_EMPLOYEE_IDS.map(empId=>{
+          const e = EMPLOYEES.find(x=>x.id===empId);
+          if (!e) return '';
+          return '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border-subtle);">'
+            + '<div style="min-width:170px;font-weight:600;">'+e.name+'</div>'
+            + '<label style="font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;">Официальный аванс, ₽'
+            + '<input type="number" class="official-advance-input" data-emp="'+e.id+'" value="'+(officialAdvanceMonth[e.id]||'')+'" placeholder="0" style="width:110px;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></label>'
+            + '<label style="font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;">Официально ЗП (закрытие месяца), ₽'
+            + '<input type="number" class="official-salary-input" data-emp="'+e.id+'" value="'+(officialSalaryMonth[e.id]||'')+'" placeholder="0" style="width:110px;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></label>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+
     html += '<table class="month-table"><thead><tr>'
       + '<th>Сотрудник</th><th>Подразделение</th><th class="num">Смен</th><th class="num">Оклад</th>'
       + '<th class="num">Начислено сверх оклада</th><th class="num">Бонусы</th><th class="num">Начислено всего</th>'
       + '<th class="num">Аванс</th><th class="num">Вычеты</th><th class="num">К выплате</th>'
       + '<th class="num">Официально (карта)</th><th class="num">Наличными</th></tr></thead><tbody>';
 
-    const officialSalaryMonth = getOfficialSalaryMonth(mk);
     let grandOclad=0, grandVar=0, grandBonus=0, grandAdvance=0, grandDeduction=0, grandTotal=0, grandToPay=0;
     let grandOfficial=0, grandCash=0;
     DEPT_ORDER.forEach(deptKey=>{
@@ -1973,8 +1995,11 @@
         const total = (t.oclad||0)+(t.variable||0)+(t.bonuses||0);
         const toPay = total - adj.advance - adj.deduction;
         const hasOfficialSplit = OFFICIAL_SALARY_EMPLOYEE_IDS.includes(e.id);
-        const officialAmt = hasOfficialSplit ? (Number(officialSalaryMonth[e.id])||0) : 0;
-        const cashAmt = hasOfficialSplit ? (toPay - officialAmt) : 0;
+        const advanceOfficial = hasOfficialSplit ? (Number(officialAdvanceMonth[e.id])||0) : 0;
+        const monthEndOfficial = hasOfficialSplit ? (Number(officialSalaryMonth[e.id])||0) : 0;
+        const officialAmt = advanceOfficial + monthEndOfficial;
+        const payableTotal = total - adj.deduction; // то, что реально выплачивается (вычет — не форма выплаты, а уменьшение начисленного)
+        const cashAmt = hasOfficialSplit ? (payableTotal - officialAmt) : 0;
         grandOclad += (t.oclad||0); grandVar += (t.variable||0); grandBonus += (t.bonuses||0);
         grandAdvance += adj.advance; grandDeduction += adj.deduction;
         grandTotal += total; grandToPay += toPay;
@@ -1994,10 +2019,7 @@
           + '<td class="num">'+(adj.advance?money(adj.advance):'—')+'</td>'
           + '<td class="num">'+(adj.deduction?money(adj.deduction):'—')+'</td>'
           + '<td class="num topay">'+money(toPay)+'</td>'
-          + '<td class="num">'+(hasOfficialSplit
-              ? '<input type="number" class="official-salary-input" data-emp="'+e.id+'" value="'+(officialSalaryMonth[e.id]||'')+'" placeholder="0" style="width:100px;text-align:right;padding:4px 6px;border:1px solid var(--border-input);border-radius:5px;background:var(--bg-input);color:var(--ink);"/>'
-              : '—')
-            +'</td>'
+          + '<td class="num">'+(hasOfficialSplit?money(officialAmt):'—')+'</td>'
           + '<td class="num" style="'+(hasOfficialSplit && cashAmt<0?'color:var(--red);':'')+'">'+(hasOfficialSplit?money(cashAmt):'—')+'</td>'
           + '</tr>';
       });
@@ -2013,7 +2035,7 @@
       + '<td class="num">'+money(grandOfficial)+'</td>'
       + '<td class="num">'+money(grandCash)+'</td></tr>';
     html += '</tbody></table>';
-    html += '<div class="assumption-note">«Официально (карта)» вводится вручную для сотрудников, у которых часть зарплаты официально проходит через банковскую карту (Бояковский Иван, Девятых Фёдор, Душницкий Сергей, Эгамназарова Хурсандой, Назаренко Дмитрий) — остальным эта колонка не нужна. «Наличными» считается автоматически как остаток от «К выплате».</div>';
+    html += '<div class="assumption-note">Официальную часть (карта) вводите выше, в панели «Официальная часть ЗП (карта)». Здесь — только расчётные значения: «Официально (карта)» = официальный аванс + официальная часть при закрытии месяца; «Наличными» — остаток.</div>';
 
     html += renderAdjustmentsPanel(mk, adjTotals);
 
@@ -2035,6 +2057,12 @@
     document.querySelectorAll('.official-salary-input').forEach(inp=>{
       inp.addEventListener('change', ()=>{
         getOfficialSalaryMonth(mk)[inp.dataset.emp] = Number(inp.value)||0;
+        scheduleSave(); renderMonthView();
+      });
+    });
+    document.querySelectorAll('.official-advance-input').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        getOfficialAdvanceMonth(mk)[inp.dataset.emp] = Number(inp.value)||0;
         scheduleSave(); renderMonthView();
       });
     });
