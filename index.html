@@ -812,7 +812,23 @@
   // его, откройте payroll_app.html в текстовом редакторе и поменяйте строку
   // ниже.
   const ACCESS_PASSWORD = 'mindal2026';
-  const RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen'];
+  const DEFAULT_RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen'];
+  const ALL_TABS_FOR_ACCESS = [
+    {id:'day', label:'Сегодня'}, {id:'revenue', label:'Выручка'}, {id:'month', label:'Месяц'},
+    {id:'timesheet', label:'Табель'}, {id:'schedule', label:'График'}, {id:'teamwork', label:'Задачи и чат'},
+    {id:'outsource', label:'Аутсорс КАЛЬЯН'}, {id:'pnl', label:'П&Л'}, {id:'kitchen', label:'Кухня'},
+    {id:'settings', label:'Сотрудники'},
+  ];
+  function getRestrictedTabs(){
+    try {
+      const raw = window.localStorage.getItem('payroll-restricted-tabs');
+      if (raw) return JSON.parse(raw);
+    } catch(e){}
+    return DEFAULT_RESTRICTED_TABS;
+  }
+  function setRestrictedTabs(list){
+    try { window.localStorage.setItem('payroll-restricted-tabs', JSON.stringify(list)); } catch(e){}
+  }
   function getAccessMode(){
     try { return window.localStorage.getItem('payroll-access-mode') || 'full'; }
     catch(e){ return 'full'; }
@@ -3425,13 +3441,14 @@
   // ---------- Уровень доступа: применение и панель ----------
   function applyAccessMode(){
     const mode = getAccessMode();
+    const restricted = getRestrictedTabs();
     document.querySelectorAll('#payroll-root .tab').forEach(t=>{
-      const hide = mode === 'manager' && RESTRICTED_TABS.includes(t.dataset.tab);
+      const hide = mode === 'manager' && restricted.includes(t.dataset.tab);
       t.style.display = hide ? 'none' : '';
     });
     document.getElementById('access-lock-btn').textContent = mode === 'manager' ? '🔒' : '🔓';
     // Если сейчас открыта именно та вкладка, которую только что скрыли — переключаемся на "Сегодня"
-    if (mode === 'manager' && RESTRICTED_TABS.includes(activeTab)){
+    if (mode === 'manager' && restricted.includes(activeTab)){
       switchTab('day');
     }
   }
@@ -3443,11 +3460,23 @@
   function renderAccessPanel(){
     const mode = getAccessMode();
     if (mode === 'full'){
+      const selected = new Set(getRestrictedTabs());
       accessPanelBody.innerHTML =
-        '<div style="font-size:12.5px;margin-bottom:8px;">Сейчас: <b>полный доступ</b>.</div>'
+        '<div style="font-size:12.5px;margin-bottom:8px;">Сейчас: <b>полный доступ</b>. Выберите, что скрыть на этом устройстве:</div>'
+        + '<div style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;margin-bottom:10px;">'
+        + ALL_TABS_FOR_ACCESS.map(t=>
+            '<label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">'
+            + '<input type="checkbox" class="access-tab-checkbox" data-tab="'+t.id+'"'+(selected.has(t.id)?' checked':'')+'/>'
+            + t.label
+            + '</label>'
+          ).join('')
+        + '</div>'
         + '<button class="btn secondary" id="access-restrict-btn" style="width:100%;">Ограничить доступ (режим менеджера)</button>'
-        + '<div class="sync-config-note">Скроет вкладки «Месяц», «П&amp;Л» и «Сотрудники» на этом устройстве. Действует только здесь.</div>';
+        + '<div class="sync-config-note">Выбранные вкладки скроются на этом устройстве. Действует только здесь.</div>';
       accessPanelBody.querySelector('#access-restrict-btn').addEventListener('click', ()=>{
+        const chosen = Array.from(accessPanelBody.querySelectorAll('.access-tab-checkbox'))
+          .filter(cb=>cb.checked).map(cb=>cb.dataset.tab);
+        setRestrictedTabs(chosen);
         setAccessModeStorage('manager');
         applyAccessMode();
         accessPanel.style.display = 'none';
