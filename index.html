@@ -1982,7 +1982,7 @@
       + '<th>Сотрудник</th><th>Подразделение</th><th class="num">Смен</th><th class="num">Оклад</th>'
       + '<th class="num">Начислено сверх оклада</th><th class="num">Бонусы</th><th class="num">Начислено всего</th>'
       + '<th class="num">Аванс</th><th class="num">Вычеты</th><th class="num">К выплате</th>'
-      + '<th class="num">Официально (карта)</th><th class="num">Наличными</th></tr></thead><tbody>';
+      + '<th class="num">Официально за месяц</th><th class="num">Наличными за месяц</th></tr></thead><tbody>';
 
     let grandOclad=0, grandVar=0, grandBonus=0, grandAdvance=0, grandDeduction=0, grandTotal=0, grandToPay=0;
     let grandOfficial=0, grandCash=0;
@@ -2016,7 +2016,11 @@
           + '<td class="num">'+money(t.variable)+'</td>'
           + '<td class="num">'+(t.bonuses?money(t.bonuses):'—')+'</td>'
           + '<td class="num"><b>'+money(total)+'</b></td>'
-          + '<td class="num">'+(adj.advance?money(adj.advance):'—')+'</td>'
+          + '<td class="num">'+(adj.advance?money(adj.advance):'—')
+              +(hasOfficialSplit && adj.advance
+                ? '<div style="font-size:10px;color:var(--ink-soft);font-weight:400;white-space:nowrap;">офиц. '+money(advanceOfficial)+' / нал. '+money(adj.advance-advanceOfficial)+'</div>'
+                : '')
+            +'</td>'
           + '<td class="num">'+(adj.deduction?money(adj.deduction):'—')+'</td>'
           + '<td class="num topay">'+money(toPay)+'</td>'
           + '<td class="num">'+(hasOfficialSplit?money(officialAmt):'—')+'</td>'
@@ -2035,7 +2039,7 @@
       + '<td class="num">'+money(grandOfficial)+'</td>'
       + '<td class="num">'+money(grandCash)+'</td></tr>';
     html += '</tbody></table>';
-    html += '<div class="assumption-note">Официальную часть (карта) вводите выше, в панели «Официальная часть ЗП (карта)». Здесь — только расчётные значения: «Официально (карта)» = официальный аванс + официальная часть при закрытии месяца; «Наличными» — остаток.</div>';
+    html += '<div class="assumption-note">Официальную часть (карта) вводите выше, в панели «Официальная часть ЗП (карта)». Под суммой аванса — разбивка, сколько из него официально/наличными. «Официально за месяц» и «Наличными за месяц» — итог по ОБЕИМ выплатам (аванс + остаток при закрытии), поэтому обычно больше, чем просто «К выплате».</div>';
 
     html += renderAdjustmentsPanel(mk, adjTotals);
 
