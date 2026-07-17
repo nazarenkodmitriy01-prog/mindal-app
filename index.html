@@ -16,20 +16,6 @@
 <style>
   body { margin: 0; background: #EEF0EC; transition: background 0.2s ease; position: relative; min-height: 100vh; overflow-x: hidden; }
   body.theme-dark { background: #141311; }
-  body::before {
-    content: "";
-    position: fixed;
-    inset: -140px;
-    z-index: 0;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28161%2C92%2C51%2C0.18%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 170px 95px;
-    animation: mindalDrift 34s linear infinite;
-  }
-  body.theme-dark::before {
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28214%2C148%2C102%2C0.16%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
-  }
   #payroll-root { position: relative; z-index: 1; }
   #payroll-root {
     --ink: #1C1F1D;
@@ -61,12 +47,15 @@
     --border-row: #EEEDE6;
     --border-dashed: #C9C7BB;
     --text-faint: #B7B5A9;
-    --card-glass: rgba(230, 226, 216, 0.62);
+    --card-glass: rgba(230, 226, 216, 0.42);
+    --accent-rgb: 161, 92, 51;
+    --glass-highlight: rgba(255, 255, 255, 0.55);
+    --glass-shadow: rgba(80, 70, 50, 0.10);
 
     transition: background 0.2s ease, color 0.2s ease;
     font-family: 'Roboto', -apple-system, sans-serif;
     color: var(--ink);
-    background: var(--paper);
+    background: linear-gradient(160deg, rgba(var(--accent-rgb), 0.16) 0%, var(--paper) 45%, var(--paper) 100%);
     padding: 18px;
     border-radius: 10px;
     max-width: 1020px;
@@ -74,26 +63,6 @@
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-  }
-  /* ---- Диагональный водяной знак MINDAL, плывущий по фону ---- */
-  #payroll-root::before {
-    content: "";
-    position: absolute;
-    inset: -140px;
-    z-index: -1;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28161%2C92%2C51%2C0.18%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 170px 95px;
-    animation: mindalDrift 34s linear infinite;
-    will-change: background-position;
-  }
-  #payroll-root.theme-dark::before {
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22170%22%20height%3D%2295%22%3E%0A%3Ctext%20x%3D%2285%22%20y%3D%2255%22%20font-family%3D%22Roboto%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28214%2C148%2C102%2C0.16%29%22%20text-anchor%3D%22middle%22%20transform%3D%22rotate%28-28%2085%2047%29%22%3EMINDAL%3C/text%3E%0A%3C/svg%3E");
-  }
-  @keyframes mindalDrift {
-    from { background-position: 0 0; }
-    to   { background-position: 340px 190px; }
   }
   #payroll-root * { box-sizing: border-box; }
   #payroll-root input, #payroll-root select, #payroll-root textarea, #payroll-root button {
@@ -179,13 +148,13 @@
   }
   #payroll-root .datebar .weekday { font-size: 13px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; }
   #payroll-root .revenue-inputs { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-  #payroll-root .revenue-box { flex: 1; min-width: 220px; background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 12px 14px; }
+  #payroll-root .revenue-box { flex: 1; min-width: 220px; background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; padding: 12px 14px; }
   #payroll-root .revenue-box label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
   #payroll-root .revenue-box input { width: 100%; font-family: 'IBM Plex Mono', monospace; font-size: 21px; font-weight: 600; border: none; background: transparent; color: var(--ink); padding: 0; }
   #payroll-root .revenue-box input:focus { outline: none; }
   #payroll-root .revenue-box.hookah { background: var(--rust-soft); }
 
-  #payroll-root .dept-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-card); overflow: hidden; }
+  #payroll-root .dept-card { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-card); overflow: hidden; }
   #payroll-root .dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.3px; }
   #payroll-root .dept-head .rule { font-weight: 400; opacity: 0.85; font-size: 12px; }
   #payroll-root .emp-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
@@ -204,7 +173,7 @@
   #payroll-root .bonus-row { display: flex; gap: 14px; padding: 8px 14px 12px; flex-wrap: wrap; border-top: 1px solid var(--border-row); }
   #payroll-root .bonus-row label { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--ink-soft); cursor: pointer; }
 
-  #payroll-root .receipt { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 4px 4px 0 0; margin-top: 22px; padding: 18px 22px 14px; font-family: 'IBM Plex Mono', monospace; position: relative; }
+  #payroll-root .receipt { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 4px 4px 0 0; margin-top: 22px; padding: 18px 22px 14px; font-family: 'IBM Plex Mono', monospace; position: relative; }
   #payroll-root .receipt::after {
     content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 18px;
     background: linear-gradient(-45deg, var(--paper) 9px, transparent 0), linear-gradient(45deg, var(--paper) 9px, transparent 0);
@@ -235,14 +204,14 @@
 
   /* ---- Задачи и чат руководителей ---- */
   #payroll-root .task-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
-  #payroll-root .task-column { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; min-width: 0; }
+  #payroll-root .task-column { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; min-width: 0; }
   #payroll-root .task-column h4 { margin: 0 0 8px; font-size: 13px; }
   #payroll-root .task-card { background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 9px; margin-bottom: 8px; }
   #payroll-root .task-card-title { font-weight: 600; font-size: 12.5px; }
   #payroll-root .task-card-desc { font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; white-space: pre-wrap; }
   #payroll-root .task-status { width: 100%; padding: 4px 6px; border: 1px solid; border-radius: 5px; font-size: 11px; }
   #payroll-root .task-card-meta { font-size: 10px; color: var(--text-faint); margin-top: 6px; }
-  #payroll-root .chat-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  #payroll-root .chat-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); }
   #payroll-root .chat-msg { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
   #payroll-root .chat-msg:last-child { border-bottom: none; margin-bottom: 0; }
   #payroll-root .chat-msg-meta { font-size: 10.5px; color: var(--ink-soft); margin-bottom: 2px; }
@@ -250,7 +219,7 @@
 
   #payroll-root table.month-table td.topay { color: var(--rust); font-weight: 700; }
   #payroll-root .dept-tag { display: inline-block; font-size: 11px; color: white; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
-  #payroll-root .kpi-panel { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .kpi-panel { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
   #payroll-root .kpi-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .bracket-ladder { display: flex; gap: 3px; margin-bottom: 8px; }
   #payroll-root .bracket { flex: 1; padding: 6px 4px; text-align: center; font-size: 11px; border-radius: 4px; background: var(--border-subtle); color: var(--ink-soft); border: 1px solid #E5E3D8; }
@@ -260,7 +229,7 @@
   #payroll-root .assumption-note { font-size: 12.5px; color: var(--ink-soft); background: var(--bg-subtle); border-radius: 6px; padding: 8px 10px; margin-top: 8px; line-height: 1.4; }
   #payroll-root .plan-input { font-family: 'IBM Plex Mono', monospace; font-size: 14px; border: 1px solid var(--border-input); border-radius: 5px; padding: 4px 8px; width: 140px; }
 
-  #payroll-root .adj-panel { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-top: 18px; }
+  #payroll-root .adj-panel { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-top: 18px; }
   #payroll-root .adj-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .adj-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   #payroll-root .adj-form select, .adj-form input { font-size: 13.5px; padding: 5px 8px; border: 1px solid var(--border-input); border-radius: 5px; background: var(--bg-input); }
@@ -283,7 +252,7 @@
   #payroll-root .adj-item .del:hover { color: var(--red); }
 
   /* Settings tab */
-  #payroll-root .settings-dept { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  #payroll-root .settings-dept { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
   #payroll-root .settings-dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; }
   #payroll-root .settings-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
   #payroll-root .settings-row.inactive { opacity: 0.5; }
@@ -291,7 +260,7 @@
   #payroll-root .settings-row select { font-size: 13.5px; padding: 5px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
   #payroll-root .settings-row .field-group { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--ink-soft); }
   #payroll-root .settings-row .field-group input[type=number] { width: 78px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 4px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
-  #payroll-root .add-emp-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 2px dashed var(--border-input); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .add-emp-card { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 2px dashed var(--border-input); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
   #payroll-root .add-emp-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .add-emp-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   #payroll-root .add-emp-form input, .add-emp-form select { font-size: 13.5px; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px; }
@@ -299,7 +268,7 @@
   #payroll-root .footer-note { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 26px; }
 
   /* Closing shift report */
-  #payroll-root .closing-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
+  #payroll-root .closing-card { background: var(--card-glass); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 24px var(--glass-shadow); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
   #payroll-root .closing-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .cash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 12px; }
   #payroll-root .cash-field label { display: block; font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
@@ -381,7 +350,10 @@
     --border-row: #2C2924;
     --border-dashed: #4A463D;
     --text-faint: #6E6A60;
-    --card-glass: rgba(20, 18, 15, 0.55);
+    --card-glass: rgba(20, 18, 15, 0.40);
+    --accent-rgb: 214, 148, 102;
+    --glass-highlight: rgba(255, 255, 255, 0.06);
+    --glass-shadow: rgba(0, 0, 0, 0.35);
   }
   /* =========================================================
      ДОПОЛНИТЕЛЬНЫЕ ЦВЕТОВЫЕ ПАЛИТРЫ
@@ -398,7 +370,8 @@
     --border-card: #DCE4D7; --border-input: #D2DACB; --bg-highlight: #F3F7F1; --bg-input: #FAFCF8;
     --bg-subtle: #EFF3EC; --border-subtle: #EAEFE6; --bg-chip-off: #E6EEE2; --border-row: #E8EDE3;
     --border-dashed: #C2CBBB; --text-faint: #AEB8A5;
-    --card-glass: rgba(224, 230, 219, 0.62);
+    --card-glass: rgba(224, 230, 219, 0.42);
+    --accent-rgb: 31, 107, 74;
   }
   #payroll-root.palette-emerald.theme-dark {
     color-scheme: dark;
@@ -407,7 +380,8 @@
     --border-card: #313C2F; --border-input: #3C4839; --bg-highlight: #1F251D; --bg-input: #171C15;
     --bg-subtle: #1C221A; --border-subtle: #262C23; --bg-chip-off: #232A20; --border-row: #262C23;
     --border-dashed: #3F4A3B; --text-faint: #5E6B5A;
-    --card-glass: rgba(14, 18, 13, 0.55);
+    --card-glass: rgba(14, 18, 13, 0.40);
+    --accent-rgb: 79, 206, 147;
   }
 
   /* ---- Сапфир ---- */
@@ -417,7 +391,8 @@
     --border-card: #DCE2EC; --border-input: #D0D7E3; --bg-highlight: #F2F5F9; --bg-input: #FAFBFD;
     --bg-subtle: #EEF1F6; --border-subtle: #E8ECF2; --bg-chip-off: #E4E9F1; --border-row: #E6EAF0;
     --border-dashed: #BFC7D6; --text-faint: #ACB4C2;
-    --card-glass: rgba(222, 227, 236, 0.62);
+    --card-glass: rgba(222, 227, 236, 0.42);
+    --accent-rgb: 44, 90, 140;
   }
   #payroll-root.palette-sapphire.theme-dark {
     color-scheme: dark;
@@ -426,7 +401,8 @@
     --border-card: #2D3646; --border-input: #384254; --bg-highlight: #1C2331; --bg-input: #141822;
     --bg-subtle: #191F29; --border-subtle: #232A38; --bg-chip-off: #212838; --border-row: #232A38;
     --border-dashed: #3A4457; --text-faint: #566178;
-    --card-glass: rgba(11, 14, 19, 0.55);
+    --card-glass: rgba(11, 14, 19, 0.40);
+    --accent-rgb: 111, 168, 220;
   }
 
   /* ---- Бордо ---- */
@@ -436,7 +412,8 @@
     --border-card: #E5D6D8; --border-input: #DCC9CC; --bg-highlight: #F8F2F2; --bg-input: #FCF8F8;
     --bg-subtle: #F3EBEC; --border-subtle: #F0E6E7; --bg-chip-off: #EDDEDF; --border-row: #EFE5E6;
     --border-dashed: #D0B9BC; --text-faint: #C0A8AB;
-    --card-glass: rgba(236, 224, 225, 0.62);
+    --card-glass: rgba(236, 224, 225, 0.42);
+    --accent-rgb: 125, 42, 59;
   }
   #payroll-root.palette-bordeaux.theme-dark {
     color-scheme: dark;
@@ -445,7 +422,8 @@
     --border-card: #3C2D2F; --border-input: #4A383B; --bg-highlight: #291F20; --bg-input: #1D1516;
     --bg-subtle: #231A1B; --border-subtle: #2D2223; --bg-chip-off: #2B2021; --border-row: #2D2223;
     --border-dashed: #4E3B3E; --text-faint: #71585B;
-    --card-glass: rgba(15, 10, 10, 0.55);
+    --card-glass: rgba(15, 10, 10, 0.40);
+    --accent-rgb: 224, 131, 154;
   }
 
   #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
@@ -555,14 +533,6 @@
 
     #payroll-root .kpi-panel, #payroll-root .adj-panel { padding: 12px; }
     #payroll-root h1, #payroll-root .display { font-size: 19px; }
-
-    /* Известный баг мобильных браузеров (iOS Safari/Chrome): position:fixed фон
-       вместе с непрерывной CSS-анимацией background-position периодически
-       "теряет" перерисовку части экрана — блоки пропадают и появляются только
-       после тача/скролла/перезагрузки. На мобильных отключаем и fixed, и саму
-       анимацию — водяной знак остаётся, просто статичный, без движения. */
-    body::before { animation: none !important; }
-    #payroll-root::before { animation: none !important; }
   }
 </style>
 <link rel="manifest" href="./manifest.json">
