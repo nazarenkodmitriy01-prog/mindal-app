@@ -463,12 +463,31 @@ function startTimeOf(b){
   if(!m) return null;
   return { h: Number(m[1]), m: Number(m[2]), label: m[1].padStart(2,'0')+':'+m[2] };
 }
-// Собирает Date-объект брони (дата + время начала) для сравнения с "сейчас"
+// Заведение работает с 12:00 до 3:00 следующих суток — поэтому время вроде
+// "01:00" или "02:30", указанное для "сегодняшней" брони, на самом деле
+// приходится на раннее утро СЛЕДУЮЩЕГО календарного дня (это всё ещё та же
+// рабочая смена, просто уже за полночь). Без этой поправки такая бронь
+// выглядела бы как "уже прошедшая", хотя на деле она ещё впереди.
+const NIGHT_CUTOFF_HOUR = 6; // до этого часа время считается "ночью после полуночи", а не "рано утром в тот же день"
+function isAfterMidnightTime(t){ return t.h < NIGHT_CUTOFF_HOUR; }
+// Собирает Date-объект брони (дата + время начала) для сравнения с "сейчас",
+// с поправкой на переход рабочей смены через полночь.
 function startDateTimeOf(b){
   const t = startTimeOf(b);
   if(!t || !b.date) return null;
   const [y,mo,d] = b.date.split('-').map(Number);
-  return new Date(y, mo-1, d, t.h, t.m, 0, 0);
+  const dayOffset = isAfterMidnightTime(t) ? 1 : 0;
+  return new Date(y, mo-1, d + dayOffset, t.h, t.m, 0, 0);
+}
+// Ключ для сортировки времени в списке "на сегодня": времена после полуночи
+// (01:00, 02:30...) должны идти В КОНЦЕ списка, после вечерних (23:xx), а не
+// в начале — потому что по факту это конец той же рабочей смены.
+function timeSortKey(label){
+  const m = label.match(/^(\d{1,2}):(\d{2})/);
+  if(!m) return 9999;
+  const h = Number(m[1]), mi = Number(m[2]);
+  const virtualHour = h < NIGHT_CUTOFF_HOUR ? h + 24 : h;
+  return virtualHour * 60 + mi;
 }
 
 /* ================== ЛОКАЛЬНОЕ ХРАНЕНИЕ ================== */
@@ -507,38 +526,34 @@ function seedExampleData(){
   persistLocal();
 }
 
-/* ================== СТАТУСЫ СТОЛОВ (с таймером 2.5 часа и учётом времени брони) ================== */
-const RESERVATION_GUARD_MS = 2.5 * 60 * 60 * 1000; // за 2.5 часа до брони стол "защищается" от посадки без брони
-
+/* ================== СТАТУСЫ СТОЛОВ (с таймером 2.5 часа) ================== */
 function todayBookingsForTable(tableNo){
   return state.bookings.filter(b => !b.deleted && b.date === todayISO() && Number(b.table) === tableNo && b.status !== 'Отменена');
 }
-// Бронь, которая определяет статус стола ПРЯМО СЕЙЧАС:
-// 1) если кто-то уже сидит ("Гость на месте") — статус определяет именно эта бронь;
-// 2) иначе — ближайшая по времени "Забронирован", ЕСЛИ до неё осталось не больше
-//    RESERVATION_GUARD_MS (или время уже наступило) — стол защищается заранее;
-// 3) если ближайшая бронь ещё далеко (например, бронь на 18:00, а сейчас 14:00) —
-//    стол прямо сейчас считается свободным, гостей без брони посадить можно.
+// Бронь, которая определяет статус стола: если кто-то уже сидит — статус
+// определяет именно эта бронь; иначе — ближайшая по времени "Забронирован".
+// Никакой блокировки нет — это только для цвета на схеме зала, гостей без
+// брони можно посадить в любой момент (см. openTableMenu/quickOccupyWalkin).
 function activeTodayBooking(tableNo){
   const list = todayBookingsForTable(tableNo);
   const seated = list.find(b => b.status === 'Гость на месте');
   if(seated) return seated;
   const upcoming = list.filter(b => b.status === 'Забронирован')
     .map(b => ({ b, dt: startDateTimeOf(b) }))
-    .filter(x => x.dt)
-    .sort((a,b) => a.dt - b.dt);
-  if(upcoming.length === 0) return null;
-  const next = upcoming[0];
-  const diff = next.dt.getTime() - Date.now();
-  if(diff <= RESERVATION_GUARD_MS) return next.b;
-  return null;
+    .sort((a,b) => (a.dt?a.dt.getTime():Infinity) - (b.dt?b.dt.getTime():Infinity));
+  return upcoming.length ? upcoming[0].b : null;
 }
-// Ближайшая бронь на стол сегодня, даже если она ещё "далеко" — только для
-// подсказки в меню стола (чтобы не забыть, что стол вечером понадобится).
+// Ближайшая бронь на стол сегодня — используется только для уведомления,
+// если стол занимают гостями без брони, а бронь на него всё же есть.
 function nextTodayReservation(tableNo){
   const list = todayBookingsForTable(tableNo).filter(b => b.status === 'Забронирован');
   const withTime = list.map(b => ({ b, dt: startDateTimeOf(b) })).filter(x => x.dt).sort((a,b)=>a.dt-b.dt);
   return withTime.length ? withTime[0].b : null;
+}
+function minutesUntil(b){
+  const dt = startDateTimeOf(b);
+  if(!dt) return null;
+  return Math.round((dt.getTime() - Date.now()) / 60000);
 }
 function tableStatus(tableNo){
   const b = activeTodayBooking(tableNo);
@@ -633,7 +648,7 @@ function renderList(list){
       if(!groups.has(key)) groups.set(key, []);
       groups.get(key).push(b);
     });
-    const sortedKeys = Array.from(groups.keys()).sort((a,b)=> a.localeCompare(b));
+    const sortedKeys = Array.from(groups.keys()).sort((a,b)=> timeSortKey(a) - timeSortKey(b));
     el.innerHTML = sortedKeys.map(key=>{
       const group = groups.get(key);
       return `<div class="time-group-head"><span class="tg-time">${key === '—' ? 'Без времени' : key}</span><span class="tg-count">${group.length} ${group.length===1?'бронь':'брони'}</span></div>`
@@ -657,9 +672,7 @@ function renderHall(){
 }
 function cellHtml(t){
   const s = tableStatus(t);
-  const hasLaterBooking = s === 'free' && !!nextTodayReservation(t);
-  const badge = hasLaterBooking ? '<span style="position:absolute;top:3px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--reserved);"></span>' : '';
-  return `<div class="table-cell ${s}" onclick="openTableMenu(${t})">${t}${badge}</div>`;
+  return `<div class="table-cell ${s}" onclick="openTableMenu(${t})">${t}</div>`;
 }
 
 /* ================== TAP ПО СТОЛУ — БЫСТРОЕ МЕНЮ СТАТУСА ================== */
@@ -679,14 +692,11 @@ function openTableMenu(t){
   }
 
   if(status === 'free'){
-    const upcoming = nextTodayReservation(t);
-    if(upcoming){
-      html += `<div class="table-info">⚠️ Стол свободен сейчас, но на него есть бронь позже: <b>${escapeHtml(upcoming.time||'')}</b> — ${escapeHtml(upcoming.name||'Гость')} (${upcoming.count||'—'} чел.). Освободите стол заранее.</div>`;
-    }
     html += `<button class="menu-btn busy" onclick="quickOccupyWalkin(${t})">🔴 Занять — гости без брони</button>`;
     html += `<button class="menu-btn plain" onclick="closeTableMenu(); openForm('today', null, ${t})">📅 Добавить бронь на этот стол</button>`;
   } else if(status === 'reserved'){
     html += `<button class="menu-btn busy" onclick="setTableStatus('${b.id}','Гость на месте')">✅ Гость пришёл — отметить занят</button>`;
+    html += `<button class="menu-btn busy" onclick="quickOccupyWalkin(${t})">🔴 Посадить других гостей без брони (эта бронь останется)</button>`;
     html += `<button class="menu-btn plain" onclick="closeTableMenu(); openForm('today','${b.id}')">✏️ Изменить бронь</button>`;
     html += `<button class="menu-btn free" onclick="setTableStatus('${b.id}','Отменена')">🟢 Отменить бронь / освободить стол</button>`;
   } else if(status === 'busy' || status === 'overtime'){
@@ -709,7 +719,15 @@ async function quickOccupyWalkin(t){
   };
   state.bookings.push(obj);
   persistLocal(); render(); closeTableMenu();
-  showToast(`Стол ${t} занят (без брони)`);
+  // Если на этот стол есть бронь позже — предупреждаем, но НЕ трогаем её
+  const upcoming = nextTodayReservation(t);
+  if(upcoming){
+    const mins = minutesUntil(upcoming);
+    const whenText = (mins!=null && mins>0) ? `через ${mins} мин (${upcoming.time})` : (upcoming.time||'');
+    showToast(`Стол ${t} занят. ⚠ Бронь на этот стол ${whenText} — ${upcoming.name||'Гость'} (${upcoming.count||'—'} чел.) сохранена`);
+  } else {
+    showToast(`Стол ${t} занят (без брони)`);
+  }
   scheduleSync();
 }
 async function setTableStatus(id, status){
