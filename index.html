@@ -1304,7 +1304,34 @@
     await ensureHtml2Canvas();
     const receiptEl = document.querySelector('#view-day .receipt');
     if (!receiptEl) throw new Error('Не нашёл чек на странице');
-    const canvas = await window.html2canvas(receiptEl, { backgroundColor: getComputedStyle(receiptEl).backgroundColor || '#ffffff', scale: 2 });
+
+    // html2canvas не умеет рисовать backdrop-filter (эффект стекла) — если
+    // оставить как есть, чек уходит в Telegram просто серым пятном. На время
+    // рендера картинки принудительно делаем фон чека однотонным и непрозрачным,
+    // а после — возвращаем как было, чтобы на экране всё осталось стеклянным.
+    const rootEl = document.getElementById('payroll-root');
+    const solidBg = getComputedStyle(rootEl).getPropertyValue('--card').trim() || '#ffffff';
+    const prevStyle = {
+      background: receiptEl.style.background,
+      backdropFilter: receiptEl.style.backdropFilter,
+      webkitBackdropFilter: receiptEl.style.webkitBackdropFilter,
+      boxShadow: receiptEl.style.boxShadow,
+    };
+    receiptEl.style.background = solidBg;
+    receiptEl.style.backdropFilter = 'none';
+    receiptEl.style.webkitBackdropFilter = 'none';
+    receiptEl.style.boxShadow = 'none';
+
+    let canvas;
+    try {
+      canvas = await window.html2canvas(receiptEl, { backgroundColor: solidBg, scale: 2 });
+    } finally {
+      receiptEl.style.background = prevStyle.background;
+      receiptEl.style.backdropFilter = prevStyle.backdropFilter;
+      receiptEl.style.webkitBackdropFilter = prevStyle.webkitBackdropFilter;
+      receiptEl.style.boxShadow = prevStyle.boxShadow;
+    }
+
     const blob = await new Promise(resolve=> canvas.toBlob(resolve, 'image/png'));
     if (!blob) throw new Error('Не удалось сформировать изображение чека');
     const file = new File([blob], 'chek-' + state.currentDate + '.png', { type: 'image/png' });
