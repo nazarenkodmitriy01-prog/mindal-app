@@ -2,14 +2,22 @@
 // Миндаль — сервер хранения данных (замена Google Apps Script)
 // ============================================================
 // Полностью повторяет контракт, который уже использует
-// payroll_app.html, поэтому во фронтенде менять код не нужно —
-// только вставить ссылку на этот сервер в настройках (шестерёнка).
+// payroll_app.html и bron.html, поэтому во фронтенде менять код
+// не нужно — только вставить ссылку на этот сервер в настройках.
 //
 // Что делает:
-//  - хранит key-value данные (дни, настройки, график, задачи, чат
-//    и т.п.) в простом JSON-файле на диске;
-//  - принимает загрузку файлов (вложения к задачам/чату, картинки
-//    чека для Telegram) и раздаёт их обратно по прямой ссылке.
+//  - хранит key-value данные (дни, настройки, график, задачи, чат,
+//    брони столов и т.п.) в СЖАТОМ (gzip) JSON-файле на диске — само
+//    хранилище данных НИКОГДА не удаляется автоматически, только
+//    сжимается для экономии места;
+//  - принимает загрузку файлов (вложения к задачам/чату) и раздаёт
+//    их обратно по прямой ссылке;
+//  - раз в сутки чистит только те загруженные файлы, которые уже
+//    нигде не упоминаются ни в одном ключе хранилища (то есть точно
+//    больше никому не нужны) — сами данные (брони, ФОТ, задачи,
+//    сообщения чата) это не затрагивает никогда.
+//
+// Диск ограничен (15 ГБ) — отсюда и сжатие с автоочисткой файлов.
 //
 // Запуск: node server.js  (порт задаётся переменной PORT, по
 // умолчанию 3000). Слушает только 127.0.0.1 — наружу его открывает
@@ -20,28 +28,41 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '127.0.0.1';
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
-const KV_FILE = path.join(DATA_DIR, 'kv.json');
+const KV_FILE_GZ = path.join(DATA_DIR, 'kv.json.gz');
+const KV_FILE_LEGACY = path.join(DATA_DIR, 'kv.json'); // несжатый файл из старой версии сервера
+
+// Файлы младше этого возраста НИКОГДА не удаляются автоочисткой, даже если
+// формально "не найдены" в ссылках — на случай, если другое устройство ещё
+// не успело досинхронизироваться и сослаться на свежезагруженный файл.
+const UPLOAD_GC_GRACE_MS = 3 * 24 * 60 * 60 * 1000; // 3 дня
 
 // ---------- Подготовка папок и файла хранения ----------
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-if (!fs.existsSync(KV_FILE)) fs.writeFileSync(KV_FILE, '{}', 'utf8');
 
-// ---------- Простое KV-хранилище поверх JSON-файла ----------
-// Всё держим в памяти и синхронно пишем на диск при каждом изменении —
-// для такого объёма данных (одна небольшая точка общепита) этого более
-// чем достаточно, и это гораздо проще и надёжнее, чем поднимать
-// отдельную СУБД на сервере с 1 ГБ RAM.
+// ---------- Простое KV-хранилище поверх СЖАТОГО JSON-файла ----------
+// Всё держим в памяти и синхронно пишем на диск (в сжатом виде) при каждом
+// изменении — для такого объёма данных этого более чем достаточно, и это
+// гораздо проще и надёжнее, чем поднимать отдельную СУБД на сервере с 1 ГБ RAM.
+// ВАЖНО: сами данные (все ключи kv) никогда и нигде в этом файле не удаляются
+// автоматически — только вложенные файлы в uploads/, и то лишь если на них
+// нигде больше нет ссылок (см. garbageCollectUploads ниже).
 let kv = {};
 try {
-  kv = JSON.parse(fs.readFileSync(KV_FILE, 'utf8') || '{}');
+  if (fs.existsSync(KV_FILE_GZ)) {
+    kv = JSON.parse(zlib.gunzipSync(fs.readFileSync(KV_FILE_GZ)).toString('utf8'));
+  } else if (fs.existsSync(KV_FILE_LEGACY)) {
+    // Миграция с более старой версии сервера, где файл хранился несжатым.
+    kv = JSON.parse(fs.readFileSync(KV_FILE_LEGACY, 'utf8') || '{}');
+  }
 } catch (e) {
-  console.error('Не удалось прочитать data/kv.json, начинаю с пустого хранилища:', e);
+  console.error('Не удалось прочитать хранилище, начинаю с пустого:', e);
   kv = {};
 }
 
@@ -54,12 +75,16 @@ function persist() {
     try {
       // Пишем во временный файл и переименовываем — так при внезапном
       // отключении питания/перезагрузке сервера файл не окажется
-      // "битым" (наполовину записанным).
-      const tmpFile = KV_FILE + '.tmp';
-      fs.writeFileSync(tmpFile, JSON.stringify(kv), 'utf8');
-      fs.renameSync(tmpFile, KV_FILE);
+      // "битым" (наполовину записанным). Сжимаем gzip — JSON-текст
+      // (брони, дни, задачи, переписка) сжимается в разы.
+      const compressed = zlib.gzipSync(Buffer.from(JSON.stringify(kv), 'utf8'));
+      const tmpFile = KV_FILE_GZ + '.tmp';
+      fs.writeFileSync(tmpFile, compressed);
+      fs.renameSync(tmpFile, KV_FILE_GZ);
+      // Старый несжатый файл больше не нужен, раз миграция прошла успешно.
+      if (fs.existsSync(KV_FILE_LEGACY)) fs.unlinkSync(KV_FILE_LEGACY);
     } catch (e) {
-      console.error('Ошибка сохранения kv.json:', e);
+      console.error('Ошибка сохранения хранилища:', e);
     }
   });
 }
@@ -188,7 +213,81 @@ function PUBLIC_BASE_URL() {
   return (process.env.PUBLIC_URL || ('http://' + HOST + ':' + PORT)).replace(/\/$/, '');
 }
 
-app.get('/health', (req, res) => res.json({ ok: true, keys: Object.keys(kv).length }));
+app.get('/health', (req, res) => {
+  res.json({ ok: true, keys: Object.keys(kv).length, diskUsage: diskUsageReport() });
+});
+
+// ---------- Автоочистка вложений, на которые больше нет ссылок ----------
+// НИКОГДА не трогает сами данные (kv) — только файлы в uploads/, и только
+// если ни в одном значении хранилища (брони, задачи, чат, ФОТ и т.п.) больше
+// нет упоминания их fileId, и файлу больше UPLOAD_GC_GRACE_MS. Это защищает
+// от случайного удаления файла, на который ссылается устройство, ещё не
+// успевшее досинхронизироваться.
+function garbageCollectUploads() {
+  try {
+    const allValuesText = Object.entries(kv)
+      .filter(([k]) => !k.startsWith('__file_meta:'))
+      .map(([, v]) => String(v))
+      .join('\n');
+
+    const files = fs.readdirSync(UPLOADS_DIR);
+    let removed = 0, freedBytes = 0;
+    const now = Date.now();
+
+    files.forEach((fileId) => {
+      const filePath = path.join(UPLOADS_DIR, fileId);
+      let stat;
+      try { stat = fs.statSync(filePath); } catch (e) { return; }
+      if (!stat.isFile()) return;
+      if (now - stat.mtimeMs < UPLOAD_GC_GRACE_MS) return; // ещё слишком свежий — не трогаем
+
+      const isReferenced = allValuesText.includes(fileId);
+      if (isReferenced) return;
+
+      try {
+        fs.unlinkSync(filePath);
+        delete kv['__file_meta:' + fileId];
+        removed++;
+        freedBytes += stat.size;
+      } catch (e) {
+        console.error('Не удалось удалить неиспользуемый файл ' + fileId + ':', e);
+      }
+    });
+
+    if (removed > 0) {
+      persist();
+      console.log(`Автоочистка: удалено неиспользуемых файлов — ${removed}, освобождено ${(freedBytes/1024/1024).toFixed(1)} МБ`);
+    }
+  } catch (e) {
+    console.error('Ошибка автоочистки вложений:', e);
+  }
+}
+
+function folderSizeBytes(dir) {
+  let total = 0;
+  try {
+    for (const name of fs.readdirSync(dir)) {
+      const p = path.join(dir, name);
+      const st = fs.statSync(p);
+      total += st.isDirectory() ? folderSizeBytes(p) : st.size;
+    }
+  } catch (e) { /* игнорируем */ }
+  return total;
+}
+function diskUsageReport() {
+  const uploadsBytes = folderSizeBytes(UPLOADS_DIR);
+  const kvBytes = fs.existsSync(KV_FILE_GZ) ? fs.statSync(KV_FILE_GZ).size : 0;
+  return {
+    uploadsMB: +(uploadsBytes / 1024 / 1024).toFixed(2),
+    kvStoreMB: +(kvBytes / 1024 / 1024).toFixed(2),
+    totalMB: +((uploadsBytes + kvBytes) / 1024 / 1024).toFixed(2),
+  };
+}
+
+// Автоочистка — сразу при старте (на случай долгого простоя без перезапуска)
+// и затем раз в сутки.
+garbageCollectUploads();
+setInterval(garbageCollectUploads, 24 * 60 * 60 * 1000);
 
 app.listen(PORT, HOST, () => {
   console.log('Миндаль-сервер запущен на ' + HOST + ':' + PORT);
