@@ -597,6 +597,7 @@
     <div class="tab" data-tab="teamwork">Задачи и чат</div>
     <div class="tab" data-tab="outsource">Аутсорс КАЛЬЯН</div>
     <div class="tab" data-tab="pnl">П&amp;Л</div>
+    <div class="tab" data-tab="kitchen">Кухня</div>
     <div class="tab" data-tab="settings">Сотрудники</div>
   </div>
 
@@ -608,6 +609,7 @@
   <div id="view-teamwork" style="display:none"></div>
   <div id="view-outsource" style="display:none"></div>
   <div id="view-pnl" style="display:none"></div>
+  <div id="view-kitchen" style="display:none"></div>
   <div id="view-settings" style="display:none"></div>
 
   <div class="footer-note">Прототип интерфейса · формулы можно уточнять и пересчитывать в реальном времени</div>
@@ -621,6 +623,7 @@
     <button class="tab bottom-tab" data-tab="teamwork"><span class="bn-icon">💬</span><span class="bn-label">Задачи</span></button>
     <button class="tab bottom-tab" data-tab="outsource"><span class="bn-icon">💨</span><span class="bn-label">Аутсорс</span></button>
     <button class="tab bottom-tab" data-tab="pnl"><span class="bn-icon">📈</span><span class="bn-label">П&amp;Л</span></button>
+    <button class="tab bottom-tab" data-tab="kitchen"><span class="bn-icon">🍳</span><span class="bn-label">Кухня</span></button>
     <button class="tab bottom-tab" data-tab="settings"><span class="bn-icon">👥</span><span class="bn-label">Сотрудники</span></button>
   </div>
 </div>
@@ -809,7 +812,7 @@
   // его, откройте payroll_app.html в текстовом редакторе и поменяйте строку
   // ниже.
   const ACCESS_PASSWORD = 'mindal2026';
-  const RESTRICTED_TABS = ['month', 'pnl', 'settings'];
+  const RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen'];
   function getAccessMode(){
     try { return window.localStorage.getItem('payroll-access-mode') || 'full'; }
     catch(e){ return 'full'; }
@@ -955,7 +958,7 @@
   function monthKeyOf(dateStr){ return dateStr.slice(0,7); }
   function daysInMonth(mk){ const [y,m]=mk.split('-').map(Number); return new Date(y,m,0).getDate(); }
 
-  let state = { currentDate: fmtDate(today), days: {}, plan: {}, adjustments: {}, breakageAmount: {}, chefProfitBonus: {}, pnl: {}, scheduleWeeks: {}, tasksWeeks: {}, chatMessages: null, outsourceDays: {}, officialSalary: {}, officialAdvance: {} };
+  let state = { currentDate: fmtDate(today), days: {}, plan: {}, adjustments: {}, breakageAmount: {}, chefProfitBonus: {}, pnl: {}, scheduleWeeks: {}, tasksWeeks: {}, chatMessages: null, outsourceDays: {}, officialSalary: {}, officialAdvance: {}, kitchenExpenses: {} };
   // state.plan: { 'YYYY-MM': number }
   // state.adjustments: { 'YYYY-MM': { empId: [ {id,type,amount,note,tag?} ] } }
   // state.breakageAmount: { 'YYYY-MM': number } — last amount used for the recurring monthly deduction
@@ -976,6 +979,88 @@
   function getChefProfitBonus(mk){
     if (!state.chefProfitBonus[mk]) state.chefProfitBonus[mk] = {amount:0, confirmed:false};
     return state.chefProfitBonus[mk];
+  }
+
+  // ---------- Вкладка «Кухня» — расчёт чистой прибыли кухни ----------
+  const KITCHEN_HOURLY_IDS = ['cook_fedor', 'cook_sabuhi', 'cook_timur']; // повара — входят в авто-ФОТ
+  const KITCHEN_CHEF_ID = 'chef';                                        // шеф-повар — входит в авто-ФОТ
+  const WASH_HOURLY_IDS = ['wash_h'];                                    // мойка — только в таблице часов, не в ФОТ
+  const KITCHEN_UTILITY_PNL_NAME = 'Аренда и коммунальные услуги';       // категория П&Л, от которой берём 40%
+  const KITCHEN_UTILITY_SHARE = 0.40;
+  const KITCHEN_LOSS_SHARE = 0.25; // потери — 25% от суммы закупок ("Заявки")
+
+  function getKitchenExpenses(mk){
+    if (!state.kitchenExpenses[mk]){
+      state.kitchenExpenses[mk] = {
+        income: 0,       // Приход — общая выручка кухни за месяц (вручную)
+        purchases: 0,     // Заявки — сумма закупок за месяц (вручную)
+        breakage: 0,      // Брокераж (вручную)
+        development: 0,   // Разработка — отработка блюд/промо (вручную)
+        chefFee: 0,       // "5% шеф" — вручную (сумма, не процент)
+        staffMeal: 0,      // Цеховое питание за месяц (вручную, вводится в нижнем разделе)
+        writeOffs: [],     // Списания — список записей {id, note, amount} (нижний раздел)
+      };
+    }
+    const k = state.kitchenExpenses[mk];
+    if (!Array.isArray(k.writeOffs)) k.writeOffs = [];
+    return k;
+  }
+  function kitchenWriteOffsTotal(mk){
+    return getKitchenExpenses(mk).writeOffs.reduce((s,w)=>s+(Number(w.amount)||0), 0);
+  }
+  function kitchenUtilityCost(mk){
+    const item = getPnl(mk).find(c => c.name === KITCHEN_UTILITY_PNL_NAME);
+    return (item ? Number(item.amount)||0 : 0) * KITCHEN_UTILITY_SHARE;
+  }
+  function kitchenAutoPayroll(mk){
+    const totals = computeMonthTotals(mk).totals;
+    let sum = 0;
+    KITCHEN_HOURLY_IDS.concat([KITCHEN_CHEF_ID]).forEach(id=>{
+      const t = totals[id];
+      if (t) sum += (t.oclad||0) + (t.variable||0) + (t.bonuses||0);
+    });
+    return sum;
+  }
+  function kitchenLossAmount(mk){
+    return getKitchenExpenses(mk).purchases * KITCHEN_LOSS_SHARE;
+  }
+  function kitchenNetProfit(mk){
+    const k = getKitchenExpenses(mk);
+    // Потери (25% от закупок) сюда намеренно НЕ включены — они уже заложены
+    // в себестоимость каждого блюда/заготовки, вычитать их ещё раз при
+    // расчёте чистой прибыли было бы задвоением. Строка "Потери" в таблице
+    // остаётся только для справки.
+    const expenses = k.purchases + kitchenUtilityCost(mk) + kitchenAutoPayroll(mk) + k.staffMeal
+      + kitchenWriteOffsTotal(mk) + k.development + k.chefFee;
+    return k.income - expenses;
+  }
+  // Часы/смены за месяц — повара (кухня) и мойка, по фактически проставленным сменам
+  function kitchenHoursSummary(mk){
+    const dim = daysInMonth(mk);
+    const employeesToShow = KITCHEN_HOURLY_IDS.concat(WASH_HOURLY_IDS)
+      .map(id => EMPLOYEES.find(e=>e.id===id)).filter(Boolean);
+    const chefEmp = EMPLOYEES.find(e=>e.id===KITCHEN_CHEF_ID);
+    const rows = employeesToShow.map(e=>{
+      let hours = 0, shifts = 0;
+      for (let d=1; d<=dim; d++){
+        const dt = mk+'-'+String(d).padStart(2,'0');
+        const day = getDay(dt);
+        const s = day.shifts[e.id];
+        if (s && s.worked){ shifts++; hours += hoursBetween(s.timeIn, s.timeOut); }
+      }
+      return { name:e.name, hours: Math.round(hours*100)/100, shifts, isHourly:true };
+    });
+    if (chefEmp){
+      let shifts = 0;
+      for (let d=1; d<=dim; d++){
+        const dt = mk+'-'+String(d).padStart(2,'0');
+        const day = getDay(dt);
+        const s = day.shifts[chefEmp.id];
+        if (s && s.worked) shifts++;
+      }
+      rows.push({ name: chefEmp.name + ' (шеф)', hours: null, shifts, isHourly:false });
+    }
+    return rows;
   }
 
   let activeTab = 'day';
@@ -1408,6 +1493,7 @@
         Object.keys(parsed.outsourceDays||{}).forEach(dt=>{ state.outsourceDays[dt]=parsed.outsourceDays[dt]; });
         if (parsed.officialSalary) state.officialSalary[mk] = parsed.officialSalary;
         if (parsed.officialAdvance) state.officialAdvance[mk] = parsed.officialAdvance;
+        if (parsed.kitchenExpenses) state.kitchenExpenses[mk] = parsed.kitchenExpenses;
       }
       // Успех — теперь можно больше не перезагружать этот месяц за сессию.
       loadedMonths[mk] = true;
@@ -1439,7 +1525,8 @@
         pnl: state.pnl[mk] || [],
         outsourceDays: monthOutsourceDays,
         officialSalary: state.officialSalary[mk] || {},
-        officialAdvance: state.officialAdvance[mk] || {}
+        officialAdvance: state.officialAdvance[mk] || {},
+        kitchenExpenses: state.kitchenExpenses[mk] || {}
       }));
     } catch(e){ console.error('save failed', e); }
   }
@@ -1976,6 +2063,107 @@
       scheduleSave(); renderPnlView();
     });
   }
+
+  // ---------- Вкладка «Кухня» — чистая прибыль кухни ----------
+  function renderKitchenView(){
+    const mk = monthKeyOf(state.currentDate);
+    const k = getKitchenExpenses(mk);
+    const utilityCost = kitchenUtilityCost(mk);
+    const autoPayroll = kitchenAutoPayroll(mk);
+    const lossAmount = kitchenLossAmount(mk);
+    const writeOffsTotal = kitchenWriteOffsTotal(mk);
+    const netProfit = kitchenNetProfit(mk);
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="kitchen-month-input" value="'+mk+'"/></div>';
+
+    // ---- Верхняя часть: расчёт чистой прибыли ----
+    html += '<div class="kpi-panel"><h4>Чистая прибыль кухни</h4>'
+      + '<table class="month-table"><tbody>'
+      + '<tr><td>Приход <span style="color:var(--ink-soft);font-weight:400;">— общая выручка кухни за месяц</span></td>'
+        + '<td class="num"><input type="number" class="kitchen-input" data-field="income" value="'+(k.income||'')+'" placeholder="0" style="width:140px;text-align:right;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></td></tr>'
+      + '<tr><td>Заявки <span style="color:var(--ink-soft);font-weight:400;">— закупки за месяц (без бара), включая Купер/магазин</span></td>'
+        + '<td class="num"><input type="number" class="kitchen-input" data-field="purchases" value="'+(k.purchases||'')+'" placeholder="0" style="width:140px;text-align:right;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></td></tr>'
+      + '<tr><td>Коммуналка <span style="color:var(--ink-soft);font-weight:400;">— авто: 40% от «'+KITCHEN_UTILITY_PNL_NAME+'» (П&amp;Л)</span></td>'
+        + '<td class="num">'+money(utilityCost)+'</td></tr>'
+      + '<tr><td>ЗП <span style="color:var(--ink-soft);font-weight:400;">— авто: повара + шеф-повар (вкладка «Месяц»)</span></td>'
+        + '<td class="num">'+money(autoPayroll)+'</td></tr>'
+      + '<tr><td>Цеховое питание <span style="color:var(--ink-soft);font-weight:400;">— вводится в разделе ниже</span></td>'
+        + '<td class="num">'+money(k.staffMeal)+'</td></tr>'
+      + '<tr><td>Потери <span style="color:var(--ink-soft);font-weight:400;">— авто: 25% от суммы «Заявки» (справочно, в прибыль не входит)</span></td>'
+        + '<td class="num">'+money(lossAmount)+'</td></tr>'
+      + '<tr><td>Списание <span style="color:var(--ink-soft);font-weight:400;">— сумма записей из раздела ниже</span></td>'
+        + '<td class="num">'+money(writeOffsTotal)+'</td></tr>'
+      + '<tr><td>Разработка <span style="color:var(--ink-soft);font-weight:400;">— отработка блюд/промо</span></td>'
+        + '<td class="num"><input type="number" class="kitchen-input" data-field="development" value="'+(k.development||'')+'" placeholder="0" style="width:140px;text-align:right;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></td></tr>'
+      + '<tr><td>5% шеф</td>'
+        + '<td class="num"><input type="number" class="kitchen-input" data-field="chefFee" value="'+(k.chefFee||'')+'" placeholder="0" style="width:140px;text-align:right;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></td></tr>'
+      + '<tr class="total-row"><td>Прибыль чистая</td><td class="num" style="color:var(--rust);font-size:15px;">'+money(netProfit)+'</td></tr>'
+      + '</tbody></table>'
+      + '<div class="assumption-note">Категория П&amp;Л «'+KITCHEN_UTILITY_PNL_NAME+'» объединяет аренду и коммуналку вместе (отдельной строки только под коммуналку в П&amp;Л нет) — 40% берётся от этой общей суммы. Если нужно точнее — заведите в П&amp;Л отдельную статью только для коммунальных услуг.</div>'
+      + '</div>';
+
+    // ---- Нижняя часть: подробности трат ----
+    html += '<div class="kpi-panel"><h4>Списания за месяц</h4>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">'
+      + '<input type="text" id="kitchen-writeoff-note" placeholder="что списали" style="flex:1;min-width:160px;padding:7px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/>'
+      + '<input type="number" id="kitchen-writeoff-amount" placeholder="сумма, ₽" style="width:120px;padding:7px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/>'
+      + '<button class="btn" id="kitchen-writeoff-add">Добавить</button>'
+      + '</div>'
+      + (k.writeOffs.length
+          ? '<div class="adj-list">' + k.writeOffs.map(w=>
+              '<div class="adj-item"><span class="note">'+(w.note||'—')+'</span><span class="amt">'+money(w.amount)+'</span>'
+              + '<span class="del" data-act="del-writeoff" data-id="'+w.id+'">✕</span></div>'
+            ).join('') + '</div>'
+          : '<div class="assumption-note" style="margin-top:0;">Пока нет ни одной записи о списании за этот месяц.</div>')
+      + '<div style="margin-top:8px;font-weight:700;">Итого списаний: '+money(writeOffsTotal)+'</div>'
+      + '</div>';
+
+    html += '<div class="kpi-panel"><h4>Цеховое питание за месяц</h4>'
+      + '<input type="number" class="kitchen-input" data-field="staffMeal" value="'+(k.staffMeal||'')+'" placeholder="сумма за месяц, ₽" style="width:220px;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/>'
+      + '</div>';
+
+    const hoursRows = kitchenHoursSummary(mk);
+    html += '<div class="kpi-panel"><h4>Отработано за месяц — кухня и мойка</h4>'
+      + '<table class="month-table"><thead><tr><th>Сотрудник</th><th class="num">Смен</th><th class="num">Часов</th></tr></thead><tbody>'
+      + hoursRows.map(r=>'<tr><td>'+r.name+'</td><td class="num">'+r.shifts+'</td><td class="num">'+(r.isHourly ? r.hours : '—')+'</td></tr>').join('')
+      + '</tbody></table>'
+      + '</div>';
+
+    document.getElementById('view-kitchen').innerHTML = html;
+    attachKitchenHandlers(mk);
+  }
+
+  function attachKitchenHandlers(mk){
+    const root = document.getElementById('view-kitchen');
+    root.querySelector('#kitchen-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderKitchenView();
+    });
+    root.querySelectorAll('.kitchen-input').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        getKitchenExpenses(mk)[inp.dataset.field] = Number(inp.value)||0;
+        scheduleSave(); renderKitchenView();
+      });
+    });
+    const addBtn = root.querySelector('#kitchen-writeoff-add');
+    if (addBtn){
+      addBtn.addEventListener('click', ()=>{
+        const note = root.querySelector('#kitchen-writeoff-note').value.trim();
+        const amount = Number(root.querySelector('#kitchen-writeoff-amount').value)||0;
+        if (amount<=0) return;
+        getKitchenExpenses(mk).writeOffs.push({id:uid(), note, amount});
+        scheduleSave(); renderKitchenView();
+      });
+    }
+    root.querySelectorAll('[data-act="del-writeoff"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const k = getKitchenExpenses(mk);
+        k.writeOffs = k.writeOffs.filter(w=>w.id!==el.dataset.id);
+        scheduleSave(); renderKitchenView();
+      });
+    });
+  }
+
   function renderMonthView(){
     const mk = monthKeyOf(state.currentDate);
     const {totals, hookahRevenueSum, totalRevenueSum, curKmBracket, adjTotals} = computeMonthTotals(mk);
@@ -3086,6 +3274,7 @@
     document.getElementById('view-teamwork').style.display = tab==='teamwork' ? '' : 'none';
     document.getElementById('view-outsource').style.display = tab==='outsource' ? '' : 'none';
     document.getElementById('view-pnl').style.display = tab==='pnl' ? '' : 'none';
+    document.getElementById('view-kitchen').style.display = tab==='kitchen' ? '' : 'none';
     document.getElementById('view-settings').style.display = tab==='settings' ? '' : 'none';
     if (tab==='day') renderDayView();
     if (tab==='revenue') renderRevenueView();
@@ -3095,6 +3284,7 @@
     if (tab==='teamwork') { Promise.all([loadTasksWeek(mondayOf(taskAnchor)), loadChat()]).then(renderTeamworkView); }
     if (tab==='outsource') { loadMonth(monthKeyOf(state.currentDate)).then(renderOutsourceView); }
     if (tab==='pnl') renderPnlView();
+    if (tab==='kitchen') renderKitchenView();
     if (tab==='settings') renderSettingsView();
   }
   document.querySelectorAll('#payroll-root .tab').forEach(t=> t.addEventListener('click', ()=>switchTab(t.dataset.tab)));
@@ -3147,6 +3337,7 @@
     if (activeTab === 'teamwork') { loadedTaskWeeks = {}; chatLoaded = false; await Promise.all([loadTasksWeek(mondayOf(taskAnchor)), loadChat()]); renderTeamworkView(); }
     if (activeTab === 'outsource') { renderOutsourceView(); }
     if (activeTab === 'pnl') renderPnlView();
+    if (activeTab === 'kitchen') renderKitchenView();
     if (activeTab === 'settings') renderSettingsView();
   });
 
