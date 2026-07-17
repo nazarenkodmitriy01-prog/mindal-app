@@ -61,6 +61,7 @@
     --border-row: #EEEDE6;
     --border-dashed: #C9C7BB;
     --text-faint: #B7B5A9;
+    --card-glass: rgba(230, 226, 216, 0.62);
 
     transition: background 0.2s ease, color 0.2s ease;
     font-family: 'Roboto', -apple-system, sans-serif;
@@ -157,6 +158,7 @@
   #payroll-root .sync-config-actions .btn { flex: 1; text-align: center; font-size: 13px; padding: 7px 10px; }
   #payroll-root .sync-config-note { font-size: 11.5px; color: var(--ink-soft); margin-top: 9px; line-height: 1.4; }
   #payroll-root .tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 2px solid var(--border-input); }
+  .bottom-nav { display: none; }
   #payroll-root .tab {
     padding: 8px 16px; font-size: 14.5px; font-weight: 600;
     cursor: pointer; color: var(--ink-soft); border-bottom: 2px solid transparent;
@@ -177,13 +179,13 @@
   }
   #payroll-root .datebar .weekday { font-size: 13px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; }
   #payroll-root .revenue-inputs { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-  #payroll-root .revenue-box { flex: 1; min-width: 220px; background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 12px 14px; }
+  #payroll-root .revenue-box { flex: 1; min-width: 220px; background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 12px 14px; }
   #payroll-root .revenue-box label { display: block; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
   #payroll-root .revenue-box input { width: 100%; font-family: 'IBM Plex Mono', monospace; font-size: 21px; font-weight: 600; border: none; background: transparent; color: var(--ink); padding: 0; }
   #payroll-root .revenue-box input:focus { outline: none; }
   #payroll-root .revenue-box.hookah { background: var(--rust-soft); }
 
-  #payroll-root .dept-card { background: var(--card); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-card); overflow: hidden; }
+  #payroll-root .dept-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-card); overflow: hidden; }
   #payroll-root .dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.3px; }
   #payroll-root .dept-head .rule { font-weight: 400; opacity: 0.85; font-size: 12px; }
   #payroll-root .emp-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
@@ -202,7 +204,7 @@
   #payroll-root .bonus-row { display: flex; gap: 14px; padding: 8px 14px 12px; flex-wrap: wrap; border-top: 1px solid var(--border-row); }
   #payroll-root .bonus-row label { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--ink-soft); cursor: pointer; }
 
-  #payroll-root .receipt { background: var(--card); border: 1px solid var(--border-card); border-radius: 4px 4px 0 0; margin-top: 22px; padding: 18px 22px 14px; font-family: 'IBM Plex Mono', monospace; position: relative; }
+  #payroll-root .receipt { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 4px 4px 0 0; margin-top: 22px; padding: 18px 22px 14px; font-family: 'IBM Plex Mono', monospace; position: relative; }
   #payroll-root .receipt::after {
     content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 18px;
     background: linear-gradient(-45deg, var(--paper) 9px, transparent 0), linear-gradient(45deg, var(--paper) 9px, transparent 0);
@@ -233,14 +235,14 @@
 
   /* ---- Задачи и чат руководителей ---- */
   #payroll-root .task-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
-  #payroll-root .task-column { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; min-width: 0; }
+  #payroll-root .task-column { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; min-width: 0; }
   #payroll-root .task-column h4 { margin: 0 0 8px; font-size: 13px; }
   #payroll-root .task-card { background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 9px; margin-bottom: 8px; }
   #payroll-root .task-card-title { font-weight: 600; font-size: 12.5px; }
   #payroll-root .task-card-desc { font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; white-space: pre-wrap; }
   #payroll-root .task-status { width: 100%; padding: 4px 6px; border: 1px solid; border-radius: 5px; font-size: 11px; }
   #payroll-root .task-card-meta { font-size: 10px; color: var(--text-faint); margin-top: 6px; }
-  #payroll-root .chat-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; background: var(--bg-subtle); }
+  #payroll-root .chat-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   #payroll-root .chat-msg { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
   #payroll-root .chat-msg:last-child { border-bottom: none; margin-bottom: 0; }
   #payroll-root .chat-msg-meta { font-size: 10.5px; color: var(--ink-soft); margin-bottom: 2px; }
@@ -248,7 +250,7 @@
 
   #payroll-root table.month-table td.topay { color: var(--rust); font-weight: 700; }
   #payroll-root .dept-tag { display: inline-block; font-size: 11px; color: white; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
-  #payroll-root .kpi-panel { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .kpi-panel { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
   #payroll-root .kpi-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .bracket-ladder { display: flex; gap: 3px; margin-bottom: 8px; }
   #payroll-root .bracket { flex: 1; padding: 6px 4px; text-align: center; font-size: 11px; border-radius: 4px; background: var(--border-subtle); color: var(--ink-soft); border: 1px solid #E5E3D8; }
@@ -258,7 +260,7 @@
   #payroll-root .assumption-note { font-size: 12.5px; color: var(--ink-soft); background: var(--bg-subtle); border-radius: 6px; padding: 8px 10px; margin-top: 8px; line-height: 1.4; }
   #payroll-root .plan-input { font-family: 'IBM Plex Mono', monospace; font-size: 14px; border: 1px solid var(--border-input); border-radius: 5px; padding: 4px 8px; width: 140px; }
 
-  #payroll-root .adj-panel { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-top: 18px; }
+  #payroll-root .adj-panel { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-top: 18px; }
   #payroll-root .adj-panel h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .adj-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   #payroll-root .adj-form select, .adj-form input { font-size: 13.5px; padding: 5px 8px; border: 1px solid var(--border-input); border-radius: 5px; background: var(--bg-input); }
@@ -281,7 +283,7 @@
   #payroll-root .adj-item .del:hover { color: var(--red); }
 
   /* Settings tab */
-  #payroll-root .settings-dept { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  #payroll-root .settings-dept { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
   #payroll-root .settings-dept-head { padding: 9px 14px; font-size: 13.5px; font-weight: 700; color: white; }
   #payroll-root .settings-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border-row); flex-wrap: wrap; }
   #payroll-root .settings-row.inactive { opacity: 0.5; }
@@ -289,7 +291,7 @@
   #payroll-root .settings-row select { font-size: 13.5px; padding: 5px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
   #payroll-root .settings-row .field-group { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--ink-soft); }
   #payroll-root .settings-row .field-group input[type=number] { width: 78px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; padding: 4px 6px; border: 1px solid var(--border-input); border-radius: 5px; }
-  #payroll-root .add-emp-card { background: var(--card); border: 2px dashed var(--border-input); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  #payroll-root .add-emp-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 2px dashed var(--border-input); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
   #payroll-root .add-emp-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .add-emp-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   #payroll-root .add-emp-form input, .add-emp-form select { font-size: 13.5px; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: 5px; }
@@ -297,7 +299,7 @@
   #payroll-root .footer-note { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 26px; }
 
   /* Closing shift report */
-  #payroll-root .closing-card { background: var(--card); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
+  #payroll-root .closing-card { background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
   #payroll-root .closing-card h4 { margin: 0 0 10px; font-size: 14px; font-family: 'Roboto', sans-serif; }
   #payroll-root .cash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 12px; }
   #payroll-root .cash-field label { display: block; font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
@@ -379,7 +381,73 @@
     --border-row: #2C2924;
     --border-dashed: #4A463D;
     --text-faint: #6E6A60;
+    --card-glass: rgba(20, 18, 15, 0.55);
   }
+  /* =========================================================
+     ДОПОЛНИТЕЛЬНЫЕ ЦВЕТОВЫЕ ПАЛИТРЫ
+     Переопределяют тот же набор переменных — остальной CSS ничего
+     не знает о палитрах, он просто продолжает использовать var(--rust) и т.д.
+     Семантические цвета (успех/ошибка/цвета отделов) намеренно почти не
+     меняются между палитрами — меняется только "фирменный" акцент и фон.
+  ========================================================= */
+
+  /* ---- Изумруд ---- */
+  #payroll-root.palette-emerald {
+    --ink: #1A211C; --ink-soft: #55635A; --paper: #EDF0EA; --card: #FFFFFF; --line: #D5DCD0;
+    --rust: #1F6B4A; --rust-soft: #D8EBE0;
+    --border-card: #DCE4D7; --border-input: #D2DACB; --bg-highlight: #F3F7F1; --bg-input: #FAFCF8;
+    --bg-subtle: #EFF3EC; --border-subtle: #EAEFE6; --bg-chip-off: #E6EEE2; --border-row: #E8EDE3;
+    --border-dashed: #C2CBBB; --text-faint: #AEB8A5;
+    --card-glass: rgba(224, 230, 219, 0.62);
+  }
+  #payroll-root.palette-emerald.theme-dark {
+    color-scheme: dark;
+    --ink: #E7EDE7; --ink-soft: #9BAC9E; --paper: #10160F; --card: #1B211A; --line: #303A2E;
+    --rust: #4FCE93; --rust-soft: #1C3327;
+    --border-card: #313C2F; --border-input: #3C4839; --bg-highlight: #1F251D; --bg-input: #171C15;
+    --bg-subtle: #1C221A; --border-subtle: #262C23; --bg-chip-off: #232A20; --border-row: #262C23;
+    --border-dashed: #3F4A3B; --text-faint: #5E6B5A;
+    --card-glass: rgba(14, 18, 13, 0.55);
+  }
+
+  /* ---- Сапфир ---- */
+  #payroll-root.palette-sapphire {
+    --ink: #191E24; --ink-soft: #565F6B; --paper: #EBEEF3; --card: #FFFFFF; --line: #D4D9E2;
+    --rust: #2C5A8C; --rust-soft: #DCE6F1;
+    --border-card: #DCE2EC; --border-input: #D0D7E3; --bg-highlight: #F2F5F9; --bg-input: #FAFBFD;
+    --bg-subtle: #EEF1F6; --border-subtle: #E8ECF2; --bg-chip-off: #E4E9F1; --border-row: #E6EAF0;
+    --border-dashed: #BFC7D6; --text-faint: #ACB4C2;
+    --card-glass: rgba(222, 227, 236, 0.62);
+  }
+  #payroll-root.palette-sapphire.theme-dark {
+    color-scheme: dark;
+    --ink: #E5E9F0; --ink-soft: #99A2B3; --paper: #0E1218; --card: #191E27; --line: #2C3441;
+    --rust: #6FA8DC; --rust-soft: #1C2E42;
+    --border-card: #2D3646; --border-input: #384254; --bg-highlight: #1C2331; --bg-input: #141822;
+    --bg-subtle: #191F29; --border-subtle: #232A38; --bg-chip-off: #212838; --border-row: #232A38;
+    --border-dashed: #3A4457; --text-faint: #566178;
+    --card-glass: rgba(11, 14, 19, 0.55);
+  }
+
+  /* ---- Бордо ---- */
+  #payroll-root.palette-bordeaux {
+    --ink: #221A1B; --ink-soft: #6B5658; --paper: #F1EAEA; --card: #FFFFFF; --line: #E0D0D1;
+    --rust: #7D2A3B; --rust-soft: #F0DBDF;
+    --border-card: #E5D6D8; --border-input: #DCC9CC; --bg-highlight: #F8F2F2; --bg-input: #FCF8F8;
+    --bg-subtle: #F3EBEC; --border-subtle: #F0E6E7; --bg-chip-off: #EDDEDF; --border-row: #EFE5E6;
+    --border-dashed: #D0B9BC; --text-faint: #C0A8AB;
+    --card-glass: rgba(236, 224, 225, 0.62);
+  }
+  #payroll-root.palette-bordeaux.theme-dark {
+    color-scheme: dark;
+    --ink: #F0E5E6; --ink-soft: #AD9598; --paper: #170F10; --card: #221A1B; --line: #3D2E30;
+    --rust: #E0839A; --rust-soft: #3A2226;
+    --border-card: #3C2D2F; --border-input: #4A383B; --bg-highlight: #291F20; --bg-input: #1D1516;
+    --bg-subtle: #231A1B; --border-subtle: #2D2223; --bg-chip-off: #2B2021; --border-row: #2D2223;
+    --border-dashed: #4E3B3E; --text-faint: #71585B;
+    --card-glass: rgba(15, 10, 10, 0.55);
+  }
+
   #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
   #payroll-root.theme-dark .month-select,
   #payroll-root.theme-dark table.month-table th { background: var(--bg-subtle); }
@@ -417,7 +485,29 @@
       flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
       scrollbar-width: none; padding-bottom: 2px;
     }
-    #payroll-root .tabs::-webkit-scrollbar { display: none; }
+    /* На мобильных верхние вкладки скрываем — переключение теперь через
+       нижнюю панель с иконками (см. .bottom-nav ниже) */
+    #payroll-root .tabs { display: none; }
+
+    #payroll-root { padding-bottom: 78px; } /* место под нижнюю панель, чтобы контент не прятался под ней */
+
+    .bottom-nav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      background: var(--card-glass); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--border-card);
+      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+    .bottom-nav::-webkit-scrollbar { display: none; }
+    .bottom-tab {
+      flex: 1 0 auto; min-width: 68px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; background: none; border: none; cursor: pointer;
+      padding: 6px 8px; border-radius: 10px; color: var(--ink-soft); font-family: inherit;
+    }
+    .bottom-tab .bn-icon { font-size: 19px; line-height: 1; }
+    .bottom-tab .bn-label { font-size: 9.5px; white-space: nowrap; }
+    .bottom-tab.active { color: var(--rust); background: var(--rust-soft); }
+
     #payroll-root .tab { padding: 9px 12px; font-size: 13.5px; white-space: nowrap; flex-shrink: 0; }
 
     /* Таблицы — горизонтальная прокрутка внутри каждой вкладки, если не влезает */
@@ -490,6 +580,7 @@
     <div class="sync-widget-wrap">
       <div class="sync-widget" id="sync-widget">
         <button class="theme-toggle" id="access-lock-btn" title="Уровень доступа">🔒</button>
+        <button class="theme-toggle" id="palette-btn" title="Цветовая палитра">🎨</button>
         <button class="theme-toggle" id="theme-toggle" title="Светлая/тёмная тема">🌙</button>
         <span class="sync-dot" id="sync-dot"></span>
         <span id="sync-text">—</span>
@@ -498,6 +589,9 @@
       </div>
       <div class="sync-config-panel" id="access-panel" style="display:none">
         <div id="access-panel-body"></div>
+      </div>
+      <div class="sync-config-panel" id="palette-panel" style="display:none">
+        <div id="palette-panel-body"></div>
       </div>
       <div class="sync-config-panel" id="sync-config-panel" style="display:none">
         <label>Ссылка на Apps Script (веб-приложение)
@@ -535,6 +629,18 @@
   <div id="view-settings" style="display:none"></div>
 
   <div class="footer-note">Прототип интерфейса · формулы можно уточнять и пересчитывать в реальном времени</div>
+
+  <div class="bottom-nav">
+    <button class="tab bottom-tab" data-tab="day"><span class="bn-icon">📋</span><span class="bn-label">Сегодня</span></button>
+    <button class="tab bottom-tab" data-tab="revenue"><span class="bn-icon">💰</span><span class="bn-label">Выручка</span></button>
+    <button class="tab bottom-tab" data-tab="month"><span class="bn-icon">📊</span><span class="bn-label">Месяц</span></button>
+    <button class="tab bottom-tab" data-tab="timesheet"><span class="bn-icon">🗓️</span><span class="bn-label">Табель</span></button>
+    <button class="tab bottom-tab" data-tab="schedule"><span class="bn-icon">📅</span><span class="bn-label">График</span></button>
+    <button class="tab bottom-tab" data-tab="teamwork"><span class="bn-icon">💬</span><span class="bn-label">Задачи</span></button>
+    <button class="tab bottom-tab" data-tab="outsource"><span class="bn-icon">💨</span><span class="bn-label">Аутсорс</span></button>
+    <button class="tab bottom-tab" data-tab="pnl"><span class="bn-icon">📈</span><span class="bn-label">П&amp;Л</span></button>
+    <button class="tab bottom-tab" data-tab="settings"><span class="bn-icon">👥</span><span class="bn-label">Сотрудники</span></button>
+  </div>
 </div>
 
 <script>
@@ -830,6 +936,7 @@
   let SCHEDULE_SLOTS = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_SLOTS));
   let TELEGRAM_BOT_TOKEN = '';
   let TELEGRAM_CHAT_ID = '';
+  let TELEGRAM_TOPIC_ID = '';
   let lastReceiptText = '';
 
   const DEFAULT_REVENUE_PLAN = 5500000;
@@ -909,6 +1016,7 @@
   function getDay(dateStr){
     if (!state.days[dateStr]) state.days[dateStr] = emptyDay();
     const d = state.days[dateStr];
+    if (!d.shifts) d.shifts = {};
     EMPLOYEES.forEach(e=>{ if (!d.shifts[e.id]) d.shifts[e.id] = emptyShift(e); });
     if (d.cashIP===undefined) d.cashIP=0;
     if (d.cashOOO===undefined) d.cashOOO=0;
@@ -951,7 +1059,6 @@
   let _lastLoadedConfigExtra = {};
   async function loadConfig(){
     if (configLoaded) return;
-    configLoaded = true;
     let needsResave = false;
     try {
       const res = await storageGet('payroll-config');
@@ -1006,12 +1113,22 @@
 
         if (typeof parsed.telegramBotToken === 'string') TELEGRAM_BOT_TOKEN = parsed.telegramBotToken;
         if (typeof parsed.telegramChatId === 'string') TELEGRAM_CHAT_ID = parsed.telegramChatId;
+        if (typeof parsed.telegramTopicId === 'string') TELEGRAM_TOPIC_ID = parsed.telegramTopicId;
 
         _lastLoadedConfigExtra = { knownEmployeeIds: parsed.knownEmployeeIds, knownScheduleSlotIds: parsed.knownScheduleSlotIds };
       }
-    } catch(e){ /* use defaults */ }
+      configLoaded = true;
+      lastConfigLoadError = null;
+    } catch(e){
+      // НЕ помечаем configLoaded=true при ошибке — иначе временный сбой сети
+      // навсегда "откатывал" бы список сотрудников/слотов к встроенным
+      // дефолтам на всю сессию, хотя реальные данные целы на сервере.
+      console.error('Не удалось загрузить конфигурацию (сотрудники/слоты/telegram):', e);
+      lastConfigLoadError = e.message;
+    }
     if (needsResave) scheduleSaveConfig();
   }
+  let lastConfigLoadError = null;
   let configSaveTimer=null;
   function scheduleSaveConfig(){ clearTimeout(configSaveTimer); configSaveTimer=setTimeout(saveConfig,250); }
   async function saveConfig(){
@@ -1034,7 +1151,8 @@
         knownEmployeeIds,
         knownScheduleSlotIds,
         telegramBotToken: TELEGRAM_BOT_TOKEN,
-        telegramChatId: TELEGRAM_CHAT_ID
+        telegramChatId: TELEGRAM_CHAT_ID,
+        telegramTopicId: TELEGRAM_TOPIC_ID
       }));
     }
     catch(e){ console.error('config save failed', e); }
@@ -1042,15 +1160,21 @@
 
   async function loadScheduleWeek(weekKey){
     if (loadedScheduleWeeks[weekKey]) return;
-    loadedScheduleWeeks[weekKey] = true;
     try {
       const res = await storageGet('payroll-schedule-week:'+weekKey);
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.scheduleWeeks[weekKey] = { cells: parsed.cells || {} };
+      } else if (!state.scheduleWeeks[weekKey]){
+        state.scheduleWeeks[weekKey] = { cells: {} };
       }
-    } catch(e){ /* nothing saved yet for this week */ }
-    if (!state.scheduleWeeks[weekKey]) state.scheduleWeeks[weekKey] = { cells: {} };
+      loadedScheduleWeeks[weekKey] = true;
+    } catch(e){
+      // НЕ помечаем как загруженное и НЕ создаём пустышку при ошибке — иначе
+      // при временном сбое сети реальные данные графика на сервере рискуют
+      // быть стёрты пустыми при следующем автосохранении.
+      console.error('Не удалось загрузить график недели '+weekKey+':', e);
+    }
   }
   let scheduleWeekSaveTimer=null;
   function scheduleSaveWeek(weekKey){
@@ -1063,15 +1187,18 @@
 
   async function loadTasksWeek(weekKey){
     if (loadedTaskWeeks[weekKey]) return;
-    loadedTaskWeeks[weekKey] = true;
     try {
       const res = await storageGet('payroll-tasks-week:'+weekKey);
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.tasksWeeks[weekKey] = { tasks: parsed.tasks || [] };
+      } else if (!state.tasksWeeks[weekKey]){
+        state.tasksWeeks[weekKey] = { tasks: [] };
       }
-    } catch(e){ /* nothing saved yet for this week */ }
-    if (!state.tasksWeeks[weekKey]) state.tasksWeeks[weekKey] = { tasks: [] };
+      loadedTaskWeeks[weekKey] = true;
+    } catch(e){
+      console.error('Не удалось загрузить задачи недели '+weekKey+':', e);
+    }
   }
   let taskWeekSaveTimer=null;
   function saveTasksWeek(weekKey){
@@ -1084,15 +1211,18 @@
 
   async function loadChat(){
     if (chatLoaded) return;
-    chatLoaded = true;
     try {
       const res = await storageGet('payroll-chat');
       if (res && res.value){
         const parsed = JSON.parse(res.value);
         state.chatMessages = parsed.messages || [];
+      } else if (!state.chatMessages){
+        state.chatMessages = [];
       }
-    } catch(e){ /* nothing saved yet */ }
-    if (!state.chatMessages) state.chatMessages = [];
+      chatLoaded = true;
+    } catch(e){
+      console.error('Не удалось загрузить чат:', e);
+    }
   }
   let chatSaveTimer=null;
   function saveChat(){
@@ -1136,10 +1266,11 @@
   }
   async function sendTextToTelegram(text){
     if (!telegramConfigured_()) throw new Error('Telegram не настроен — укажите токен бота и chat_id в разделе «Сотрудники»');
-    const url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage'
+    let url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage'
       + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID)
       + '&parse_mode=HTML'
       + '&text=' + encodeURIComponent(text);
+    if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
     try {
       await fetch(url, { method: 'GET' });
     } catch(e){
@@ -1150,9 +1281,51 @@
     }
   }
 
+  // Ленивая загрузка html2canvas (только когда реально нужно сделать
+  // изображение чека — не тормозим загрузку страницы им заранее).
+  let html2canvasLoadPromise = null;
+  function ensureHtml2Canvas(){
+    if (window.html2canvas) return Promise.resolve();
+    if (html2canvasLoadPromise) return html2canvasLoadPromise;
+    html2canvasLoadPromise = new Promise((resolve, reject)=>{
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = ()=>resolve();
+      script.onerror = ()=>reject(new Error('Не удалось загрузить библиотеку рендера изображения (нет интернета?)'));
+      document.head.appendChild(script);
+    });
+    return html2canvasLoadPromise;
+  }
+
+  // Рендерит DOM-элемент чека в PNG-файл, загружает его на Google Диск через
+  // уже существующий канал (тот же, что для вложений в чате/задачах), и
+  // отправляет получившуюся ссылку в Telegram методом sendPhoto — так надёжнее,
+  // чем слать файл напрямую из браузера в Telegram (там строже с CORS для
+  // multipart-запросов, а GET-запрос с URL картинки — простой и всегда проходит).
+  async function sendReceiptImageToTelegram(){
+    if (!telegramConfigured_()) throw new Error('Telegram не настроен — укажите токен бота и chat_id в разделе «Сотрудники»');
+    if (!sheetApiConfigured_()) throw new Error('Синхронизация с таблицей не настроена — она же используется для загрузки картинки');
+    await ensureHtml2Canvas();
+    const receiptEl = document.querySelector('#view-day .receipt');
+    if (!receiptEl) throw new Error('Не нашёл чек на странице');
+    const canvas = await window.html2canvas(receiptEl, { backgroundColor: getComputedStyle(receiptEl).backgroundColor || '#ffffff', scale: 2 });
+    const blob = await new Promise(resolve=> canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Не удалось сформировать изображение чека');
+    const file = new File([blob], 'chek-' + state.currentDate + '.png', { type: 'image/png' });
+    const uploaded = await uploadFileToSheet(file);
+
+    let url = 'https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendPhoto'
+      + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID)
+      + '&photo=' + encodeURIComponent(uploaded.url)
+      + '&caption=' + encodeURIComponent('Чек дня · ' + state.currentDate);
+    if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
+    try { await fetch(url, { method: 'GET' }); }
+    catch(e){ console.warn('Telegram sendPhoto warning (фото могло всё же отправиться):', e); }
+  }
+
+  let lastMonthLoadError = null;
   async function loadMonth(mk){
     if (loadedMonths[mk]) return;
-    loadedMonths[mk] = true;
     try {
       const res = await storageGet('payroll-month:'+mk);
       if (res && res.value){
@@ -1165,7 +1338,17 @@
         if (parsed.pnl && parsed.pnl.length) state.pnl[mk] = parsed.pnl;
         Object.keys(parsed.outsourceDays||{}).forEach(dt=>{ state.outsourceDays[dt]=parsed.outsourceDays[dt]; });
       }
-    } catch(e){ /* nothing saved yet for this month */ }
+      // Успех — теперь можно больше не перезагружать этот месяц за сессию.
+      loadedMonths[mk] = true;
+      lastMonthLoadError = null;
+    } catch(e){
+      // ВАЖНО: loadedMonths[mk] НЕ помечаем как true при ошибке — иначе при
+      // временном сбое сети приложение молча и навсегда "забывало" про
+      // реально существующие данные месяца до конца сессии, что выглядело
+      // как будто данные пропали, хотя они всё это время целы в таблице.
+      console.error('Не удалось загрузить данные месяца '+mk+':', e);
+      lastMonthLoadError = mk + ': ' + e.message;
+    }
   }
   let saveTimer=null;
   function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveMonth,250); }
@@ -1334,6 +1517,17 @@
     const mk = monthKeyOf(state.currentDate);
     const curKmBracket = KALYAN_BRACKETS[findBracketIndex(monthlyHookahRevenue(mk))];
     let html = '';
+
+    if ((lastMonthLoadError && lastMonthLoadError.startsWith(mk+':')) || lastConfigLoadError){
+      html += '<div style="background:#4A1F1C;color:#FFD7D2;border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;">'
+        + '⚠️ Не удалось загрузить сохранённые данные из таблицы (проблема с сетью или синхронизацией). '
+        + 'Показанное ниже может быть НЕ полным — это не значит, что данные удалены. '
+        + '<button class="btn secondary" id="retry-month-load-btn" style="margin-left:8px;">Повторить загрузку</button>'
+        + (lastMonthLoadError ? '<div style="margin-top:4px;opacity:0.8;">Месяц: '+lastMonthLoadError.split(': ').slice(1).join(': ')+'</div>' : '')
+        + (lastConfigLoadError ? '<div style="margin-top:4px;opacity:0.8;">Настройки: '+lastConfigLoadError+'</div>' : '')
+        + '</div>';
+    }
+
     html += '<div class="datebar"><button class="nav" data-act="prevday">‹</button>'
       + '<input type="date" id="date-input" value="'+state.currentDate+'"/>'
       + '<span class="weekday">'+weekdayShort(state.currentDate)+'</span>'
@@ -1504,7 +1698,7 @@
       + '</div>';
 
     html += '<div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">'
-      + '<button class="btn" id="send-telegram-btn">📤 Отправить чек в Telegram</button>'
+      + '<button class="btn" id="send-telegram-btn">🖼️ Отправить чек в Telegram (картинкой)</button>'
       + '<span id="telegram-send-status" style="font-size:11.5px;color:var(--ink-soft);"></span>'
       + '</div>';
 
@@ -1536,6 +1730,15 @@
 
   function attachDayHandlers(){
     const root = document.getElementById('view-day');
+    const retryBtn = root.querySelector('#retry-month-load-btn');
+    if (retryBtn){
+      retryBtn.addEventListener('click', async ()=>{
+        retryBtn.textContent = 'Загрузка…';
+        retryBtn.disabled = true;
+        await Promise.all([loadMonth(monthKeyOf(state.currentDate)), loadConfig()]);
+        renderDayView();
+      });
+    }
     root.querySelector('#send-telegram-btn').addEventListener('click', async ()=>{
       const statusEl = root.querySelector('#telegram-send-status');
       if (!telegramConfigured_()){
@@ -1543,10 +1746,10 @@
         statusEl.style.color = 'var(--red)';
         return;
       }
-      statusEl.textContent = 'Отправка…';
+      statusEl.textContent = 'Рисую и отправляю изображение…';
       statusEl.style.color = 'var(--ink-soft)';
       try {
-        await sendTextToTelegram(lastReceiptText);
+        await sendReceiptImageToTelegram();
         statusEl.textContent = 'Отправлено ✓';
         statusEl.style.color = 'var(--green)';
       } catch(err){
@@ -2611,6 +2814,8 @@
       + '<input type="text" id="tg-bot-token" value="'+(TELEGRAM_BOT_TOKEN||'')+'" placeholder="123456789:AAExampleTokenHere" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
       + '<label style="font-size:12.5px;color:var(--ink-soft);">Chat ID (id группового чата или личного чата с ботом)'
       + '<input type="text" id="tg-chat-id" value="'+(TELEGRAM_CHAT_ID||'')+'" placeholder="-1001234567890" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
+      + '<label style="font-size:12.5px;color:var(--ink-soft);">ID темы (необязательно — только если в группе включены темы/топики и чек должен падать в конкретную)'
+      + '<input type="text" id="tg-topic-id" value="'+(TELEGRAM_TOPIC_ID||'')+'" placeholder="напр. 15" style="width:100%;margin-top:4px;padding:7px 9px;border:1px solid var(--border-input);border-radius:6px;font-family:monospace;font-size:12.5px;"/></label>'
       + '<div><button class="btn secondary" id="tg-save-btn">Сохранить</button> <span id="tg-save-status" style="font-size:11.5px;color:var(--ink-soft);margin-left:8px;"></span></div>'
       + '</div>'
       + '<div class="assumption-note">Настраивается один раз — сохраняется в общей таблице и работает сразу на всех устройствах. Кнопка отправки чека появляется на вкладке «Сегодня».</div>'
@@ -2675,6 +2880,7 @@
     root.querySelector('#tg-save-btn').addEventListener('click', ()=>{
       TELEGRAM_BOT_TOKEN = root.querySelector('#tg-bot-token').value.trim();
       TELEGRAM_CHAT_ID = root.querySelector('#tg-chat-id').value.trim();
+      TELEGRAM_TOPIC_ID = root.querySelector('#tg-topic-id').value.trim();
       scheduleSaveConfig();
       const statusEl = root.querySelector('#tg-save-status');
       statusEl.textContent = 'Сохранено ✓';
@@ -2789,6 +2995,8 @@
     syncCfgPanel.style.display = opening ? '' : 'none';
     const accessPanelEl = document.getElementById('access-panel');
     if (accessPanelEl) accessPanelEl.style.display = 'none';
+    const palettePanelEl = document.getElementById('palette-panel');
+    if (palettePanelEl) palettePanelEl.style.display = 'none';
     if (opening){
       syncCfgUrlInp.value = SHEET_API_URL || '';
     }
@@ -2845,6 +3053,62 @@
     try { window.localStorage.setItem('payroll-theme', next); } catch(e){}
   });
   initTheme();
+
+  // ---------- Цветовая палитра ----------
+  const PALETTES = [
+    {id:'mindal',   label:'Миндаль',  swatch:'#A15C33'},
+    {id:'emerald',  label:'Изумруд',  swatch:'#1F6B4A'},
+    {id:'sapphire', label:'Сапфир',   swatch:'#2C5A8C'},
+    {id:'bordeaux', label:'Бордо',    swatch:'#7D2A3B'},
+  ];
+  function getPalette(){
+    try { return window.localStorage.getItem('payroll-palette') || 'mindal'; } catch(e){ return 'mindal'; }
+  }
+  function applyPalette(id){
+    const root = document.getElementById('payroll-root');
+    PALETTES.forEach(p=>{ root.classList.toggle('palette-'+p.id, p.id === id); });
+  }
+  function setPalette(id){
+    applyPalette(id);
+    try { window.localStorage.setItem('payroll-palette', id); } catch(e){}
+  }
+  applyPalette(getPalette());
+
+  const paletteBtn = document.getElementById('palette-btn');
+  const palettePanel = document.getElementById('palette-panel');
+  const palettePanelBody = document.getElementById('palette-panel-body');
+  function renderPalettePanel(){
+    const current = getPalette();
+    palettePanelBody.innerHTML = '<div style="font-size:12.5px;margin-bottom:8px;">Цветовая палитра интерфейса</div>'
+      + '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
+      + PALETTES.map(p=>
+          '<button class="palette-swatch-btn" data-palette="'+p.id+'" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:4px;">'
+          + '<span style="display:block;width:32px;height:32px;border-radius:50%;background:'+p.swatch+';border:2px solid '+(p.id===current?'var(--ink)':'transparent')+';box-shadow:0 0 0 1px var(--border-input);"></span>'
+          + '<span style="font-size:11px;color:var(--ink-soft);">'+p.label+'</span>'
+          + '</button>'
+        ).join('')
+      + '</div>';
+    palettePanelBody.querySelectorAll('.palette-swatch-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        setPalette(btn.dataset.palette);
+        renderPalettePanel();
+      });
+    });
+  }
+  paletteBtn.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    const opening = palettePanel.style.display === 'none';
+    palettePanel.style.display = opening ? '' : 'none';
+    document.getElementById('sync-config-panel').style.display = 'none';
+    const accessPanelEl = document.getElementById('access-panel');
+    if (accessPanelEl) accessPanelEl.style.display = 'none';
+    if (opening) renderPalettePanel();
+  });
+  document.addEventListener('click', (ev)=>{
+    if (palettePanel.style.display !== 'none' && !palettePanel.contains(ev.target) && ev.target.id !== 'palette-btn'){
+      palettePanel.style.display = 'none';
+    }
+  });
 
   // ---------- Уровень доступа: применение и панель ----------
   function applyAccessMode(){
@@ -2907,6 +3171,8 @@
     const opening = accessPanel.style.display === 'none';
     accessPanel.style.display = opening ? '' : 'none';
     document.getElementById('sync-config-panel').style.display = 'none';
+    const palettePanelEl2 = document.getElementById('palette-panel');
+    if (palettePanelEl2) palettePanelEl2.style.display = 'none';
     if (opening) renderAccessPanel();
   });
   document.addEventListener('click', (ev)=>{
