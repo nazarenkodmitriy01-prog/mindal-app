@@ -1277,12 +1277,17 @@
       + '&text=' + encodeURIComponent(text);
     if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
     try {
-      await fetch(url, { method: 'GET' });
+      const res = await fetch(url, { method: 'GET' });
+      const data = await res.json();
+      if (data && data.ok === false){
+        throw new Error(data.description || 'Telegram отклонил запрос');
+      }
     } catch(e){
-      // Из-за CORS браузер иногда не даёт прочитать ответ Telegram, хотя
-      // сообщение при этом реально отправляется — поэтому не считаем это
-      // фатальной ошибкой сразу, просто логируем.
-      console.warn('Telegram fetch warning (сообщение могло всё же отправиться):', e);
+      // Если сама ошибка пришла ОТ Telegram (data.ok===false) — это реальная
+      // проблема, пробрасываем её дальше, чтобы пользователь её увидел.
+      // Если же fetch упал из-за CORS/сети (не смогли даже достучаться до
+      // Telegram) — тоже пробрасываем, чтобы не показывать ложный "успех".
+      throw e;
     }
   }
 
@@ -1363,8 +1368,15 @@
       + '&photo=' + encodeURIComponent(uploaded.url)
       + '&caption=' + encodeURIComponent('Чек дня · ' + state.currentDate);
     if (TELEGRAM_TOPIC_ID) url += '&message_thread_id=' + encodeURIComponent(TELEGRAM_TOPIC_ID);
-    try { await fetch(url, { method: 'GET' }); }
-    catch(e){ console.warn('Telegram sendPhoto warning (фото могло всё же отправиться):', e); }
+    try {
+      const res = await fetch(url, { method: 'GET' });
+      const data = await res.json();
+      if (data && data.ok === false){
+        throw new Error(data.description || 'Telegram отклонил запрос');
+      }
+    } catch(e){
+      throw e;
+    }
   }
 
   let lastMonthLoadError = null;
