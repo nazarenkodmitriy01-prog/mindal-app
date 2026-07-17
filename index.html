@@ -93,6 +93,9 @@
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     padding: 12px 18px;
+    position: relative; z-index: 30; /* backdrop-filter создаёт свой слой отрисовки —
+      поднимаем саму шапку выше остального контента, иначе всплывающие панели
+      внутри нее (настройки, палитра, доступ) не могли подняться выше вкладок/карточек ниже */
   }
   #payroll-root .topbar .sub { color: rgba(237,235,228,0.65) !important; }
   #payroll-root h1 { font-size: 23px; margin: 0; letter-spacing: 0.2px; }
@@ -122,7 +125,7 @@
   }
   #payroll-root .sync-gear:hover { color: var(--ink); }
   #payroll-root .sync-config-panel {
-    position: absolute; top: calc(100% + 8px); right: 0; z-index: 20;
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 200;
     background: var(--card); border: 1px solid var(--border-card); border-radius: 8px;
     padding: 14px; width: 320px; box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   }
@@ -467,7 +470,7 @@
     /* Панели настроек (шестерёнка / замок) — не должны вылезать за край экрана */
     #payroll-root .sync-config-panel {
       position: fixed; left: 10px; right: 10px; top: auto; width: auto;
-      max-width: none; margin-top: 6px;
+      max-width: none; margin-top: 6px; z-index: 200;
     }
 
     /* Вкладки — горизontальная прокрутка вместо переноса/сжатия в нечитаемое */
