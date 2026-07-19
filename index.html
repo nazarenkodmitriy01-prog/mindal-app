@@ -986,14 +986,22 @@
 
   const DEFAULT_PNL_CATEGORIES = [
     'Себестоимость бара', 'Себестоимость кухни', 'Себестоимость КАЛЬЯН',
-    'Аренда и коммунальные услуги', 'Логистика (такси, развоз)', 'Маркетинг и реклама',
+    'Аренда', 'Коммунальные услуги', 'Логистика (такси, развоз)', 'Маркетинг и реклама',
     'Административные расходы', 'Налоги', 'Банковское обслуживание',
   ];
+  // Эти категории — постоянные: их нельзя удалить из П&Л (кнопка "✕" для них
+  // скрыта), и они автоматически добавляются в уже существующие месяцы, если
+  // там их ещё нет (например, для месяцев, сохранённых до этого изменения).
+  const PERMANENT_PNL_CATEGORIES = ['Коммунальные услуги'];
   function getPnl(mk){
     if (!state.pnl[mk]){
       state.pnl[mk] = DEFAULT_PNL_CATEGORIES.map(name=>({id:uid(), name, amount:0}));
     }
-    return state.pnl[mk];
+    const pnl = state.pnl[mk];
+    PERMANENT_PNL_CATEGORIES.forEach(name=>{
+      if (!pnl.some(c=>c.name===name)) pnl.push({id:uid(), name, amount:0});
+    });
+    return pnl;
   }
   function getChefProfitBonus(mk){
     if (!state.chefProfitBonus[mk]) state.chefProfitBonus[mk] = {amount:0, confirmed:false};
@@ -1004,7 +1012,7 @@
   const KITCHEN_HOURLY_IDS = ['cook_fedor', 'cook_sabuhi', 'cook_timur']; // повара — входят в авто-ФОТ
   const KITCHEN_CHEF_ID = 'chef';                                        // шеф-повар — входит в авто-ФОТ
   const WASH_HOURLY_IDS = ['wash_h'];                                    // мойка — только в таблице часов, не в ФОТ
-  const KITCHEN_UTILITY_PNL_NAME = 'Аренда и коммунальные услуги';       // категория П&Л, от которой берём 40%
+  const KITCHEN_UTILITY_PNL_NAME = 'Коммунальные услуги';               // категория П&Л, от которой берём 40%
   const KITCHEN_UTILITY_SHARE = 0.40;
   const KITCHEN_LOSS_SHARE = 0.25; // потери — 25% от суммы закупок ("Заявки")
 
@@ -2030,11 +2038,15 @@
       html += '<tr class="auto-row"><td>Подмены Мойка, нал. (автоматически)</td><td class="num">'+money(substituteCashTotal)+'</td><td class="num pct">'+pct(substituteCashTotal)+'</td><td></td></tr>';
     }
     categories.forEach(c=>{
+      const isPermanent = PERMANENT_PNL_CATEGORIES.includes(c.name);
       html += '<tr data-cat="'+c.id+'">'
-        + '<td><input type="text" data-field="name" value="'+c.name+'"/></td>'
+        + '<td>'+(isPermanent
+            ? '<b>'+c.name+'</b> <span style="font-size:10px;color:var(--ink-soft);">(постоянная)</span>'
+            : '<input type="text" data-field="name" value="'+c.name+'"/>')
+          +'</td>'
         + '<td class="num"><input type="number" data-field="amount" value="'+(c.amount||'')+'" placeholder="0"/></td>'
         + '<td class="num pct">'+pct(Number(c.amount)||0)+'</td>'
-        + '<td><span class="del" data-act="del-pnl-cat" data-id="'+c.id+'" style="cursor:pointer;color:var(--text-faint);">✕</span></td></tr>';
+        + '<td>'+(isPermanent ? '' : '<span class="del" data-act="del-pnl-cat" data-id="'+c.id+'" style="cursor:pointer;color:var(--text-faint);">✕</span>')+'</td></tr>';
     });
     html += '<tr class="profit-row"><td>ЧИСТАЯ ПРИБЫЛЬ</td><td class="num">'+money(netProfit)+'</td><td class="num">'+pct(netProfit)+'</td><td></td></tr>';
     html += '</tbody></table>';
@@ -2118,7 +2130,7 @@
         + '<td class="num"><input type="number" class="kitchen-input" data-field="chefFee" value="'+(k.chefFee||'')+'" placeholder="0" style="width:140px;text-align:right;padding:5px 8px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--ink);"/></td></tr>'
       + '<tr class="total-row"><td>Прибыль чистая</td><td class="num" style="color:var(--rust);font-size:15px;">'+money(netProfit)+'</td></tr>'
       + '</tbody></table>'
-      + '<div class="assumption-note">Категория П&amp;Л «'+KITCHEN_UTILITY_PNL_NAME+'» объединяет аренду и коммуналку вместе (отдельной строки только под коммуналку в П&amp;Л нет) — 40% берётся от этой общей суммы. Если нужно точнее — заведите в П&amp;Л отдельную статью только для коммунальных услуг.</div>'
+      + '<div class="assumption-note">Коммуналка берётся автоматически — 40% от статьи «'+KITCHEN_UTILITY_PNL_NAME+'» на вкладке «П&amp;Л» (эта статья там постоянная, вводится вручную).</div>'
       + '</div>';
 
     // ---- Нижняя часть: подробности трат ----
