@@ -1,12 +1,22 @@
 [
-     {
-       "relation": ["delegate_permission/common.handle_all_urls"],
-       "target": {
-         "namespace": "android_app",
-         "package_name": "io.github.nazarenkodmitriy01_prog.twa",
-         "sha256_cert_fingerprints": [
-           "62:E2:08:A4:27:6A:D2:8A:60:AE:84:11:67:5C:84:67:A6:B5:BD:85:E1:FB:12:5F:99:A6:1E:BA:C1:C2:E5:B5"
-         ]
-       }
-     }
-   ]
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.nazarenkodmitriy01_prog.twa",
+      "sha256_cert_fingerprints": [
+        "62:E2:08:A4:27:6A:D2:8A:60:AE:84:11:67:5C:84:67:A6:B5:BD:85:E1:FB:12:5F:99:A6:1E:BA:C1:C2:E5:B5"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.nazarenkodmitriy01_prog.bron.twa",
+      "sha256_cert_fingerprints": [
+        "00:54:2C:6C:E7:19:8C:73:02:64:D2:D5:3D:BC:1D:6A:8E:1D:9D:72:C6:A5:22:B0:80:28:46:0E:EB:02:B0:6B"
+      ]
+    }
+  }
+]
