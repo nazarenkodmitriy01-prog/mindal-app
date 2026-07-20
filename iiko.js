@@ -167,6 +167,19 @@ async function diagPing() {
   const token = await auth();
   return { ok: true, tokenReceived: !!token, baseUrl: cfg().baseUrl };
 }
+// Список ВСЕХ доступных полей для конкретного типа отчёта — чтобы не
+// гадать по одному названию, а сразу увидеть точный список от самого iiko.
+async function diagColumns(reportType) {
+  const c = cfg();
+  const token = await auth();
+  const url = c.baseUrl + '/api/v2/reports/olap/columns?reportType=' + encodeURIComponent(reportType || 'SALES') + '&key=' + encodeURIComponent(token);
+  const res = await fetchWithTimeout(url);
+  const text = await res.text();
+  if (!res.ok) throw new Error('Ошибка получения списка полей: ' + text.slice(0, 400));
+  try { return JSON.parse(text); }
+  catch (e) { return { raw: text.slice(0, 3000) }; }
+}
+
 async function diagRawSales(dateStr) {
   const token = await auth();
   return olapReport(token, {
@@ -204,4 +217,5 @@ module.exports = {
   diagPing,
   diagRawSales,
   diagRawTransactions,
+  diagColumns,
 };
