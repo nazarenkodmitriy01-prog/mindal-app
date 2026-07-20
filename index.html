@@ -1047,7 +1047,7 @@
   // state.pnl: { 'YYYY-MM': [ {id,name,amount} ] } — manually managed P&L expense categories (revenue & ФОТ are computed, not stored here)
 
   const DEFAULT_PNL_CATEGORIES = [
-    'Себестоимость бара', 'Себестоимость кухни', 'Себестоимость КАЛЬЯН',
+    'Себестоимость бара', 'Себестоимость кухни', 'Себестоимость КАЛЬЯН', 'Хозтовары',
     'Аренда', 'Коммунальные услуги', 'Логистика (такси, развоз)', 'Маркетинг и реклама',
     'Административные расходы', 'Налоги', 'Банковское обслуживание',
   ];
@@ -2198,12 +2198,17 @@
           const totals = await iikoPullMonthTotals(mk);
           const cats = getPnl(mk);
           const setCat = (name, value) => {
-            const cat = cats.find(c=>c.name===name);
-            if (cat) cat.amount = Math.round(value);
+            let cat = cats.find(c=>c.name===name);
+            if (!cat){
+              cat = { id: uid(), name, amount: 0 };
+              cats.push(cat);
+            }
+            cat.amount = Math.round(value);
           };
           setCat('Себестоимость бара', totals.purchasesBar);
           setCat('Себестоимость кухни', totals.purchasesKitchen);
           setCat('Себестоимость КАЛЬЯН', totals.purchasesHookah);
+          setCat('Хозтовары', totals.purchasesHozy);
           scheduleSave();
           renderPnlView();
           return;

@@ -31,6 +31,7 @@ function cfg() {
       bar: process.env.IIKO_WAREHOUSE_BAR || '',
       kitchen: process.env.IIKO_WAREHOUSE_KITCHEN || '',
       hookah: process.env.IIKO_WAREHOUSE_HOOKAH || '',
+      hozy: process.env.IIKO_WAREHOUSE_HOZY || '',
     },
   };
 }
@@ -148,7 +149,7 @@ async function fetchWarehousePurchases(dateStr) {
     if (!store) return;
     byWarehouse[store] = (byWarehouse[store] || 0) + sum;
   });
-  const result = { bar: 0, kitchen: 0, hookah: 0 };
+  const result = { bar: 0, kitchen: 0, hookah: 0, hozy: 0 };
   // Сопоставляем названия складов "нестрого" — без учёта лишних пробелов по
   // краям и регистра. Это подстраховка на случай, если при копировании
   // названия склада в настройки закралась случайная разница в пробелах.

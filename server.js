@@ -356,7 +356,7 @@ app.get('/iiko/month', (req, res) => {
   const days = Object.keys(kv).filter((k) => k.indexOf(prefix) === 0);
   const totals = {
     revenueTotal: 0, revenueHookah: 0,
-    purchasesBar: 0, purchasesKitchen: 0, purchasesHookah: 0,
+    purchasesBar: 0, purchasesKitchen: 0, purchasesHookah: 0, purchasesHozy: 0,
     daysSynced: 0, daysWithErrors: 0,
   };
   days.forEach((key) => {
@@ -370,6 +370,7 @@ app.get('/iiko/month', (req, res) => {
         totals.purchasesBar += Number(parsed.purchases.byDept.bar) || 0;
         totals.purchasesKitchen += Number(parsed.purchases.byDept.kitchen) || 0;
         totals.purchasesHookah += Number(parsed.purchases.byDept.hookah) || 0;
+        totals.purchasesHozy += Number(parsed.purchases.byDept.hozy) || 0;
       }
       totals.daysSynced++;
     } catch (e) {
