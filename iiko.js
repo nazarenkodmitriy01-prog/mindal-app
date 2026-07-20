@@ -44,6 +44,15 @@ function sha1(s) {
   return crypto.createHash('sha1').update(s, 'utf8').digest('hex');
 }
 
+// iiko требует, чтобы конец периода СТРОГО отличался от начала (не может
+// совпадать) — поэтому для "одного дня" всегда берём диапазон
+// "с начала этого дня по начало следующего", а не "день - день".
+function nextDayStr(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + 1));
+  return dt.getUTCFullYear() + '-' + String(dt.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dt.getUTCDate()).padStart(2, '0');
+}
+
 let cachedToken = null;
 let tokenObtainedAt = 0;
 const TOKEN_TTL_MS = 14 * 60 * 1000; // токены iiko живут около 15 минут — обновляем чуть раньше
@@ -90,7 +99,7 @@ async function fetchDayRevenue(dateStr) {
     groupByColFields: [],
     aggregateFields: ['DishSumInt'],
     filters: {
-      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: dateStr },
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
   let total = 0, hookah = 0;
@@ -115,7 +124,7 @@ async function fetchWarehousePurchases(dateStr) {
     groupByColFields: [],
     aggregateFields: ['Sum.Incoming'],
     filters: {
-      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: dateStr },
+      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
   const byWarehouse = {};
@@ -157,7 +166,7 @@ async function diagRawSales(dateStr) {
     groupByColFields: [],
     aggregateFields: ['DishSumInt'],
     filters: {
-      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: dateStr },
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
 }
@@ -170,7 +179,7 @@ async function diagRawTransactions(dateStr) {
     groupByColFields: [],
     aggregateFields: ['Sum.Incoming'],
     filters: {
-      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: dateStr },
+      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
 }
