@@ -2514,20 +2514,19 @@
       + '<span><b style="color:var(--red);">C</b>: '+abc.countC+' поз.</span>'
       + '<span style="color:var(--ink-soft);">Всего выручки: '+money(abc.total)+'</span>'
       + '</div>';
-    // Показываем топ-30 позиций, чтобы не перегружать экран — полный список слишком длинный для одной таблицы.
-    const top = abc.items.slice(0, 30);
-    html += '<table class="month-table"><thead><tr><th>Блюдо</th><th class="num">Категория</th><th class="num">Выручка</th><th class="num">% от общей</th><th class="num">Накопительно</th></tr></thead><tbody>'
-      + top.map(i=>
+    html += '<div style="overflow:auto;max-height:520px;">'
+      + '<table class="month-table" style="min-width:640px;"><thead><tr><th>Блюдо</th><th class="num">Категория</th><th class="num">Кол-во</th><th class="num">Выручка</th><th class="num">% от общей</th><th class="num">Накопительно</th></tr></thead><tbody>'
+      + abc.items.map(i=>
           '<tr><td>'+escapeHtmlA(i.name)+'</td>'
           + '<td class="num" style="color:'+catColor[i.category]+';font-weight:800;">'+i.category+'</td>'
+          + '<td class="num">'+i.qty+'</td>'
           + '<td class="num">'+money(i.sum)+'</td>'
           + '<td class="num">'+i.sharePercent+'%</td>'
           + '<td class="num">'+i.cumPercent+'%</td></tr>'
         ).join('')
-      + '</tbody></table>';
-    if (abc.items.length > 30){
-      html += '<div class="assumption-note">Показаны первые 30 позиций из '+abc.items.length+' (отсортировано по убыванию выручки).</div>';
-    }
+      + '</tbody></table>'
+      + '</div>';
+    html += '<div class="assumption-note">Всего позиций: '+abc.items.length+' (отсортировано по убыванию выручки). Таблицу можно прокручивать по горизонтали, если не помещается на экране.</div>';
     container.innerHTML = html;
   }
 
