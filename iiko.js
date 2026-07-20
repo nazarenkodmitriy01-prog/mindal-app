@@ -228,6 +228,44 @@ async function fetchAbcAnalysis(fromDate, toDate) {
 // Пока не знаем точных критериев вашего "отчёта 037" — берём с большим запасом
 // все операции, где есть признаки удаления, возврата или крупной скидки, и
 // смотрим на сырые данные, чтобы потом точно откалибровать критерии вместе.
+// ---------- Опасные операции за день (рабочая версия) ----------
+// Два вида: удаления блюд (с/без списания — со комментарием причины и
+// официантом) и крупные скидки на блюда, которые НЕ были удалены (иначе
+// удалённые блюда задвоились бы — они сами показывают скидку 100%).
+const DANGEROUS_DISCOUNT_THRESHOLD = 0.15; // 15% — крупная скидка на неотменённое блюдо
+async function fetchDangerousOps(dateStr) {
+  const token = await auth();
+  const report = await olapReport(token, {
+    reportType: 'SALES',
+    buildSummary: false,
+    groupByRowFields: ['OrderNum', 'DishName', 'WaiterName', 'RemovalType', 'DeletedWithWriteoff', 'Storned', 'DiscountPercent', 'DeletionComment'],
+    groupByColFields: [],
+    aggregateFields: ['DishSumInt', 'DishAmountInt'],
+    filters: {
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+    },
+  });
+  const rows = (report && report.data) || [];
+  const deletions = [];
+  const bigDiscounts = [];
+  const stornos = [];
+  rows.forEach((r) => {
+    const deleted = r['DeletedWithWriteoff'] && r['DeletedWithWriteoff'] !== 'NOT_DELETED';
+    const storned = String(r['Storned']).toUpperCase() === 'TRUE';
+    const discount = Number(r['DiscountPercent']) || 0;
+    const item = {
+      orderNum: r['OrderNum'], dish: r['DishName'], waiter: r['WaiterName'],
+      sum: Number(r['DishSumInt']) || 0, qty: Number(r['DishAmountInt']) || 0,
+      comment: r['DeletionComment'] || '', removalType: r['RemovalType'] || '',
+      discountPercent: Math.round(discount * 1000) / 10,
+    };
+    if (deleted) deletions.push(item);
+    else if (storned) stornos.push(item);
+    else if (discount >= DANGEROUS_DISCOUNT_THRESHOLD) bigDiscounts.push(item);
+  });
+  return { date: dateStr, deletions, bigDiscounts, stornos, totalFlagged: deletions.length + bigDiscounts.length + stornos.length };
+}
+
 async function diagDangerousRaw(dateStr) {
   const token = await auth();
   return olapReport(token, {
@@ -312,4 +350,5 @@ module.exports = {
   diagColumns,
   fetchAbcAnalysis,
   diagDangerousRaw,
+  fetchDangerousOps,
 };

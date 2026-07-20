@@ -813,6 +813,60 @@
     return data; // {items, total, countA, countB, countC}
   }
 
+  // Забирает отчёт об опасных операциях (удаления + крупные скидки) за день.
+  async function iikoPullDangerousOps(dateStr){
+    const base = iikoBaseUrl_();
+    if (!base) throw new Error('Сервер синхронизации не настроен');
+    const res = await fetch(base + '/iiko/dangerous?date=' + encodeURIComponent(dateStr));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.message || data.error || 'iiko не ответил');
+    return data; // {deletions, bigDiscounts, stornos, totalFlagged}
+  }
+  // Форматирует отчёт в текст и отправляет отдельным сообщением в тот же
+  // чат/тему, что и чек дня (тем же ботом, напрямую с этого устройства).
+  function formatDangerousOpsText(dateStr, ops){
+    if (ops.totalFlagged === 0){
+      return '✅ Опасных операций за ' + dateStr + ' не обнаружено (удалений и крупных скидок нет).';
+    }
+    let text = '🚨 Отчёт об опасных операциях за ' + dateStr + '\n';
+    if (ops.deletions.length){
+      text += '\nУдаления (' + ops.deletions.length + '):\n';
+      ops.deletions.forEach(i=>{
+        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽) — ' + i.waiter + (i.comment ? ' — «' + i.comment + '»' : '') + '\n';
+      });
+    }
+    if (ops.bigDiscounts.length){
+      text += '\nКрупные скидки (' + ops.bigDiscounts.length + '):\n';
+      ops.bigDiscounts.forEach(i=>{
+        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽, -' + i.discountPercent + '%) — ' + i.waiter + '\n';
+      });
+    }
+    if (ops.stornos.length){
+      text += '\nВозвраты (' + ops.stornos.length + '):\n';
+      ops.stornos.forEach(i=>{
+        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽) — ' + i.waiter + '\n';
+      });
+    }
+    return text;
+  }
+  async function sendDangerousOpsToTelegram(dateStr){
+    if (!telegramConfigured_()) throw new Error('Telegram не настроен');
+    const ops = await iikoPullDangerousOps(dateStr);
+    const text = formatDangerousOpsText(dateStr, ops);
+    const formData = new URLSearchParams();
+    formData.append('chat_id', TELEGRAM_CHAT_ID);
+    if (TELEGRAM_TOPIC_ID) formData.append('message_thread_id', TELEGRAM_TOPIC_ID);
+    formData.append('text', text);
+    const res = await fetch('https://api.telegram.org/bot' + encodeURIComponent(TELEGRAM_BOT_TOKEN) + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
+    });
+    const data = await res.json();
+    if (data && data.ok === false) throw new Error(data.description || 'Telegram отклонил запрос');
+    return ops;
+  }
+
   // ---------- Default data (used only if nothing saved yet) ----------
   const DEFAULT_EMPLOYEES = [
     {id:'bar_ivan',   name:'Иван Старченко',        dept:'bar',      role:'oclad_percent', oclad:45000, percent:0.013, active:true},
@@ -2062,8 +2116,17 @@
       statusEl.style.color = 'var(--ink-soft)';
       try {
         await sendReceiptImageToTelegram();
-        statusEl.textContent = 'Отправлено ✓';
+        statusEl.textContent = 'Чек отправлен ✓ Запрашиваю отчёт об опасных операциях…';
         statusEl.style.color = 'var(--green)';
+        try {
+          await sendDangerousOpsToTelegram(state.currentDate);
+          statusEl.textContent = 'Чек и отчёт об опасных операциях отправлены ✓';
+        } catch(opsErr){
+          // Чек уже ушёл успешно — отчёт об опасных операциях необязателен,
+          // поэтому его сбой не должен выглядеть как общая неудача отправки.
+          statusEl.textContent = 'Чек отправлен ✓, но отчёт об опасных операциях не удалось получить: ' + opsErr.message;
+          statusEl.style.color = 'var(--rust)';
+        }
       } catch(err){
         statusEl.textContent = 'Не удалось отправить: ' + err.message;
         statusEl.style.color = 'var(--red)';
