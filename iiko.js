@@ -140,6 +140,9 @@ async function fetchWarehousePurchases(dateStr) {
   const byWarehouse = {};
   const rows = (report && report.data) || [];
   rows.forEach((r) => {
+    // Берём только накладные (INVOICE) — остальные типы (продажи, списания,
+    // инкассация и т.п.) тоже проходят через "Sum.Incoming", но это не закупки.
+    if (r['TransactionType'] !== 'INVOICE') return;
     const store = r['Store'];
     const sum = Number(r['Sum.Incoming']) || 0;
     if (!store) return;
@@ -207,6 +210,23 @@ async function diagRawTransactions(dateStr, toDateStr) {
   });
 }
 
+// Детальная диагностика — каждая накладная отдельной строкой (склад + номер
+// документа + сумма), чтобы можно было свериться один в один со списком
+// накладных в самом iikoOffice и понять, каких именно не хватает в подсчёте.
+async function diagInvoiceDetail(dateStr, toDateStr) {
+  const token = await auth();
+  return olapReport(token, {
+    reportType: 'TRANSACTIONS',
+    buildSummary: true,
+    groupByRowFields: ['Store', 'Document', 'TransactionType'],
+    groupByColFields: [],
+    aggregateFields: ['Sum.Incoming'],
+    filters: {
+      'DateTime.DateTyped': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: toDateStr || nextDayStr(dateStr) },
+    },
+  });
+}
+
 module.exports = {
   configured,
   auth,
@@ -217,5 +237,6 @@ module.exports = {
   diagPing,
   diagRawSales,
   diagRawTransactions,
+  diagInvoiceDetail,
   diagColumns,
 };

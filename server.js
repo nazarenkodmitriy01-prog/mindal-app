@@ -336,6 +336,10 @@ app.get('/iiko/diag/columns', async (req, res) => {
   try { res.json(await iiko.diagColumns(req.query.reportType || 'SALES')); }
   catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
 });
+app.get('/iiko/diag/invoices', async (req, res) => {
+  try { res.json(await iiko.diagInvoiceDetail(req.query.date || todayDateStr(), req.query.to)); }
+  catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
+});
 
 // Автосинхронизация "сегодня" раз в час — чтобы данные в приложении сами
 // обновлялись в течение дня, без необходимости нажимать что-либо вручную.
