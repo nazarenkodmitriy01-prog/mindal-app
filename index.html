@@ -616,6 +616,7 @@
     <div class="tab" data-tab="outsource">Аутсорс КАЛЬЯН</div>
     <div class="tab" data-tab="pnl">П&amp;Л</div>
     <div class="tab" data-tab="kitchen">Кухня</div>
+    <div class="tab" data-tab="analytics">Аналитика</div>
     <div class="tab" data-tab="settings">Сотрудники</div>
   </div>
 
@@ -628,6 +629,7 @@
   <div id="view-outsource" style="display:none"></div>
   <div id="view-pnl" style="display:none"></div>
   <div id="view-kitchen" style="display:none"></div>
+  <div id="view-analytics" style="display:none"></div>
   <div id="view-settings" style="display:none"></div>
 
   <div class="footer-note">Прототип интерфейса · формулы можно уточнять и пересчитывать в реальном времени</div>
@@ -642,6 +644,7 @@
     <button class="tab bottom-tab" data-tab="outsource"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/><path d="M3 13c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/><path d="M3 18c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/></svg></span><span class="bn-label">Аутсорс</span></button>
     <button class="tab bottom-tab" data-tab="pnl"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><span class="bn-label">П&amp;Л</span></button>
     <button class="tab bottom-tab" data-tab="kitchen"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10a4 4 0 0 1 1-7.8A4.5 4.5 0 0 1 12 2a4.5 4.5 0 0 1 4 .2A4 4 0 0 1 17 10"/><path d="M7 10v9h10v-9"/><path d="M7 14h10"/></svg></span><span class="bn-label">Кухня</span></button>
+    <button class="tab bottom-tab" data-tab="analytics"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="17" y="13" width="4" height="7" rx="1"/></svg></span><span class="bn-label">Аналитика</span></button>
     <button class="tab bottom-tab" data-tab="settings"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><circle cx="17" cy="8" r="2.3"/><path d="M16 15.3c2.4.4 4 2 4 4.7"/></svg></span><span class="bn-label">Сотрудники</span></button>
   </div>
 </div>
@@ -830,12 +833,12 @@
   // его, откройте payroll_app.html в текстовом редакторе и поменяйте строку
   // ниже.
   const ACCESS_PASSWORD = 'mindal2026';
-  const DEFAULT_RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen'];
+  const DEFAULT_RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen', 'analytics'];
   const ALL_TABS_FOR_ACCESS = [
     {id:'day', label:'Сегодня'}, {id:'revenue', label:'Выручка'}, {id:'month', label:'Месяц'},
     {id:'timesheet', label:'Табель'}, {id:'schedule', label:'График'}, {id:'teamwork', label:'Задачи и чат'},
     {id:'outsource', label:'Аутсорс КАЛЬЯН'}, {id:'pnl', label:'П&Л'}, {id:'kitchen', label:'Кухня'},
-    {id:'settings', label:'Сотрудники'},
+    {id:'analytics', label:'Аналитика'}, {id:'settings', label:'Сотрудники'},
   ];
   function getRestrictedTabs(){
     try {
@@ -2259,6 +2262,147 @@
     });
   }
 
+  // ---------- Вкладка «Аналитика» — сводка за месяц с диаграммами ----------
+  function svgHBarChart(items, opts){
+    opts = opts || {};
+    const width = 560, barH = 22, gap = 10, labelW = opts.labelW || 150;
+    const maxVal = Math.max(1, ...items.map(i=>Number(i.value)||0));
+    const chartW = width - labelW - 78;
+    const height = items.length * (barH+gap) + gap;
+    let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" style="max-width:'+width+'px;display:block;">';
+    items.forEach((it, idx)=>{
+      const y = gap + idx*(barH+gap);
+      const val = Number(it.value)||0;
+      const w = val>0 ? Math.max(2, (val/maxVal)*chartW) : 0;
+      svg += '<text x="0" y="'+(y+barH*0.68)+'" font-size="12" fill="var(--ink-soft)" font-family="Roboto, sans-serif">'+escapeHtmlA(it.label)+'</text>';
+      svg += '<rect x="'+labelW+'" y="'+y+'" width="'+w+'" height="'+barH+'" rx="5" fill="'+(it.color||'var(--rust)')+'" opacity="0.88"/>';
+      svg += '<text x="'+(labelW+w+8)+'" y="'+(y+barH*0.68)+'" font-size="12" fill="var(--ink)" font-weight="700" font-family="Roboto, sans-serif">'+money(val)+'</text>';
+    });
+    svg += '</svg>';
+    return svg;
+  }
+  function svgDailyRevenueChart(dates){
+    const width = 680, height = 190, padL = 34, padB = 22, padT = 10, padR = 6;
+    const values = dates.map(dt => Number((state.days[dt]||{}).totalRevenue) || 0);
+    const maxVal = Math.max(1, ...values);
+    const chartW = width - padL - padR, chartH = height - padT - padB;
+    const barGap = 2;
+    const barW = Math.max(1.5, chartW/values.length - barGap);
+    const withData = values.filter(v=>v>0);
+    const avg = withData.length ? withData.reduce((a,b)=>a+b,0)/withData.length : 0;
+    const avgY = padT + chartH - (avg/maxVal)*chartH;
+    let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" style="max-width:'+width+'px;display:block;">';
+    svg += '<line x1="'+padL+'" y1="'+avgY+'" x2="'+(width-padR)+'" y2="'+avgY+'" stroke="var(--ink-soft)" stroke-dasharray="4 3" stroke-width="1"/>';
+    svg += '<text x="'+(width-padR)+'" y="'+(avgY-4)+'" font-size="10" fill="var(--ink-soft)" text-anchor="end" font-family="Roboto, sans-serif">средняя '+money(avg)+'</text>';
+    values.forEach((v, idx)=>{
+      const x = padL + idx*(barW+barGap);
+      const h = (v/maxVal)*chartH;
+      const y = padT + chartH - h;
+      const dayNum = idx+1;
+      svg += '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(0,h)+'" rx="1.5" fill="var(--rust)" opacity="'+(v>0?0.85:0.15)+'"/>';
+      if (dayNum===1 || dayNum===values.length || dayNum%5===0){
+        svg += '<text x="'+(x+barW/2)+'" y="'+(height-6)+'" font-size="9" fill="var(--ink-soft)" text-anchor="middle" font-family="Roboto, sans-serif">'+dayNum+'</text>';
+      }
+    });
+    svg += '</svg>';
+    return svg;
+  }
+  function escapeHtmlA(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function renderAnalyticsView(){
+    const mk = monthKeyOf(state.currentDate);
+    const {totals, hookahRevenueSum, totalRevenueSum, dates, adjTotals} = computeMonthTotals(mk);
+    const plan = state.plan[mk] || DEFAULT_REVENUE_PLAN;
+    const planPct = plan>0 ? Math.round((totalRevenueSum/plan)*100) : 0;
+    const daysWithData = dates.filter(dt => Number((state.days[dt]||{}).totalRevenue) > 0).length;
+    const avgPerDay = daysWithData ? totalRevenueSum/daysWithData : 0;
+    const restRevenue = Math.max(0, totalRevenueSum - hookahRevenueSum);
+    const hookahSharePct = totalRevenueSum>0 ? Math.round((hookahRevenueSum/totalRevenueSum)*100) : 0;
+
+    // ФОТ по подразделениям
+    const deptTotals = {};
+    DEPT_ORDER.forEach(d=> deptTotals[d]=0);
+    let fotTotal = 0;
+    EMPLOYEES.forEach(e=>{
+      const t = totals[e.id]; if (!t) return;
+      const sum = (t.oclad||0)+(t.variable||0)+(t.bonuses||0);
+      if (!deptTotals.hasOwnProperty(e.dept)) deptTotals[e.dept]=0;
+      deptTotals[e.dept] += sum;
+      fotTotal += sum;
+    });
+    const deptChartItems = DEPT_ORDER.filter(d=>deptTotals[d]>0).map(d=>({label:DEPTS[d].label, value:deptTotals[d], color:DEPTS[d].color}));
+
+    // П&Л статьи
+    const pnlItems = getPnl(mk).filter(c=>c.amount>0).sort((a,b)=>b.amount-a.amount);
+    const pnlTotal = pnlItems.reduce((s,c)=>s+(Number(c.amount)||0),0);
+    const pnlChartItems = pnlItems.map(c=>({label:c.name, value:c.amount, color:'var(--rust)'}));
+
+    // Кухня (если заполнено)
+    const kx = getKitchenExpenses(mk);
+    const kitchenHasData = kx.income>0 || kx.purchases>0;
+    const kitchenProfit = kitchenHasData ? kitchenNetProfit(mk) : null;
+
+    let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="analytics-month-input" value="'+mk+'"/></div>';
+
+    // KPI-карточки
+    const kpis = [
+      {label:'Выручка за месяц', value:money(totalRevenueSum), sub:'план '+money(plan)+' ('+planPct+'%)'},
+      {label:'Выручка КАЛЬЯН', value:money(hookahRevenueSum), sub:hookahSharePct+'% от общей выручки'},
+      {label:'Средняя выручка в день', value:money(Math.round(avgPerDay)), sub:daysWithData+' дн. с данными из '+dates.length},
+      {label:'ФОТ за месяц', value:money(fotTotal), sub:totalRevenueSum>0 ? Math.round((fotTotal/totalRevenueSum)*100)+'% от выручки' : '—'},
+      {label:'Расходы П&amp;Л', value:money(pnlTotal), sub:pnlItems.length+' стат'+(pnlItems.length===1?'ья':'ей')},
+    ];
+    if (kitchenHasData){
+      kpis.push({label:'Прибыль кухни', value:money(kitchenProfit), sub:'приход '+money(kx.income)});
+    }
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px;">'
+      + kpis.map(k=>
+          '<div class="kpi-panel" style="margin-bottom:0;padding:14px 16px;">'
+          + '<div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">'+k.label+'</div>'
+          + '<div style="font-size:20px;font-weight:800;color:var(--rust);">'+k.value+'</div>'
+          + '<div style="font-size:11px;color:var(--ink-soft);margin-top:3px;">'+k.sub+'</div>'
+          + '</div>'
+        ).join('')
+      + '</div>';
+
+    // Прогресс плана
+    const barPct = Math.min(100, planPct);
+    html += '<div class="kpi-panel"><h4>Выполнение плана по выручке</h4>'
+      + '<div style="background:var(--bg-subtle);border-radius:8px;height:16px;overflow:hidden;margin:8px 0;">'
+      + '<div style="height:100%;width:'+barPct+'%;background:var(--rust);border-radius:8px;"></div>'
+      + '</div>'
+      + '<div style="font-size:12.5px;color:var(--ink-soft);">'+money(totalRevenueSum)+' из '+money(plan)+' ('+planPct+'%)</div>'
+      + '</div>';
+
+    // Выручка по дням
+    html += '<div class="kpi-panel"><h4>Выручка по дням месяца</h4>'
+      + svgDailyRevenueChart(dates)
+      + '</div>';
+
+    // ФОТ по подразделениям
+    if (deptChartItems.length){
+      html += '<div class="kpi-panel"><h4>ФОТ по подразделениям</h4>'
+        + svgHBarChart(deptChartItems)
+        + '</div>';
+    }
+
+    // П&Л по статьям
+    if (pnlChartItems.length){
+      html += '<div class="kpi-panel"><h4>Расходы П&amp;Л по статьям</h4>'
+        + svgHBarChart(pnlChartItems)
+        + '</div>';
+    }
+
+    html += '<div class="assumption-note">Данные считаются по тем же цифрам, что и на вкладках «Месяц» и «П&amp;Л» — ничего отдельно вводить не нужно, аналитика собирается сама.</div>';
+
+    document.getElementById('view-analytics').innerHTML = html;
+
+    document.getElementById('analytics-month-input').addEventListener('change', async ev=>{
+      const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
+      await loadMonth(monthKeyOf(state.currentDate)); renderAnalyticsView();
+    });
+  }
+
   function renderMonthView(){
     const mk = monthKeyOf(state.currentDate);
     const {totals, hookahRevenueSum, totalRevenueSum, curKmBracket, adjTotals} = computeMonthTotals(mk);
@@ -3444,6 +3588,7 @@
     document.getElementById('view-outsource').style.display = tab==='outsource' ? '' : 'none';
     document.getElementById('view-pnl').style.display = tab==='pnl' ? '' : 'none';
     document.getElementById('view-kitchen').style.display = tab==='kitchen' ? '' : 'none';
+    document.getElementById('view-analytics').style.display = tab==='analytics' ? '' : 'none';
     document.getElementById('view-settings').style.display = tab==='settings' ? '' : 'none';
     if (tab==='day') renderDayView();
     if (tab==='revenue') renderRevenueView();
@@ -3454,6 +3599,7 @@
     if (tab==='outsource') { loadMonth(monthKeyOf(state.currentDate)).then(renderOutsourceView); }
     if (tab==='pnl') renderPnlView();
     if (tab==='kitchen') renderKitchenView();
+    if (tab==='analytics') renderAnalyticsView();
     if (tab==='settings') renderSettingsView();
   }
   document.querySelectorAll('#payroll-root .tab').forEach(t=> t.addEventListener('click', ()=>switchTab(t.dataset.tab)));
@@ -3507,6 +3653,7 @@
     if (activeTab === 'outsource') { renderOutsourceView(); }
     if (activeTab === 'pnl') renderPnlView();
     if (activeTab === 'kitchen') renderKitchenView();
+    if (activeTab === 'analytics') renderAnalyticsView();
     if (activeTab === 'settings') renderSettingsView();
   });
 
