@@ -813,7 +813,7 @@
     return data; // {items, total, countA, countB, countC}
   }
 
-  // Забирает отчёт об опасных операциях (удаления + крупные скидки) за день.
+  // Забирает отчёт по удалениям блюд за день.
   async function iikoPullDangerousOps(dateStr){
     const base = iikoBaseUrl_();
     if (!base) throw new Error('Сервер синхронизации не настроен');
@@ -825,28 +825,18 @@
   // Форматирует отчёт в текст и отправляет отдельным сообщением в тот же
   // чат/тему, что и чек дня (тем же ботом, напрямую с этого устройства).
   function formatDangerousOpsText(dateStr, ops){
-    if (ops.totalFlagged === 0){
-      return '✅ Опасных операций за ' + dateStr + ' не обнаружено (удалений и крупных скидок нет).';
+    if (!ops.deletions.length){
+      return '✅ Удалений за ' + dateStr + ' не обнаружено.';
     }
-    let text = '🚨 Отчёт об опасных операциях за ' + dateStr + '\n';
-    if (ops.deletions.length){
-      text += '\nУдаления (' + ops.deletions.length + '):\n';
-      ops.deletions.forEach(i=>{
-        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽) — ' + i.waiter + (i.comment ? ' — «' + i.comment + '»' : '') + '\n';
-      });
-    }
-    if (ops.bigDiscounts.length){
-      text += '\nКрупные скидки (' + ops.bigDiscounts.length + '):\n';
-      ops.bigDiscounts.forEach(i=>{
-        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽, -' + i.discountPercent + '%) — ' + i.waiter + '\n';
-      });
-    }
-    if (ops.stornos.length){
-      text += '\nВозвраты (' + ops.stornos.length + '):\n';
-      ops.stornos.forEach(i=>{
-        text += '• ' + i.dish.trim() + ' (' + i.sum + '₽) — ' + i.waiter + '\n';
-      });
-    }
+    let text = '🚨 Отчёт по удалениям за ' + dateStr + ' — всего: ' + ops.deletions.length + '\n';
+    ops.deletions.forEach((i, idx)=>{
+      text += '\n' + (idx+1) + '. Чек №' + i.orderNum + '\n'
+        + 'Блюдо: ' + i.dish.trim() + '\n'
+        + 'Кол-во: ' + i.qty + ' · Сумма: ' + i.sum + '₽\n'
+        + 'Официант: ' + i.waiter + '\n'
+        + 'Тип: ' + (i.removalType || '—') + '\n'
+        + 'Причина: ' + (i.comment ? i.comment : '(без комментария)') + '\n';
+    });
     return text;
   }
   async function sendDangerousOpsToTelegram(dateStr){
@@ -2116,15 +2106,15 @@
       statusEl.style.color = 'var(--ink-soft)';
       try {
         await sendReceiptImageToTelegram();
-        statusEl.textContent = 'Чек отправлен ✓ Запрашиваю отчёт об опасных операциях…';
+        statusEl.textContent = 'Чек отправлен ✓ Запрашиваю отчёт по удалениям…';
         statusEl.style.color = 'var(--green)';
         try {
           await sendDangerousOpsToTelegram(state.currentDate);
-          statusEl.textContent = 'Чек и отчёт об опасных операциях отправлены ✓';
+          statusEl.textContent = 'Чек и отчёт по удалениям отправлены ✓';
         } catch(opsErr){
-          // Чек уже ушёл успешно — отчёт об опасных операциях необязателен,
+          // Чек уже ушёл успешно — отчёт по удалениям необязателен,
           // поэтому его сбой не должен выглядеть как общая неудача отправки.
-          statusEl.textContent = 'Чек отправлен ✓, но отчёт об опасных операциях не удалось получить: ' + opsErr.message;
+          statusEl.textContent = 'Чек отправлен ✓, но отчёт по удалениям не удалось получить: ' + opsErr.message;
           statusEl.style.color = 'var(--rust)';
         }
       } catch(err){
