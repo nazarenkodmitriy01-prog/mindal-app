@@ -130,17 +130,17 @@ async function fetchWarehousePurchases(dateStr) {
   const report = await olapReport(token, {
     reportType: 'TRANSACTIONS',
     buildSummary: true,
-    groupByRowFields: ['Store.Name', 'TransactionType'],
+    groupByRowFields: ['Store', 'TransactionType'],
     groupByColFields: [],
     aggregateFields: ['Sum.Incoming'],
     filters: {
-      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'DateTime.DateTyped': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
   const byWarehouse = {};
   const rows = (report && report.data) || [];
   rows.forEach((r) => {
-    const store = r['Store.Name'];
+    const store = r['Store'];
     const sum = Number(r['Sum.Incoming']) || 0;
     if (!store) return;
     byWarehouse[store] = (byWarehouse[store] || 0) + sum;
@@ -198,11 +198,11 @@ async function diagRawTransactions(dateStr) {
   return olapReport(token, {
     reportType: 'TRANSACTIONS',
     buildSummary: true,
-    groupByRowFields: ['Store.Name', 'TransactionType'],
+    groupByRowFields: ['Store', 'TransactionType'],
     groupByColFields: [],
     aggregateFields: ['Sum.Incoming'],
     filters: {
-      'DateTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'DateTime.DateTyped': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
 }
