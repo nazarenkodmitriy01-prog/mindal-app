@@ -29,6 +29,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const zlib = require('zlib');
+const iiko = require('./iiko.js');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '127.0.0.1';
@@ -288,6 +289,60 @@ function diskUsageReport() {
 // и затем раз в сутки.
 garbageCollectUploads();
 setInterval(garbageCollectUploads, 24 * 60 * 60 * 1000);
+
+// ============================================================
+// Интеграция с iiko — синхронизация выручки и накладных
+// ============================================================
+function todayDateStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Синхронизация конкретного дня, с сохранением результата в общее хранилище
+// под ключом iiko-sync:YYYY-MM-DD — оттуда уже читает само приложение.
+async function runIikoSync(dateStr) {
+  const result = await iiko.syncDay(dateStr);
+  kv['iiko-sync:' + dateStr] = JSON.stringify(result);
+  persist();
+  return result;
+}
+
+app.get('/iiko/sync', async (req, res) => {
+  if (!iiko.configured()) return res.status(400).json({ error: 'iiko_not_configured', message: 'Заполните IIKO_BASE_URL / IIKO_LOGIN / IIKO_PASSWORD в переменных окружения сервера' });
+  const dateStr = req.query.date || todayDateStr();
+  try {
+    const result = await runIikoSync(dateStr);
+    res.json({ ok: true, result });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e.message || e) });
+  }
+});
+
+// Диагностика — проверить, что логин/пароль верны и посмотреть "сырой" ответ
+// iiko (полезно, чтобы свериться с точными названиями полей/складов/групп).
+app.get('/iiko/diag/ping', async (req, res) => {
+  try { res.json(await iiko.diagPing()); }
+  catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
+});
+app.get('/iiko/diag/sales', async (req, res) => {
+  try { res.json(await iiko.diagRawSales(req.query.date || todayDateStr())); }
+  catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
+});
+app.get('/iiko/diag/transactions', async (req, res) => {
+  try { res.json(await iiko.diagRawTransactions(req.query.date || todayDateStr())); }
+  catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
+});
+
+// Автосинхронизация "сегодня" раз в час — чтобы данные в приложении сами
+// обновлялись в течение дня, без необходимости нажимать что-либо вручную.
+if (iiko.configured()) {
+  runIikoSync(todayDateStr()).catch((e) => console.error('iiko: первая синхронизация не удалась:', e.message));
+  setInterval(() => {
+    runIikoSync(todayDateStr()).catch((e) => console.error('iiko: синхронизация не удалась:', e.message));
+  }, 60 * 60 * 1000);
+} else {
+  console.log('iiko: интеграция не настроена (нет переменных окружения IIKO_*) — пропускаю.');
+}
 
 app.listen(PORT, HOST, () => {
   console.log('Миндаль-сервер запущен на ' + HOST + ':' + PORT);
