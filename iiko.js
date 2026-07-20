@@ -181,6 +181,68 @@ async function diagPing() {
 }
 // Список ВСЕХ доступных полей для конкретного типа отчёта — чтобы не
 // гадать по одному названию, а сразу увидеть точный список от самого iiko.
+// ---------- АБС-анализ блюд за период ----------
+// Классика: сортируем блюда по выручке (с учётом скидки), считаем
+// нарастающий % от общей суммы — топ-80% выручки это категория A,
+// следующие 15% (до 95%) — B, оставшиеся 5% — C.
+async function fetchAbcAnalysis(fromDate, toDate) {
+  const token = await auth();
+  const report = await olapReport(token, {
+    reportType: 'SALES',
+    buildSummary: true,
+    groupByRowFields: ['DishName'],
+    groupByColFields: [],
+    aggregateFields: ['DishDiscountSumInt', 'DishAmountInt'],
+    filters: {
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: fromDate, to: toDate },
+    },
+  });
+  const rows = (report && report.data) || [];
+  const items = rows
+    .map((r) => ({
+      name: r['DishName'] || '(без названия)',
+      sum: Number(r['DishDiscountSumInt']) || 0,
+      qty: Number(r['DishAmountInt']) || 0,
+    }))
+    .filter((i) => i.sum > 0);
+  items.sort((a, b) => b.sum - a.sum);
+  const total = items.reduce((s, i) => s + i.sum, 0);
+  let cum = 0;
+  items.forEach((i) => {
+    cum += i.sum;
+    const pct = total > 0 ? cum / total : 0;
+    i.cumPercent = Math.round(pct * 1000) / 10;
+    i.sharePercent = total > 0 ? Math.round((i.sum / total) * 1000) / 10 : 0;
+    i.category = pct <= 0.8 ? 'A' : (pct <= 0.95 ? 'B' : 'C');
+  });
+  return {
+    items,
+    total,
+    countA: items.filter((i) => i.category === 'A').length,
+    countB: items.filter((i) => i.category === 'B').length,
+    countC: items.filter((i) => i.category === 'C').length,
+  };
+}
+
+// ---------- Опасные операции за день (черновой диагностический запрос) ----------
+// Пока не знаем точных критериев вашего "отчёта 037" — берём с большим запасом
+// все операции, где есть признаки удаления, возврата или крупной скидки, и
+// смотрим на сырые данные, чтобы потом точно откалибровать критерии вместе.
+async function diagDangerousRaw(dateStr) {
+  const token = await auth();
+  return olapReport(token, {
+    reportType: 'SALES',
+    buildSummary: false,
+    groupByRowFields: ['OrderNum', 'DishName', 'WaiterName', 'RemovalType', 'DeletedWithWriteoff', 'Storned', 'DiscountPercent', 'DeletionComment'],
+    groupByColFields: [],
+    aggregateFields: ['DishSumInt', 'DishAmountInt'],
+    filters: {
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+    },
+  });
+}
+
+// ---------- Списки полей / диагностика отчётов ----------
 async function diagColumns(reportType) {
   const c = cfg();
   const token = await auth();
@@ -248,4 +310,6 @@ module.exports = {
   diagRawTransactions,
   diagInvoiceDetail,
   diagColumns,
+  fetchAbcAnalysis,
+  diagDangerousRaw,
 };

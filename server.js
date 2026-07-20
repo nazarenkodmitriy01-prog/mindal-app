@@ -402,6 +402,22 @@ app.get('/iiko/diag/invoices', async (req, res) => {
   try { res.json(await iiko.diagInvoiceDetail(req.query.date || todayDateStr(), req.query.to)); }
   catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
 });
+app.get('/iiko/abc', async (req, res) => {
+  if (!iiko.configured()) return res.status(400).json({ error: 'iiko_not_configured' });
+  const from = req.query.from;
+  const to = req.query.to;
+  if (!from || !to) return res.status(400).json({ error: 'missing_from_to', message: 'Укажите ?from=YYYY-MM-DD&to=YYYY-MM-DD' });
+  try {
+    const result = await iiko.fetchAbcAnalysis(from, to);
+    res.json({ ok: true, ...result });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e.message || e) });
+  }
+});
+app.get('/iiko/diag/dangerous', async (req, res) => {
+  try { res.json(await iiko.diagDangerousRaw(req.query.date || todayDateStr())); }
+  catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
+});
 
 // Автосинхронизация "сегодня" раз в час — чтобы данные в приложении сами
 // обновлялись в течение дня, без необходимости нажимать что-либо вручную.

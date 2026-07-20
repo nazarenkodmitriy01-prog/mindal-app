@@ -804,6 +804,15 @@
     return data;
   }
 
+  async function iikoPullAbcAnalysis(fromDate, toDate){
+    const base = iikoBaseUrl_();
+    if (!base) throw new Error('Сервер синхронизации не настроен');
+    const res = await fetch(base + '/iiko/abc?from=' + fromDate + '&to=' + toDate);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.message || data.error || 'iiko не ответил');
+    return data; // {items, total, countA, countB, countC}
+  }
+
   // ---------- Default data (used only if nothing saved yet) ----------
   const DEFAULT_EMPLOYEES = [
     {id:'bar_ivan',   name:'Иван Старченко',        dept:'bar',      role:'oclad_percent', oclad:45000, percent:0.013, active:true},
@@ -2431,6 +2440,34 @@
   }
   function escapeHtmlA(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+  function renderAbcResult(abc){
+    const container = document.getElementById('abc-result-container');
+    if (!container) return;
+    const catColor = { A:'var(--green)', B:'var(--rust)', C:'var(--red)' };
+    const catLabel = { A:'A — основная выручка', B:'B — стабильные продажи', C:'C — редкие/низкая выручка' };
+    let html = '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;">'
+      + '<span><b style="color:var(--green);">A</b>: '+abc.countA+' поз.</span>'
+      + '<span><b style="color:var(--rust);">B</b>: '+abc.countB+' поз.</span>'
+      + '<span><b style="color:var(--red);">C</b>: '+abc.countC+' поз.</span>'
+      + '<span style="color:var(--ink-soft);">Всего выручки: '+money(abc.total)+'</span>'
+      + '</div>';
+    // Показываем топ-30 позиций, чтобы не перегружать экран — полный список слишком длинный для одной таблицы.
+    const top = abc.items.slice(0, 30);
+    html += '<table class="month-table"><thead><tr><th>Блюдо</th><th class="num">Категория</th><th class="num">Выручка</th><th class="num">% от общей</th><th class="num">Накопительно</th></tr></thead><tbody>'
+      + top.map(i=>
+          '<tr><td>'+escapeHtmlA(i.name)+'</td>'
+          + '<td class="num" style="color:'+catColor[i.category]+';font-weight:800;">'+i.category+'</td>'
+          + '<td class="num">'+money(i.sum)+'</td>'
+          + '<td class="num">'+i.sharePercent+'%</td>'
+          + '<td class="num">'+i.cumPercent+'%</td></tr>'
+        ).join('')
+      + '</tbody></table>';
+    if (abc.items.length > 30){
+      html += '<div class="assumption-note">Показаны первые 30 позиций из '+abc.items.length+' (отсортировано по убыванию выручки).</div>';
+    }
+    container.innerHTML = html;
+  }
+
   function renderAnalyticsView(){
     const mk = monthKeyOf(state.currentDate);
     const {totals, hookahRevenueSum, totalRevenueSum, dates, adjTotals} = computeMonthTotals(mk);
@@ -2515,6 +2552,13 @@
         + '</div>';
     }
 
+    // АБС-анализ блюд (по запросу — тянется из iiko отдельной кнопкой)
+    html += '<div class="kpi-panel"><h4>АБС-анализ блюд за месяц</h4>'
+      + '<div style="margin-bottom:10px;"><button class="btn secondary" id="iiko-pull-abc-btn">⤓ Подтянуть АБС-анализ из iiko</button> '
+      + '<span id="iiko-pull-abc-status" style="font-size:12px;color:var(--ink-soft);"></span></div>'
+      + '<div id="abc-result-container"></div>'
+      + '</div>';
+
     html += '<div class="assumption-note">Данные считаются по тем же цифрам, что и на вкладках «Месяц» и «П&amp;Л» — ничего отдельно вводить не нужно, аналитика собирается сама.</div>';
 
     document.getElementById('view-analytics').innerHTML = html;
@@ -2523,6 +2567,29 @@
       const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
       await loadMonth(monthKeyOf(state.currentDate)); renderAnalyticsView();
     });
+    const abcBtn = document.getElementById('iiko-pull-abc-btn');
+    if (abcBtn){
+      abcBtn.addEventListener('click', async ()=>{
+        const statusEl = document.getElementById('iiko-pull-abc-status');
+        abcBtn.disabled = true;
+        statusEl.textContent = 'Запрашиваю у iiko (может занять до минуты)…';
+        statusEl.style.color = 'var(--ink-soft)';
+        try {
+          const dim = daysInMonth(mk);
+          const from = mk + '-01';
+          const to = mk + '-' + String(dim).padStart(2,'0');
+          const abc = await iikoPullAbcAnalysis(from, to);
+          renderAbcResult(abc);
+          statusEl.textContent = 'Готово';
+          statusEl.style.color = 'var(--green)';
+        } catch(err){
+          statusEl.textContent = 'Не удалось: ' + err.message;
+          statusEl.style.color = 'var(--red)';
+        } finally {
+          abcBtn.disabled = false;
+        }
+      });
+    }
   }
 
   function renderMonthView(){
