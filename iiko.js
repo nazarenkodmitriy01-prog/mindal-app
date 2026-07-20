@@ -109,7 +109,7 @@ async function fetchDayRevenue(dateStr) {
     groupByColFields: [],
     aggregateFields: ['DishDiscountSumInt'],
     filters: {
-      'CloseDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
   let total = 0, hookah = 0;
@@ -189,7 +189,7 @@ async function diagRawSales(dateStr) {
     groupByColFields: [],
     aggregateFields: ['DishSumInt', 'DishDiscountSumInt'],
     filters: {
-      'CloseDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
 }
