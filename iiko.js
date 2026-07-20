@@ -57,6 +57,16 @@ let cachedToken = null;
 let tokenObtainedAt = 0;
 const TOKEN_TTL_MS = 14 * 60 * 1000; // токены iiko живут около 15 минут — обновляем чуть раньше
 
+// Ограничение времени ожидания ответа от iiko — если сервер iiko долго не
+// отвечает, запрос завершится ошибкой сам, а не будет висеть бесконечно.
+const IIKO_TIMEOUT_MS = 20 * 1000;
+function fetchWithTimeout(url, opts) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), IIKO_TIMEOUT_MS);
+  return fetch(url, Object.assign({}, opts, { signal: controller.signal }))
+    .finally(() => clearTimeout(timer));
+}
+
 async function auth() {
   const c = cfg();
   if (!configured()) throw new Error('iiko не настроен (нет IIKO_BASE_URL / IIKO_LOGIN / IIKO_PASSWORD в переменных окружения сервера)');
@@ -64,7 +74,7 @@ async function auth() {
 
   const passHash = sha1(c.password);
   const url = c.baseUrl + '/api/auth?login=' + encodeURIComponent(c.login) + '&pass=' + passHash;
-  const res = await fetch(url);
+  const res = await fetchWithTimeout(url);
   const text = (await res.text()).trim();
   if (!res.ok || !text || text.indexOf('<') !== -1) {
     throw new Error('Не удалось авторизоваться в iiko: ' + text.slice(0, 300));
@@ -77,7 +87,7 @@ async function auth() {
 async function olapReport(token, body) {
   const c = cfg();
   const url = c.baseUrl + '/api/v2/reports/olap?key=' + encodeURIComponent(token);
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -97,15 +107,15 @@ async function fetchDayRevenue(dateStr) {
     buildSummary: true,
     groupByRowFields: ['DishGroup'],
     groupByColFields: [],
-    aggregateFields: ['DishSumInt'],
+    aggregateFields: ['DishDiscountSumInt'],
     filters: {
-      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'CloseTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
   let total = 0, hookah = 0;
   const rows = (report && report.data) || [];
   rows.forEach((r) => {
-    const sum = Number(r['DishSumInt']) || 0;
+    const sum = Number(r['DishDiscountSumInt']) || 0;
     total += sum;
     const group = String(r['DishGroup'] || '');
     if (group.toLowerCase().indexOf(String(c.hookahDishGroup).toLowerCase()) !== -1) hookah += sum;
@@ -164,9 +174,9 @@ async function diagRawSales(dateStr) {
     buildSummary: true,
     groupByRowFields: ['DishGroup'],
     groupByColFields: [],
-    aggregateFields: ['DishSumInt'],
+    aggregateFields: ['DishSumInt', 'DishDiscountSumInt'],
     filters: {
-      'OpenDate.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'CloseTime.Typed': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
     },
   });
 }
