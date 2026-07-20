@@ -1538,7 +1538,10 @@
 
   async function sendTimesheetToTelegram(){
     const el = document.querySelector('#view-timesheet .timesheet-wrap') || document.querySelector('#view-timesheet table');
-    await sendElementToTelegram(el, TELEGRAM_TIMESHEET_CHAT_ID, TELEGRAM_TIMESHEET_TOPIC_ID, 'Табель · ' + monthKeyOf(state.currentDate), 'tabel');
+    const emp = EMPLOYEES.find(e=>e.id===timesheetEmpId);
+    const empName = emp ? emp.name : 'сотрудник не выбран';
+    const caption = 'Табель · ' + monthKeyOf(state.currentDate) + ' · ' + empName;
+    await sendElementToTelegram(el, TELEGRAM_TIMESHEET_CHAT_ID, TELEGRAM_TIMESHEET_TOPIC_ID, caption, 'tabel');
   }
 
   async function sendScheduleToTelegram(weekStart, weekEnd){
