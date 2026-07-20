@@ -764,6 +764,46 @@
     }
   }
 
+  // ---------- Интеграция с iiko — тот же сервер, отдельные /iiko/* маршруты ----------
+  function iikoBaseUrl_(){
+    return sheetApiConfigured_() ? SHEET_API_URL.replace(/\/$/, '') : '';
+  }
+  // Забирает выручку за конкретный день (сам инициирует свежую синхронизацию
+  // на сервере — не просто читает то, что уже там было).
+  async function iikoPullDayRevenue(dateStr){
+    const base = iikoBaseUrl_();
+    if (!base) throw new Error('Сервер синхронизации не настроен');
+    const res = await fetch(base + '/iiko/sync?date=' + encodeURIComponent(dateStr));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.message || data.error || 'iiko не ответил');
+    if (data.result && data.result.revenue && data.result.revenue.error) throw new Error(data.result.revenue.error);
+    return data.result.revenue; // {total, hookah, rowsCount}
+  }
+  // Забирает суммы накладных по подразделениям за целый месяц (сумма уже
+  // засинхронизированных дней — если каких-то дней не хватает, можно сначала
+  // вызвать iikoSyncMonthRange).
+  async function iikoPullMonthTotals(mk){
+    const base = iikoBaseUrl_();
+    if (!base) throw new Error('Сервер синхронизации не настроен');
+    const res = await fetch(base + '/iiko/month?month=' + encodeURIComponent(mk));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.message || data.error || 'iiko не ответил');
+    return data; // {revenueTotal, revenueHookah, purchasesBar, purchasesKitchen, purchasesHookah, daysSynced}
+  }
+  // Досинхронизирует весь месяц целиком (на случай, если какие-то дни ещё
+  // не были засинхронизированы) — может занять несколько секунд.
+  async function iikoSyncMonthRange(mk){
+    const base = iikoBaseUrl_();
+    if (!base) throw new Error('Сервер синхронизации не настроен');
+    const dim = daysInMonth(mk);
+    const from = mk + '-01';
+    const to = mk + '-' + String(dim).padStart(2,'0');
+    const res = await fetch(base + '/iiko/sync-range?from=' + from + '&to=' + to);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.message || data.error || 'iiko не ответил');
+    return data;
+  }
+
   // ---------- Default data (used only if nothing saved yet) ----------
   const DEFAULT_EMPLOYEES = [
     {id:'bar_ivan',   name:'Иван Старченко',        dept:'bar',      role:'oclad_percent', oclad:45000, percent:0.013, active:true},
@@ -1778,6 +1818,8 @@
       + '<div class="revenue-box hookah"><label>Выручка КАЛЬЯН за день</label>'
       + '<input type="number" id="rev-hookah" value="'+(day.hookahRevenue||'')+'" placeholder="0"/></div>'
       + '</div>';
+    html += '<div style="margin:-6px 0 14px;"><button class="btn secondary" id="iiko-pull-revenue-btn">⤓ Подтянуть выручку из iiko</button> '
+      + '<span id="iiko-pull-revenue-status" style="font-size:12px;color:var(--ink-soft);"></span></div>';
 
     // ---- Closing shift report ----
     // Order: выручка дня → наличные ООО/ИП/итого → расходы → наличные с учётом трат →
@@ -1978,6 +2020,28 @@
         renderDayView();
       });
     }
+    const iikoPullBtn = root.querySelector('#iiko-pull-revenue-btn');
+    if (iikoPullBtn){
+      iikoPullBtn.addEventListener('click', async ()=>{
+        const statusEl = root.querySelector('#iiko-pull-revenue-status');
+        iikoPullBtn.disabled = true;
+        statusEl.textContent = 'Запрашиваю у iiko…';
+        statusEl.style.color = 'var(--ink-soft)';
+        try {
+          const rev = await iikoPullDayRevenue(state.currentDate);
+          const day = getDay(state.currentDate);
+          day.totalRevenue = Math.round(rev.total);
+          day.hookahRevenue = Math.round(rev.hookah);
+          scheduleSave();
+          renderDayView();
+          return; // renderDayView перерисует всё заново, дальнейший код не нужен
+        } catch(err){
+          iikoPullBtn.disabled = false;
+          statusEl.textContent = 'Не удалось: ' + err.message;
+          statusEl.style.color = 'var(--red)';
+        }
+      });
+    }
     root.querySelector('#send-telegram-btn').addEventListener('click', async ()=>{
       const statusEl = root.querySelector('#telegram-send-status');
       if (!telegramConfigured_()){
@@ -2078,6 +2142,8 @@
     function pct(amount){ return revenue>0 ? (amount/revenue*100).toFixed(1)+'%' : '—'; }
 
     let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="pnl-month-input" value="'+mk+'"/></div>';
+    html += '<div style="margin-bottom:14px;"><button class="btn secondary" id="iiko-pull-pnl-btn">⤓ Подтянуть себестоимость из iiko</button> '
+      + '<span id="iiko-pull-pnl-status" style="font-size:12px;color:var(--ink-soft);"></span></div>';
 
     let expenseSum = 0;
     categories.forEach(c=>{ expenseSum += Number(c.amount)||0; });
@@ -2120,6 +2186,34 @@
       const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
       await loadMonth(monthKeyOf(state.currentDate)); renderPnlView();
     });
+    const iikoPnlBtn = root.querySelector('#iiko-pull-pnl-btn');
+    if (iikoPnlBtn){
+      iikoPnlBtn.addEventListener('click', async ()=>{
+        const statusEl = root.querySelector('#iiko-pull-pnl-status');
+        iikoPnlBtn.disabled = true;
+        statusEl.textContent = 'Досинхронизирую месяц (может занять до минуты)…';
+        statusEl.style.color = 'var(--ink-soft)';
+        try {
+          await iikoSyncMonthRange(mk);
+          const totals = await iikoPullMonthTotals(mk);
+          const cats = getPnl(mk);
+          const setCat = (name, value) => {
+            const cat = cats.find(c=>c.name===name);
+            if (cat) cat.amount = Math.round(value);
+          };
+          setCat('Себестоимость бара', totals.purchasesBar);
+          setCat('Себестоимость кухни', totals.purchasesKitchen);
+          setCat('Себестоимость КАЛЬЯН', totals.purchasesHookah);
+          scheduleSave();
+          renderPnlView();
+          return;
+        } catch(err){
+          iikoPnlBtn.disabled = false;
+          statusEl.textContent = 'Не удалось: ' + err.message;
+          statusEl.style.color = 'var(--red)';
+        }
+      });
+    }
     root.querySelectorAll('[data-field="name"]').forEach(inp=>{
       inp.addEventListener('change', ()=>{
         const cat = getPnl(mk).find(c=>c.id===inp.closest('tr').dataset.cat);
@@ -2184,6 +2278,8 @@
     }
 
     let html = '<div style="margin-bottom:14px;"><input class="month-select" type="month" id="kitchen-month-input" value="'+mk+'"/></div>';
+    html += '<div style="margin-bottom:14px;"><button class="btn secondary" id="iiko-pull-kitchen-btn">⤓ Подтянуть закупки за месяц из iiko</button> '
+      + '<span id="iiko-pull-kitchen-status" style="font-size:12px;color:var(--ink-soft);"></span></div>';
 
     // ---- Верхняя часть: расчёт чистой прибыли ----
     html += '<div class="kpi-panel"><h4>Чистая прибыль кухни</h4>'
@@ -2237,6 +2333,27 @@
       const [y,m] = ev.target.value.split('-'); state.currentDate = y+'-'+m+'-01';
       await loadMonth(monthKeyOf(state.currentDate)); renderKitchenView();
     });
+    const iikoKitchenBtn = root.querySelector('#iiko-pull-kitchen-btn');
+    if (iikoKitchenBtn){
+      iikoKitchenBtn.addEventListener('click', async ()=>{
+        const statusEl = root.querySelector('#iiko-pull-kitchen-status');
+        iikoKitchenBtn.disabled = true;
+        statusEl.textContent = 'Досинхронизирую месяц (может занять до минуты)…';
+        statusEl.style.color = 'var(--ink-soft)';
+        try {
+          await iikoSyncMonthRange(mk);
+          const totals = await iikoPullMonthTotals(mk);
+          getKitchenExpenses(mk).purchases = Math.round(totals.purchasesKitchen);
+          scheduleSave();
+          renderKitchenView();
+          return;
+        } catch(err){
+          iikoKitchenBtn.disabled = false;
+          statusEl.textContent = 'Не удалось: ' + err.message;
+          statusEl.style.color = 'var(--red)';
+        }
+      });
+    }
     root.querySelectorAll('.kitchen-input').forEach(inp=>{
       inp.addEventListener('change', ()=>{
         getKitchenExpenses(mk)[inp.dataset.field] = Number(inp.value)||0;
