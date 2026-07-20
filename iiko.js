@@ -149,11 +149,19 @@ async function fetchWarehousePurchases(dateStr) {
     byWarehouse[store] = (byWarehouse[store] || 0) + sum;
   });
   const result = { bar: 0, kitchen: 0, hookah: 0 };
+  // Сопоставляем названия складов "нестрого" — без учёта лишних пробелов по
+  // краям и регистра. Это подстраховка на случай, если при копировании
+  // названия склада в настройки закралась случайная разница в пробелах.
+  const norm = (s) => String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+  const byWarehouseNorm = {};
+  Object.keys(byWarehouse).forEach((k) => { byWarehouseNorm[norm(k)] = byWarehouse[k]; });
   Object.keys(c.warehouses).forEach((dept) => {
     const whName = c.warehouses[dept];
-    if (whName && byWarehouse[whName] != null) result[dept] = byWarehouse[whName];
+    if (!whName) return;
+    const key = norm(whName);
+    if (byWarehouseNorm[key] != null) result[dept] = byWarehouseNorm[key];
   });
-  return { byDept: result, byWarehouseRaw: byWarehouse, rowsCount: rows.length };
+  return { byDept: result, byWarehouseRaw: byWarehouse, rowsCount: rows.length, configuredWarehouses: c.warehouses };
 }
 
 // ---------- Полная синхронизация за один день ----------
