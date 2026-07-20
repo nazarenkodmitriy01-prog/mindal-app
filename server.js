@@ -318,6 +318,67 @@ app.get('/iiko/sync', async (req, res) => {
   }
 });
 
+// Синхронизация целого диапазона дат за один вызов — чтобы заполнить
+// пропущенные дни месяца, не вызывая /iiko/sync по одному на каждый день.
+app.get('/iiko/sync-range', async (req, res) => {
+  if (!iiko.configured()) return res.status(400).json({ error: 'iiko_not_configured' });
+  const from = req.query.from;
+  const to = req.query.to;
+  if (!from || !to) return res.status(400).json({ error: 'missing_from_to', message: 'Укажите ?from=YYYY-MM-DD&to=YYYY-MM-DD' });
+  try {
+    const [fy, fm, fd] = from.split('-').map(Number);
+    const [ty, tm, td] = to.split('-').map(Number);
+    let cur = new Date(Date.UTC(fy, fm - 1, fd));
+    const end = new Date(Date.UTC(ty, tm - 1, td));
+    const results = [];
+    while (cur <= end) {
+      const dateStr = cur.getUTCFullYear() + '-' + String(cur.getUTCMonth() + 1).padStart(2, '0') + '-' + String(cur.getUTCDate()).padStart(2, '0');
+      try {
+        const r = await runIikoSync(dateStr);
+        results.push({ date: dateStr, ok: true, revenue: r.revenue, purchases: r.purchases });
+      } catch (e) {
+        results.push({ date: dateStr, ok: false, error: String(e.message || e) });
+      }
+      cur = new Date(cur.getTime() + 24 * 60 * 60 * 1000);
+    }
+    res.json({ ok: true, days: results.length, results });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e.message || e) });
+  }
+});
+
+// Сумма за месяц по уже засинхронизированным дням (ключи iiko-sync:YYYY-MM-*
+// уже лежат в общем хранилище — здесь просто складываем то, что там есть).
+app.get('/iiko/month', (req, res) => {
+  const month = req.query.month; // YYYY-MM
+  if (!month) return res.status(400).json({ error: 'missing_month', message: 'Укажите ?month=YYYY-MM' });
+  const prefix = 'iiko-sync:' + month;
+  const days = Object.keys(kv).filter((k) => k.indexOf(prefix) === 0);
+  const totals = {
+    revenueTotal: 0, revenueHookah: 0,
+    purchasesBar: 0, purchasesKitchen: 0, purchasesHookah: 0,
+    daysSynced: 0, daysWithErrors: 0,
+  };
+  days.forEach((key) => {
+    try {
+      const parsed = JSON.parse(kv[key]);
+      if (parsed.revenue && !parsed.revenue.error) {
+        totals.revenueTotal += Number(parsed.revenue.total) || 0;
+        totals.revenueHookah += Number(parsed.revenue.hookah) || 0;
+      }
+      if (parsed.purchases && !parsed.purchases.error && parsed.purchases.byDept) {
+        totals.purchasesBar += Number(parsed.purchases.byDept.bar) || 0;
+        totals.purchasesKitchen += Number(parsed.purchases.byDept.kitchen) || 0;
+        totals.purchasesHookah += Number(parsed.purchases.byDept.hookah) || 0;
+      }
+      totals.daysSynced++;
+    } catch (e) {
+      totals.daysWithErrors++;
+    }
+  });
+  res.json({ ok: true, month, ...totals });
+});
+
 // Диагностика — проверить, что логин/пароль верны и посмотреть "сырой" ответ
 // iiko (полезно, чтобы свериться с точными названиями полей/складов/групп).
 app.get('/iiko/diag/ping', async (req, res) => {
