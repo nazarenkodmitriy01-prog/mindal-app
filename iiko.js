@@ -193,7 +193,7 @@ async function diagRawSales(dateStr) {
     },
   });
 }
-async function diagRawTransactions(dateStr) {
+async function diagRawTransactions(dateStr, toDateStr) {
   const token = await auth();
   return olapReport(token, {
     reportType: 'TRANSACTIONS',
@@ -202,7 +202,7 @@ async function diagRawTransactions(dateStr) {
     groupByColFields: [],
     aggregateFields: ['Sum.Incoming'],
     filters: {
-      'DateTime.DateTyped': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: nextDayStr(dateStr) },
+      'DateTime.DateTyped': { filterType: 'DateRange', periodType: 'CUSTOM', from: dateStr, to: toDateStr || nextDayStr(dateStr) },
     },
   });
 }

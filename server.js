@@ -329,7 +329,7 @@ app.get('/iiko/diag/sales', async (req, res) => {
   catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
 });
 app.get('/iiko/diag/transactions', async (req, res) => {
-  try { res.json(await iiko.diagRawTransactions(req.query.date || todayDateStr())); }
+  try { res.json(await iiko.diagRawTransactions(req.query.date || todayDateStr(), req.query.to)); }
   catch (e) { res.status(500).json({ ok: false, error: String(e.message || e) }); }
 });
 app.get('/iiko/diag/columns', async (req, res) => {
