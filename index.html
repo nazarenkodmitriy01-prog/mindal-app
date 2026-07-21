@@ -2025,7 +2025,10 @@
       + '<div class="line"><div class="ln">Выручка за день</div><div class="amt">'+money(day.totalRevenue)+'</div></div>'
       + '<div class="line"><div class="ln">Наличные ООО / ИП</div><div class="amt">'+money(day.cashOOO)+' / '+money(day.cashIP)+'</div></div>'
       + '<div class="line"><div class="ln">Итого наличных</div><div class="amt">'+money(totalCash)+'</div></div>'
-      + '<div class="line"><div class="ln">Расходы за день</div><div class="amt">-'+money(expensesSum)+'</div></div>'
+      + ((day.dailyExpenses||[]).length
+          ? '<div class="line"><div class="ln">Расходы за день</div><div class="amt">-'+money(expensesSum)+'</div></div>'
+            + day.dailyExpenses.map(x=>'<div class="line sub"><div class="ln">— '+x.name+'</div><div class="amt">-'+money(x.amount)+'</div></div>').join('')
+          : '<div class="line"><div class="ln">Расходы за день</div><div class="amt">-'+money(expensesSum)+'</div></div>')
       + '<div class="line"><div class="ln"><b>Наличные с учётом трат</b></div><div class="amt"><b>'+money(cashAfterExpenses)+'</b></div></div>'
       + '<div class="line"><div class="ln">Остаток размена в кассе</div><div class="amt">'+money(day.changeFund)+'</div></div>'
       + '<div class="line"><div class="ln">Закрывающий</div><div class="amt" style="font-family:inherit;">'+(day.closerName||'—')+'</div></div>'
@@ -2053,6 +2056,7 @@
     tgLines.push('Наличные ООО / ИП: '+escTg(money(day.cashOOO))+' / '+escTg(money(day.cashIP)));
     tgLines.push('Итого наличных: '+escTg(money(totalCash)));
     tgLines.push('Расходы за день: -'+escTg(money(expensesSum)));
+    (day.dailyExpenses||[]).forEach(x=> tgLines.push('  — '+escTg(x.name)+': -'+escTg(money(x.amount))));
     tgLines.push('<b>Наличные с учётом трат: '+escTg(money(cashAfterExpenses))+'</b>');
     tgLines.push('Остаток размена в кассе: '+escTg(money(day.changeFund)));
     tgLines.push('Закрывающий: '+escTg(day.closerName||'—'));
