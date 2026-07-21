@@ -250,7 +250,11 @@ async function fetchDangerousOps(dateStr) {
   const bigDiscounts = [];
   const stornos = [];
   rows.forEach((r) => {
-    const deleted = r['DeletedWithWriteoff'] && r['DeletedWithWriteoff'] !== 'NOT_DELETED';
+    // Важно: считаем "опасным" удалением только те позиции, где ЕСТЬ тип
+    // (RemovalType = "Со списанием"/"Без списания") — так же, как в родном
+    // отчёте iikoOffice "Опасные операции". Удаления без типа — это отмены
+    // ДО печати на кухню/бар, они в этот отчёт не попадают.
+    const deleted = r['DeletedWithWriteoff'] && r['DeletedWithWriteoff'] !== 'NOT_DELETED' && !!r['RemovalType'];
     const storned = String(r['Storned']).toUpperCase() === 'TRUE';
     const discount = Number(r['DiscountPercent']) || 0;
     const item = {
