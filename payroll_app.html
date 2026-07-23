@@ -394,27 +394,6 @@
      меняются между палитрами — меняется только "фирменный" акцент и фон.
   ========================================================= */
 
-  /* ---- Лагуна (тёплый тил + жёлтый — референс "Оживлённый, но спокойный") ---- */
-  #payroll-root.palette-laguna {
-    --ink: #0F2E2E; --ink-soft: #4F7873; --paper: #EDEAE5; --card: #FFFFFF; --line: #D8D3C8;
-    --rust: #026670; --rust-soft: #CFEAE8;
-    --border-card: #DDD7CB; --border-input: #D0C9BB; --bg-highlight: #F5F3EE; --bg-input: #FBFAF7;
-    --bg-subtle: #F0EDE7; --border-subtle: #EEEAE2; --bg-chip-off: #E7E2D6; --border-row: #EAE5DC;
-    --border-dashed: #C7C0B0; --text-faint: #B8AF9C;
-    --card-glass: rgba(237, 234, 229, 0.42);
-    --accent-rgb: 2, 102, 112;
-  }
-  #payroll-root.palette-laguna.theme-dark {
-    color-scheme: dark;
-    --ink: #E7F5F3; --ink-soft: #9DBAB5; --paper: #0D1F1F; --card: #172D2C; --line: #2C4442;
-    --rust: #4FC9BE; --rust-soft: #1B3B38;
-    --border-card: #294240; --border-input: #34524F; --bg-highlight: #1B302F; --bg-input: #122522;
-    --bg-subtle: #172B29; --border-subtle: #203634; --bg-chip-off: #1E322F; --border-row: #203634;
-    --border-dashed: #345450; --text-faint: #4F6E69;
-    --card-glass: rgba(13, 31, 31, 0.40);
-    --accent-rgb: 79, 201, 190;
-  }
-
   /* ---- Бронза (чёрно-бело-серая база + бронзовый акцент — стандартная палитра) ---- */
   #payroll-root.palette-bronza {
     --ink: #1A1A1A; --ink-soft: #6B6B6B; --paper: #F3F2F0; --card: #FFFFFF; --line: #DDDAD4;
@@ -452,45 +431,6 @@
       radial-gradient(circle at 100% 92%, rgba(var(--accent-rgb), 0.11) 0%, rgba(var(--accent-rgb), 0) 30%),
       radial-gradient(circle at 6% 88%,  rgba(var(--accent-rgb), 0.07) 0%, rgba(var(--accent-rgb), 0) 24%),
       var(--paper);
-  }
-
-  /* ---- Планер (сиреневое "ночное" стекло — референс PLN Planner) ---- */
-  #payroll-root.palette-planer {
-    --ink: #000000; --ink-soft: rgba(0,0,0,0.62); --paper: #F5F3FC; --card: #FFFFFF; --line: rgba(32,29,51,0.12);
-    --rust: #7360D9; --rust-soft: rgba(115,96,217,0.12);
-    --border-card: #E4DFFB; --border-input: rgba(32,29,51,0.16); --bg-highlight: rgba(255,255,255,0.5); --bg-input: rgba(255,255,255,0.55);
-    --bg-subtle: rgba(255,255,255,0.35); --border-subtle: rgba(32,29,51,0.08); --bg-chip-off: rgba(115,96,217,0.08); --border-row: rgba(32,29,51,0.08);
-    --border-dashed: rgba(32,29,51,0.18); --text-faint: rgba(0,0,0,0.38);
-    --card-glass: rgba(255,255,255,0.5);
-    --accent-rgb: 115, 96, 217;
-    --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
-  }
-  #payroll-root.palette-planer input, #payroll-root.palette-planer select, #payroll-root.palette-planer textarea {
-    backdrop-filter: blur(18px) saturate(170%); -webkit-backdrop-filter: blur(18px) saturate(170%);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 2px 8px var(--glass-shadow);
-  }
-  #payroll-root.palette-planer select {
-    background-color: var(--bg-input);
-  }
-  #payroll-root.palette-planer.theme-dark {
-    color-scheme: dark;
-    --ink: #F1F1F7; --ink-soft: rgba(241,241,247,0.62); --paper: #0E0F17; --card: #171826; --line: rgba(255,255,255,0.12);
-    --rust: #9083F5; --rust-soft: rgba(144,131,245,0.18);
-    --border-card: rgba(255,255,255,0.16); --border-input: rgba(255,255,255,0.16); --bg-highlight: rgba(255,255,255,0.09); --bg-input: rgba(255,255,255,0.09);
-    --bg-subtle: rgba(255,255,255,0.05); --border-subtle: rgba(255,255,255,0.10); --bg-chip-off: rgba(255,255,255,0.08); --border-row: rgba(255,255,255,0.10);
-    --border-dashed: rgba(255,255,255,0.20); --text-faint: rgba(241,241,247,0.38);
-    --card-glass: rgba(255,255,255,0.07);
-    --accent-rgb: 144, 131, 245;
-    --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
-  }
-  #payroll-root.palette-planer.theme-dark input,
-  #payroll-root.palette-planer.theme-dark select,
-  #payroll-root.palette-planer.theme-dark textarea {
-    color: #FFFFFF;
-  }
-  #payroll-root.palette-planer.theme-dark input::placeholder,
-  #payroll-root.palette-planer.theme-dark textarea::placeholder {
-    color: rgba(255,255,255,0.45);
   }
 
   #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
@@ -3971,8 +3911,6 @@
   // ---------- Цветовая палитра ----------
   const PALETTES = [
     {id:'bronza',   label:'Бронза',  swatch:'#9C6B3F'},
-    {id:'laguna',   label:'Лагуна',  swatch:'#026670'},
-    {id:'planer',   label:'Планер',  swatch:'#7360D9'},
   ];
   function getPalette(){
     let p;
