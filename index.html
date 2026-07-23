@@ -415,61 +415,62 @@
     --accent-rgb: 79, 201, 190;
   }
 
-  /* ---- Олива (тёмный мох + лаймовый акцент — референс reputationsquad) ---- */
-  #payroll-root.palette-oliva {
-    --ink: #24291F; --ink-soft: #5E6952; --paper: #F1F3EA; --card: #FFFFFF; --line: #DDE3CE;
-    --rust: #61892F; --rust-soft: #DEEAC9;
-    --border-card: #E1E7D2; --border-input: #D4DCC1; --bg-highlight: #F6F8EF; --bg-input: #FBFCF7;
-    --bg-subtle: #F2F4EA; --border-subtle: #EEF1E4; --bg-chip-off: #E7ECD9; --border-row: #EAEEE0;
-    --border-dashed: #C6CFB0; --text-faint: #B7C1A0;
-    --card-glass: rgba(230, 234, 210, 0.42);
-    --accent-rgb: 97, 137, 47;
+  /* ---- Бронза (чёрно-бело-серая база + бронзовый акцент — стандартная палитра) ---- */
+  #payroll-root.palette-bronza {
+    --ink: #1A1A1A; --ink-soft: #6B6B6B; --paper: #F3F2F0; --card: #FFFFFF; --line: #DDDAD4;
+    --rust: #9C6B3F; --rust-soft: #EFE3D3;
+    --border-card: #E4E1DA; --border-input: #D8D4CB; --bg-highlight: #F8F7F5; --bg-input: #FBFAF8;
+    --bg-subtle: #F1F0ED; --border-subtle: #ECEAE5; --bg-chip-off: #E9E6DF; --border-row: #EAE7E1;
+    --border-dashed: #C9C4B8; --text-faint: #A39E92;
+    --card-glass: rgba(243, 242, 240, 0.45);
+    --accent-rgb: 156, 107, 63;
   }
-  #payroll-root.palette-oliva.theme-dark {
+  #payroll-root.palette-bronza.theme-dark {
     color-scheme: dark;
-    --ink: #EAF0DF; --ink-soft: #A5AF95; --paper: #17191B; --card: #222629; --line: #383D34;
-    --rust: #86C232; --rust-soft: #33421C;
-    --border-card: #34392F; --border-input: #454B3C; --bg-highlight: #262A22; --bg-input: #1B1E17;
-    --bg-subtle: #202319; --border-subtle: #2A2E22; --bg-chip-off: #282C21; --border-row: #2A2E22;
-    --border-dashed: #4A5039; --text-faint: #565B47;
-    --card-glass: rgba(23, 25, 27, 0.40);
-    --accent-rgb: 134, 194, 50;
+    --ink: #F2F0EC; --ink-soft: #A6A29A; --paper: #141414; --card: #1E1E1E; --line: #333333;
+    --rust: #C08A52; --rust-soft: #3A2C1C;
+    --border-card: #3A3A3A; --border-input: #3A3A3A; --bg-highlight: #1C1C1C; --bg-input: #1A1A1A;
+    --bg-subtle: #171717; --border-subtle: #2A2A2A; --bg-chip-off: #232323; --border-row: #2A2A2A;
+    --border-dashed: #3D3D3D; --text-faint: #6E6E6E;
+    --card-glass: rgba(255, 255, 255, 0.06);
+    --accent-rgb: 192, 138, 82;
   }
-
-  /* ---- Бирюза (тёмный navy + тил — референс "Чистый и современный") ---- */
-  #payroll-root.palette-biryuza {
-    --ink: #12292B; --ink-soft: #4C6B6C; --paper: #DEF2F1; --card: #FFFFFF; --line: #C8E3E1;
-    --rust: #2B7A78; --rust-soft: #CCE9E7;
-    --border-card: #CFE6E4; --border-input: #C1DBD8; --bg-highlight: #EAF7F6; --bg-input: #F6FBFA;
-    --bg-subtle: #E6F4F3; --border-subtle: #E1F0EF; --bg-chip-off: #D6EDEB; --border-row: #DCEFEE;
-    --border-dashed: #ABCFCC; --text-faint: #9BC0BD;
-    --card-glass: rgba(222, 242, 241, 0.42);
-    --accent-rgb: 43, 122, 120;
+  /* Бронза: приглушаем угловое свечение до едва заметного — фон должен
+     оставаться чёрно-бело-серым, а не окрашиваться в коричневый. */
+  #payroll-root.palette-bronza {
+    background:
+      radial-gradient(circle at 12% 8%,  rgba(var(--accent-rgb), 0.16) 0%, rgba(var(--accent-rgb), 0) 32%),
+      radial-gradient(circle at 90% 15%, rgba(var(--accent-rgb), 0.10) 0%, rgba(var(--accent-rgb), 0) 26%),
+      radial-gradient(circle at 100% 92%, rgba(var(--accent-rgb), 0.13) 0%, rgba(var(--accent-rgb), 0) 30%),
+      radial-gradient(circle at 6% 88%,  rgba(var(--accent-rgb), 0.08) 0%, rgba(var(--accent-rgb), 0) 24%),
+      var(--paper);
   }
-  #payroll-root.palette-biryuza.theme-dark {
-    color-scheme: dark;
-    --ink: #E4F5F4; --ink-soft: #93BAB7; --paper: #0F1E20; --card: #17252A; --line: #2C4245;
-    --rust: #3AAFA9; --rust-soft: #1B3B39;
-    --border-card: #263B3E; --border-input: #33494C; --bg-highlight: #1B2C2F; --bg-input: #121F21;
-    --bg-subtle: #17272A; --border-subtle: #1F3235; --bg-chip-off: #1D3033; --border-row: #1F3235;
-    --border-dashed: #33504F; --text-faint: #4A6567;
-    --card-glass: rgba(15, 30, 32, 0.40);
-    --accent-rgb: 58, 175, 169;
+  #payroll-root.palette-bronza.theme-dark {
+    background:
+      radial-gradient(circle at 12% 8%,  rgba(var(--accent-rgb), 0.14) 0%, rgba(var(--accent-rgb), 0) 32%),
+      radial-gradient(circle at 90% 15%, rgba(var(--accent-rgb), 0.09) 0%, rgba(var(--accent-rgb), 0) 26%),
+      radial-gradient(circle at 100% 92%, rgba(var(--accent-rgb), 0.11) 0%, rgba(var(--accent-rgb), 0) 30%),
+      radial-gradient(circle at 6% 88%,  rgba(var(--accent-rgb), 0.07) 0%, rgba(var(--accent-rgb), 0) 24%),
+      var(--paper);
   }
 
   /* ---- Планер (сиреневое "ночное" стекло — референс PLN Planner) ---- */
   #payroll-root.palette-planer {
-    --ink: #201D33; --ink-soft: rgba(32,29,51,0.62); --paper: #F5F3FC; --card: #FFFFFF; --line: rgba(32,29,51,0.12);
+    --ink: #000000; --ink-soft: rgba(0,0,0,0.62); --paper: #F5F3FC; --card: #FFFFFF; --line: rgba(32,29,51,0.12);
     --rust: #7360D9; --rust-soft: rgba(115,96,217,0.12);
     --border-card: #E4DFFB; --border-input: rgba(32,29,51,0.16); --bg-highlight: rgba(255,255,255,0.5); --bg-input: rgba(255,255,255,0.55);
     --bg-subtle: rgba(255,255,255,0.35); --border-subtle: rgba(32,29,51,0.08); --bg-chip-off: rgba(115,96,217,0.08); --border-row: rgba(32,29,51,0.08);
-    --border-dashed: rgba(32,29,51,0.18); --text-faint: rgba(32,29,51,0.38);
+    --border-dashed: rgba(32,29,51,0.18); --text-faint: rgba(0,0,0,0.38);
     --card-glass: rgba(255,255,255,0.5);
     --accent-rgb: 115, 96, 217;
     --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
   }
   #payroll-root.palette-planer input, #payroll-root.palette-planer select, #payroll-root.palette-planer textarea {
-    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(170%); -webkit-backdrop-filter: blur(18px) saturate(170%);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 2px 8px var(--glass-shadow);
+  }
+  #payroll-root.palette-planer select {
+    background-color: var(--bg-input);
   }
   #payroll-root.palette-planer.theme-dark {
     color-scheme: dark;
@@ -481,6 +482,15 @@
     --card-glass: rgba(255,255,255,0.07);
     --accent-rgb: 144, 131, 245;
     --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
+  }
+  #payroll-root.palette-planer.theme-dark input,
+  #payroll-root.palette-planer.theme-dark select,
+  #payroll-root.palette-planer.theme-dark textarea {
+    color: #FFFFFF;
+  }
+  #payroll-root.palette-planer.theme-dark input::placeholder,
+  #payroll-root.palette-planer.theme-dark textarea::placeholder {
+    color: rgba(255,255,255,0.45);
   }
 
   #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
@@ -3960,16 +3970,15 @@
 
   // ---------- Цветовая палитра ----------
   const PALETTES = [
+    {id:'bronza',   label:'Бронза',  swatch:'#9C6B3F'},
     {id:'laguna',   label:'Лагуна',  swatch:'#026670'},
-    {id:'oliva',    label:'Олива',   swatch:'#86C232'},
-    {id:'biryuza',  label:'Бирюза',  swatch:'#2B7A78'},
     {id:'planer',   label:'Планер',  swatch:'#7360D9'},
   ];
   function getPalette(){
     let p;
-    try { p = window.localStorage.getItem('payroll-palette') || 'laguna'; } catch(e){ p = 'laguna'; }
-    // Миграция: старые палитры (Миндаль/Изумруд/Терракота/Сапфир/Бордо) убраны — теперь Лагуна по умолчанию.
-    if (!PALETTES.some(x=>x.id===p)) p = 'laguna';
+    try { p = window.localStorage.getItem('payroll-palette') || 'bronza'; } catch(e){ p = 'bronza'; }
+    // Миграция: старые палитры (Миндаль/Изумруд/Терракота/Сапфир/Бордо/Олива/Бирюза) убраны — теперь Бронза по умолчанию.
+    if (!PALETTES.some(x=>x.id===p)) p = 'bronza';
     return p;
   }
   function applyPalette(id){
