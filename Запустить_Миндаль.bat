@@ -1,2 +1,2 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0launch_mindal.ps1"
+wscript.exe "%~dp0launch_mindal_hidden.vbs"
