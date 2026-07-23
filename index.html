@@ -461,19 +461,22 @@
   #payroll-root.palette-planer {
     --ink: #201D33; --ink-soft: rgba(32,29,51,0.62); --paper: #F5F3FC; --card: #FFFFFF; --line: rgba(32,29,51,0.12);
     --rust: #7360D9; --rust-soft: rgba(115,96,217,0.12);
-    --border-card: #E4DFFB; --border-input: #DCD5F5; --bg-highlight: #F8F6FE; --bg-input: #FBFAFF;
-    --bg-subtle: #F1EEFA; --border-subtle: rgba(32,29,51,0.08); --bg-chip-off: rgba(115,96,217,0.08); --border-row: rgba(32,29,51,0.08);
+    --border-card: #E4DFFB; --border-input: rgba(32,29,51,0.16); --bg-highlight: rgba(255,255,255,0.5); --bg-input: rgba(255,255,255,0.55);
+    --bg-subtle: rgba(255,255,255,0.35); --border-subtle: rgba(32,29,51,0.08); --bg-chip-off: rgba(115,96,217,0.08); --border-row: rgba(32,29,51,0.08);
     --border-dashed: rgba(32,29,51,0.18); --text-faint: rgba(32,29,51,0.38);
     --card-glass: rgba(255,255,255,0.5);
     --accent-rgb: 115, 96, 217;
     --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
   }
+  #payroll-root.palette-planer input, #payroll-root.palette-planer select, #payroll-root.palette-planer textarea {
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
   #payroll-root.palette-planer.theme-dark {
     color-scheme: dark;
     --ink: #F1F1F7; --ink-soft: rgba(241,241,247,0.62); --paper: #0E0F17; --card: #171826; --line: rgba(255,255,255,0.12);
     --rust: #9083F5; --rust-soft: rgba(144,131,245,0.18);
-    --border-card: rgba(255,255,255,0.16); --border-input: rgba(255,255,255,0.16); --bg-highlight: #1B1C2B; --bg-input: #171826;
-    --bg-subtle: #14151F; --border-subtle: rgba(255,255,255,0.10); --bg-chip-off: rgba(255,255,255,0.08); --border-row: rgba(255,255,255,0.10);
+    --border-card: rgba(255,255,255,0.16); --border-input: rgba(255,255,255,0.16); --bg-highlight: rgba(255,255,255,0.09); --bg-input: rgba(255,255,255,0.09);
+    --bg-subtle: rgba(255,255,255,0.05); --border-subtle: rgba(255,255,255,0.10); --bg-chip-off: rgba(255,255,255,0.08); --border-row: rgba(255,255,255,0.10);
     --border-dashed: rgba(255,255,255,0.20); --text-faint: rgba(241,241,247,0.38);
     --card-glass: rgba(255,255,255,0.07);
     --accent-rgb: 144, 131, 245;
