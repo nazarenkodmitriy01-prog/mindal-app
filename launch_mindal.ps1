@@ -37,6 +37,6 @@ if (-not $browser) {
 
 # If a normal browser window opens at the homepage instead of the Mindal
 # interface, the browser was probably already running and ignored the
-# --app flag. Closing all its windows (check the system tray too) and
-# launching again fixes that.
-Start-Process -FilePath $browser -ArgumentList @("--new-window", "--app=$fileUri")
+# --app/--start-fullscreen flags. Closing all its windows (check the
+# system tray too) and launching again fixes that.
+Start-Process -FilePath $browser -ArgumentList @("--new-window", "--start-fullscreen", "--app=$fileUri")
