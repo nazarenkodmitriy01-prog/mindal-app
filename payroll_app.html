@@ -1144,6 +1144,11 @@
     setDeviceName(name);
     setDeviceAllowedTabsCache(PENDING_DEVICE_TABS);
     setDeviceStatusCache('pending');
+    // getAccessMode() по умолчанию (когда ничего не сохранено) отдаёт 'full' —
+    // старое поведение "никто не настраивал — считаем, что все видят всё",
+    // которое иначе полностью обнулило бы ограничение по вкладкам ниже.
+    // Явно фиксируем 'manager', чтобы не полагаться на этот скрытый дефолт.
+    setAccessModeStorage('manager');
     const record = {
       deviceId: getDeviceId(), name: name,
       requestedAt: new Date().toISOString(), status: 'pending', allowedTabs: PENDING_DEVICE_TABS,
