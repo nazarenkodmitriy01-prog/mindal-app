@@ -2868,9 +2868,9 @@
   // В отличие от ИИ-распознавания это просто OCR: он не отличает бренд от
   // названия вкуса, поэтому возвращает сырой распознанный текст — форма
   // остаётся полностью editable, чтобы разложить его по полям вручную.
-  async function recognizeTobaccoPhoto(file){
+  async function recognizeTobaccoPhoto(source){
     if (typeof Tesseract === 'undefined') throw new Error('Модуль распознавания не загрузился — проверьте интернет-соединение');
-    const { data } = await Tesseract.recognize(file, 'eng+rus');
+    const { data } = await Tesseract.recognize(source, 'eng+rus');
     const rawText = (data && data.text || '').trim();
     return { ok: true, rawText };
   }
@@ -2933,6 +2933,18 @@
       + '<input type="file" accept="image/*" capture="environment" id="shelf-scan-input" style="display:none;"/>'
       + '<span id="shelf-scan-status" style="font-size:12.5px;color:var(--ink-soft);"></span>'
       + '</div>'
+      + '<div id="shelf-crop-wrap" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">'
+        + '<div class="sync-config-note" style="margin:0 0 8px;">Выделите (потяните пальцем/мышью) область с названием вкуса — обычно чистая наклейка без узоров. Так распознавание намного точнее, чем по всему фото.</div>'
+        + '<div id="shelf-crop-stage" style="position:relative;touch-action:none;max-width:100%;border-radius:8px;overflow:hidden;background:#000;user-select:none;">'
+          + '<img id="shelf-crop-img" style="display:block;width:100%;height:auto;"/>'
+          + '<div id="shelf-crop-rect" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,0.5);display:none;pointer-events:none;"></div>'
+        + '</div>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
+        + '<button class="btn" id="shelf-crop-recognize">Распознать выделенное</button>'
+        + '<button class="btn ghost" id="shelf-crop-skip">Распознать всё фото</button>'
+        + '<button class="btn ghost" id="shelf-crop-cancel">Отмена</button>'
+        + '</div>'
+      + '</div>'
       + '<div id="shelf-scan-form" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">'
         + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
         + '<input type="text" id="shelf-form-manufacturer" placeholder="Производитель" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
@@ -2967,6 +2979,72 @@
     attachShelfHandlers();
   }
 
+  // Простой выбор прямоугольной области перетаскиванием (мышью или пальцем)
+  // поверх изображения. Возвращает объект с текущим выделением в координатах
+  // ЭКРАНА (CSS-пиксели относительно stage) через колбэк onChange.
+  function setupCropSelector_(stage, rectEl, onChange){
+    let startX=0, startY=0, dragging=false;
+    function getPos(ev){
+      const r = stage.getBoundingClientRect();
+      const t = ev.touches ? (ev.touches[0] || ev.changedTouches[0]) : ev;
+      return {
+        x: Math.min(Math.max(t.clientX - r.left, 0), r.width),
+        y: Math.min(Math.max(t.clientY - r.top, 0), r.height),
+      };
+    }
+    function update(x,y,w,h){
+      rectEl.style.left=x+'px'; rectEl.style.top=y+'px';
+      rectEl.style.width=w+'px'; rectEl.style.height=h+'px';
+      onChange({x,y,w,h});
+    }
+    function down(ev){
+      dragging = true;
+      const p = getPos(ev);
+      startX=p.x; startY=p.y;
+      rectEl.style.display='';
+      update(p.x,p.y,0,0);
+      ev.preventDefault();
+    }
+    function move(ev){
+      if (!dragging) return;
+      const p = getPos(ev);
+      update(Math.min(startX,p.x), Math.min(startY,p.y), Math.abs(p.x-startX), Math.abs(p.y-startY));
+      ev.preventDefault();
+    }
+    function up(){ dragging = false; }
+    stage.addEventListener('mousedown', down);
+    stage.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+    stage.addEventListener('touchstart', down, {passive:false});
+    stage.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('touchend', up);
+  }
+
+  // Вырезает выделенную область из исходного фото В ЕГО РЕАЛЬНОМ разрешении
+  // (screenRect — координаты на ЭКРАНЕ, пересчитываем через масштаб) и
+  // повышает контраст в оттенках серого — вместе с обрезкой это резко
+  // улучшает точность OCR на чистой наклейке с названием вкуса, убирая фон
+  // и стилизованный логотип, которые иначе забивают распознавание шумом.
+  async function cropAndPreprocess_(imgEl, screenRect){
+    const scale = imgEl.naturalWidth / imgEl.clientWidth;
+    const sx = Math.round(screenRect.x * scale), sy = Math.round(screenRect.y * scale);
+    const sw = Math.max(1, Math.round(screenRect.w * scale)), sh = Math.max(1, Math.round(screenRect.h * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = sw; canvas.height = sh;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, sw, sh);
+    const imgData = ctx.getImageData(0,0,sw,sh);
+    const d = imgData.data;
+    const contrast = 1.6, mid = 128;
+    for (let i=0;i<d.length;i+=4){
+      let gray = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+      gray = Math.max(0, Math.min(255, (gray-mid)*contrast+mid));
+      d[i]=d[i+1]=d[i+2]=gray;
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return new Promise(res => canvas.toBlob(res, 'image/png'));
+  }
+
   function attachShelfHandlers(){
     const root = document.getElementById('view-shelf');
     const scanBtn = root.querySelector('#shelf-scan-btn');
@@ -2976,26 +3054,23 @@
     const mfInput = root.querySelector('#shelf-form-manufacturer');
     const flInput = root.querySelector('#shelf-form-flavor');
     const rawTextEl = root.querySelector('#shelf-form-rawtext');
+    const cropWrap = root.querySelector('#shelf-crop-wrap');
+    const cropStage = root.querySelector('#shelf-crop-stage');
+    const cropImg = root.querySelector('#shelf-crop-img');
+    const cropRectEl = root.querySelector('#shelf-crop-rect');
 
-    scanBtn.addEventListener('click', ()=> scanInput.click());
-    root.querySelector('#shelf-manual-btn').addEventListener('click', ()=>{
-      mfInput.value = ''; flInput.value = '';
-      statusEl.textContent = '';
-      rawTextEl.style.display = 'none';
-      formWrap.style.display = '';
-      mfInput.focus();
-    });
-    scanInput.addEventListener('change', async ()=>{
-      const file = scanInput.files[0];
-      if (!file) return;
-      mfInput.value = ''; flInput.value = '';
-      rawTextEl.style.display = 'none';
+    let currentFile = null;
+    let currentScreenRect = null;
+    let cropObjectUrl = null;
+    setupCropSelector_(cropStage, cropRectEl, r => { currentScreenRect = r; });
+
+    async function runRecognition(source){
       formWrap.style.display = 'none';
-      //Tesseract.js читает текст ПРЯМО В БРАУЗЕРЕ — файл никуда не
-      // отправляется и после этого блока не сохраняется нигде.
-      statusEl.textContent = 'Распознаю текст с фото… это может занять несколько секунд';
+      mfInput.value = ''; flInput.value = '';
+      rawTextEl.style.display = 'none';
+      statusEl.textContent = 'Распознаю текст… это может занять несколько секунд';
       try {
-        const recognized = await recognizeTobaccoPhoto(file);
+        const recognized = await recognizeTobaccoPhoto(source);
         const lines = (recognized.rawText || '').split('\n').map(s=>s.trim()).filter(Boolean);
         if (lines.length){
           // Не можем надёжно отличить бренд от вкуса по сырому OCR-тексту —
@@ -3006,13 +3081,63 @@
           rawTextEl.style.display = '';
           statusEl.textContent = 'Текст распознан — проверьте и поправьте поля ниже';
         } else {
-          statusEl.textContent = 'Не удалось прочитать текст с фото — заполните вручную';
+          statusEl.textContent = 'Не удалось прочитать текст — заполните вручную';
         }
       } catch(e){
         statusEl.textContent = 'Ошибка распознавания: ' + e.message + ' — заполните вручную';
       }
       formWrap.style.display = '';
+    }
+
+    scanBtn.addEventListener('click', ()=> scanInput.click());
+    root.querySelector('#shelf-manual-btn').addEventListener('click', ()=>{
+      mfInput.value = ''; flInput.value = '';
+      statusEl.textContent = '';
+      rawTextEl.style.display = 'none';
+      cropWrap.style.display = 'none';
+      formWrap.style.display = '';
+      mfInput.focus();
+    });
+    scanInput.addEventListener('change', ()=>{
+      const file = scanInput.files[0];
       scanInput.value = '';
+      if (!file) return;
+      currentFile = file;
+      currentScreenRect = null;
+      formWrap.style.display = 'none';
+      cropRectEl.style.display = 'none';
+      if (cropObjectUrl) URL.revokeObjectURL(cropObjectUrl);
+      cropObjectUrl = URL.createObjectURL(file);
+      cropImg.src = cropObjectUrl;
+      cropWrap.style.display = '';
+      statusEl.textContent = '';
+    });
+
+    root.querySelector('#shelf-crop-recognize').addEventListener('click', async ()=>{
+      if (!currentScreenRect || currentScreenRect.w < 10 || currentScreenRect.h < 10){
+        statusEl.textContent = 'Сначала выделите область с текстом (потяните по фото).';
+        return;
+      }
+      // Важно: считаем обрезку, пока картинка ещё ВИДИМА (cropWrap ещё не
+      // скрыт) — иначе clientWidth/clientHeight у скрытого <img> станут 0,
+      // масштаб уйдёт в бесконечность и getImageData упадёт с ошибкой.
+      let blob;
+      try {
+        blob = await cropAndPreprocess_(cropImg, currentScreenRect);
+      } catch(e){
+        statusEl.textContent = 'Не удалось обработать выделение: ' + e.message;
+        return;
+      }
+      cropWrap.style.display = 'none';
+      await runRecognition(blob);
+    });
+    root.querySelector('#shelf-crop-skip').addEventListener('click', async ()=>{
+      cropWrap.style.display = 'none';
+      await runRecognition(currentFile);
+    });
+    root.querySelector('#shelf-crop-cancel').addEventListener('click', ()=>{
+      cropWrap.style.display = 'none';
+      statusEl.textContent = '';
     });
 
     root.querySelector('#shelf-form-cancel').addEventListener('click', ()=>{
