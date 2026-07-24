@@ -143,11 +143,6 @@
   #payroll-root .sync-config-panel input[type="checkbox"] {
     display: inline-block; width: 16px; height: 16px; flex-shrink: 0; margin: 0; accent-color: var(--rust);
   }
-  #payroll-root .access-tab-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 7px 2px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; cursor: pointer;
-  }
-  #payroll-root .access-tab-row:last-child { border-bottom: none; }
   #payroll-root .sync-config-actions { display: flex; gap: 8px; margin-top: 4px; }
   #payroll-root .sync-config-actions .btn { flex: 1; text-align: center; font-size: 13px; padding: 7px 10px; }
   #payroll-root .sync-config-note { font-size: 11.5px; color: var(--ink-soft); margin-top: 9px; line-height: 1.4; }
@@ -1081,23 +1076,12 @@
   // его, откройте payroll_app.html в текстовом редакторе и поменяйте строку
   // ниже.
   const ACCESS_PASSWORD = 'mindal2026';
-  const DEFAULT_RESTRICTED_TABS = ['month', 'pnl', 'settings', 'kitchen', 'analytics'];
   const ALL_TABS_FOR_ACCESS = [
     {id:'day', label:'Сегодня'}, {id:'revenue', label:'Выручка'}, {id:'month', label:'Месяц'},
     {id:'timesheet', label:'Табель'}, {id:'schedule', label:'График'}, {id:'teamwork', label:'Задачи и чат'},
     {id:'outsource', label:'Аутсорс КАЛЬЯН'}, {id:'pnl', label:'П&Л'}, {id:'kitchen', label:'Кухня'},
     {id:'analytics', label:'Аналитика'}, {id:'settings', label:'Сотрудники'},
   ];
-  function getRestrictedTabs(){
-    try {
-      const raw = window.localStorage.getItem('payroll-restricted-tabs');
-      if (raw) return JSON.parse(raw);
-    } catch(e){}
-    return DEFAULT_RESTRICTED_TABS;
-  }
-  function setRestrictedTabs(list){
-    try { window.localStorage.setItem('payroll-restricted-tabs', JSON.stringify(list)); } catch(e){}
-  }
   function getAccessMode(){
     try { return window.localStorage.getItem('payroll-access-mode') || 'full'; }
     catch(e){ return 'full'; }
@@ -4305,25 +4289,22 @@
     // Полный доступ даёт ТОЛЬКО локальный пароль на этом устройстве (введён
     // либо через замок в шапке, либо через обход "Я администратор" на
     // экране "Кто вы?") — запасной вариант, не зависящий от сервера.
-    // Иначе видимость вкладок = пересечение локального ограничения
-    // (getRestrictedTabs, старая функция "ограничить это устройство") и
-    // списка вкладок, который для этого устройства выдал администратор
-    // централизованно (см. "Логин по устройствам" выше) — пока заявка не
-    // одобрена (или устройство никогда не регистрировалось), это только
-    // вкладка "Сегодня".
+    // Иначе видимость вкладок = список, который для этого устройства выдал
+    // администратор централизованно (см. "Логин по устройствам" выше) —
+    // пока заявка не одобрена (или устройство никогда не регистрировалось),
+    // это только вкладка "Сегодня".
     const passwordFull = getAccessMode() === 'full';
-    const restrictedLocally = new Set(getRestrictedTabs());
     const deviceAllowed = new Set(
       getDeviceStatusCache() === 'approved' ? getDeviceAllowedTabsCache() : PENDING_DEVICE_TABS
     );
     document.querySelectorAll('#payroll-root .tab').forEach(t=>{
       const id = t.dataset.tab;
-      const hide = !passwordFull && (restrictedLocally.has(id) || !deviceAllowed.has(id));
+      const hide = !passwordFull && !deviceAllowed.has(id);
       t.style.display = hide ? 'none' : '';
     });
     document.getElementById('access-lock-btn').innerHTML = passwordFull ? ICON_UNLOCK : ICON_LOCK;
     // Если сейчас открыта именно та вкладка, которую только что скрыли — переключаемся на "Сегодня"
-    if (!passwordFull && (restrictedLocally.has(activeTab) || !deviceAllowed.has(activeTab))){
+    if (!passwordFull && !deviceAllowed.has(activeTab)){
       switchTab('day');
     }
   }
@@ -4335,30 +4316,11 @@
   function renderAccessPanel(){
     const mode = getAccessMode();
     if (mode === 'full'){
-      const selected = new Set(getRestrictedTabs());
       accessPanelBody.innerHTML =
-        '<div style="font-size:12.5px;margin-bottom:8px;">Сейчас: <b>полный доступ</b>. Выберите, что скрыть на этом устройстве:</div>'
-        + '<div style="max-height:240px;overflow-y:auto;margin-bottom:10px;">'
-        + ALL_TABS_FOR_ACCESS.map(t=>
-            '<label class="access-tab-row">'
-            + '<span>'+t.label+'</span>'
-            + '<input type="checkbox" class="access-tab-checkbox" data-tab="'+t.id+'"'+(selected.has(t.id)?' checked':'')+'/>'
-            + '</label>'
-          ).join('')
-        + '</div>'
-        + '<button class="btn secondary" id="access-restrict-btn" style="width:100%;">Ограничить доступ (режим менеджера)</button>'
-        + '<div class="sync-config-note">Выбранные вкладки скроются на этом устройстве. Действует только здесь.</div>'
-        + '<div style="border-top:1px solid var(--border-subtle);margin:14px 0 10px;"></div>'
+        '<div style="font-size:12.5px;margin-bottom:10px;">Сейчас: <b>полный доступ</b> (введён пароль администратора на этом устройстве).</div>'
         + '<div style="font-size:12.5px;font-weight:600;margin-bottom:8px;">Устройства</div>'
+        + '<div class="sync-config-note" style="margin-bottom:8px;">Здесь выдаётся доступ каждому устройству, которое подало заявку через экран «Кто вы?».</div>'
         + '<div id="access-devices-list"><div class="sync-config-note">Загрузка…</div></div>';
-      accessPanelBody.querySelector('#access-restrict-btn').addEventListener('click', ()=>{
-        const chosen = Array.from(accessPanelBody.querySelectorAll('.access-tab-checkbox'))
-          .filter(cb=>cb.checked).map(cb=>cb.dataset.tab);
-        setRestrictedTabs(chosen);
-        setAccessModeStorage('manager');
-        applyAccessMode();
-        accessPanel.style.display = 'none';
-      });
       renderDevicesAdminSection();
     } else {
       accessPanelBody.innerHTML =
