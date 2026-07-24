@@ -665,15 +665,25 @@
   <div class="device-gate" id="device-gate">
     <div class="device-gate-card">
       <h2>Кто вы?</h2>
-      <div class="sub">Выберите своё имя — устройство отправится на подтверждение администратору.</div>
-      <label>Сотрудник
-        <select id="device-gate-select"></select>
-      </label>
-      <label id="device-gate-other-wrap" style="display:none">Имя
-        <input type="text" id="device-gate-other-input" placeholder="Введите имя">
-      </label>
-      <button class="btn" id="device-gate-submit" style="margin-top:4px;">Отправить заявку</button>
+      <div id="device-gate-name-wrap">
+        <div class="sub">Выберите своё имя — устройство отправится на подтверждение администратору. До одобрения будет доступна только вкладка «Сегодня».</div>
+        <label>Сотрудник
+          <select id="device-gate-select"></select>
+        </label>
+        <label id="device-gate-other-wrap" style="display:none">Имя
+          <input type="text" id="device-gate-other-input" placeholder="Введите имя">
+        </label>
+        <button class="btn" id="device-gate-submit" style="margin-top:4px;">Отправить заявку</button>
+      </div>
+      <div id="device-gate-admin-wrap" style="display:none">
+        <div class="sub">Пароль администратора — полный доступ сразу, без заявки.</div>
+        <label>Пароль
+          <input type="password" id="device-gate-admin-password" placeholder="пароль">
+        </label>
+        <button class="btn" id="device-gate-admin-submit" style="margin-top:4px;">Войти</button>
+      </div>
       <div class="device-gate-error" id="device-gate-error"></div>
+      <button type="button" id="device-gate-admin-toggle" style="margin-top:14px;width:100%;background:none;border:none;color:var(--ink-soft);font-size:12px;cursor:pointer;text-decoration:underline;">Я администратор</button>
     </div>
   </div>
   <div class="topbar">
@@ -1099,14 +1109,16 @@
   // ---------- Логин по устройствам (вход по имени, без пароля) ----------
   // Каждое устройство один раз выбирает имя из списка сотрудников (без
   // пароля) и отправляет заявку в общий KV-реестр на сервере
-  // (ключ "device:<id>"). До одобрения устройство работает в ограниченном
-  // режиме — том же самом, что и обычный "режим менеджера" выше. Права
-  // (полный/ограниченный доступ) выдаются централизованно из панели
-  // "Уровень доступа" на любом устройстве, где введён ACCESS_PASSWORD —
-  // см. renderDevicesAdminSection ниже. Локальный пароль как способ
-  // получить полный доступ не убран — это запасной вариант, если сервер
-  // недоступен.
+  // (ключ "device:<id>"). До одобрения устройство видит ТОЛЬКО вкладку
+  // "Сегодня". После заявки администратор сам решает, какие именно вкладки
+  // открыть этому устройству (см. renderDevicesAdminSection ниже) — это не
+  // бинарный переключатель "полный/ограниченный", а точный список.
+  // Локальный пароль (ACCESS_PASSWORD) остаётся отдельным способом получить
+  // полный доступ на конкретном устройстве — тот, кто вводит пароль прямо на
+  // экране "Кто вы?", вообще не создаёт заявку и не появляется в списке
+  // устройств (это администратор, а не сотрудник, ожидающий подтверждения).
   const DEVICE_KEY_PREFIX = 'device:';
+  const PENDING_DEVICE_TABS = ['day'];
   function getDeviceId(){
     let id = localGet_('payroll-device-id');
     if (!id){
@@ -1118,39 +1130,36 @@
   }
   function getDeviceName(){ return localGet_('payroll-device-name') || null; }
   function setDeviceName(name){ localSet_('payroll-device-name', name); }
-  function getDeviceRoleCache(){ return localGet_('payroll-device-role') || null; }
-  function setDeviceRoleCache(role){ localSet_('payroll-device-role', role || ''); }
+  function getDeviceAdminBypass_(){ return localGet_('payroll-device-admin-bypass') === '1'; }
+  function setDeviceAdminBypass_(){ localSet_('payroll-device-admin-bypass', '1'); }
+  function getDeviceAllowedTabsCache(){
+    try { const raw = localGet_('payroll-device-allowed-tabs'); return raw ? JSON.parse(raw) : PENDING_DEVICE_TABS; }
+    catch(e){ return PENDING_DEVICE_TABS; }
+  }
+  function setDeviceAllowedTabsCache(tabs){ localSet_('payroll-device-allowed-tabs', JSON.stringify(tabs)); }
   function getDeviceStatusCache(){ return localGet_('payroll-device-status') || null; }
   function setDeviceStatusCache(status){ localSet_('payroll-device-status', status || ''); }
 
   async function submitDeviceRequest(name){
     setDeviceName(name);
-    setDeviceRoleCache('manager');
+    setDeviceAllowedTabsCache(PENDING_DEVICE_TABS);
     setDeviceStatusCache('pending');
-    // getAccessMode() по умолчанию (когда ничего не сохранено) отдаёт 'full' —
-    // это старое поведение "никто не настраивал — считаем, что все видят всё".
-    // Раз устройство теперь регистрируется явно, фиксируем локальный режим как
-    // 'manager', чтобы не полагаться на этот скрытый дефолт: без этого только
-    // что зарегистрированное устройство осталось бы с полным доступом до
-    // первого ручного ограничения. Пароль (см. renderAccessPanel) по-прежнему
-    // может явно переключить обратно на 'full'.
-    setAccessModeStorage('manager');
     const record = {
       deviceId: getDeviceId(), name: name,
-      requestedAt: new Date().toISOString(), status: 'pending', role: 'manager',
+      requestedAt: new Date().toISOString(), status: 'pending', allowedTabs: PENDING_DEVICE_TABS,
     };
     await deviceStorageSet_(DEVICE_KEY_PREFIX + getDeviceId(), JSON.stringify(record));
   }
 
   async function refreshDeviceStatus(){
     const name = getDeviceName();
-    if (!name) return; // экран "Кто вы?" ещё не пройден
+    if (!name) return; // экран "Кто вы?" ещё не пройден (или это обход по паролю)
     const raw = await deviceStorageGet_(DEVICE_KEY_PREFIX + getDeviceId());
     if (!raw) return; // офлайн или запись ещё не создана — оставляем кэш как есть
     let rec;
     try { rec = JSON.parse(raw); } catch(e){ return; }
-    const role = rec.status === 'approved' ? (rec.role || 'manager') : 'manager';
-    setDeviceRoleCache(role);
+    const tabs = rec.status === 'approved' ? (rec.allowedTabs && rec.allowedTabs.length ? rec.allowedTabs : PENDING_DEVICE_TABS) : PENDING_DEVICE_TABS;
+    setDeviceAllowedTabsCache(tabs);
     setDeviceStatusCache(rec.status || 'pending');
     applyAccessMode();
     updatePendingBanner();
@@ -1162,7 +1171,7 @@
     const status = getDeviceStatusCache();
     const textEl = document.getElementById('device-pending-banner-text');
     if (status === 'pending'){
-      textEl.textContent = 'Заявка на доступ отправлена — ожидает подтверждения администратора.';
+      textEl.textContent = 'Заявка на доступ отправлена — ожидает подтверждения администратора. Пока доступна только вкладка «Сегодня».';
       banner.style.display = 'flex';
     } else if (status === 'blocked'){
       textEl.textContent = 'Доступ этого устройства отклонён администратором.';
@@ -1178,6 +1187,10 @@
     const otherWrap = document.getElementById('device-gate-other-wrap');
     const otherInput = document.getElementById('device-gate-other-input');
     const errorEl = document.getElementById('device-gate-error');
+    const adminToggle = document.getElementById('device-gate-admin-toggle');
+    const adminWrap = document.getElementById('device-gate-admin-wrap');
+    const adminInput = document.getElementById('device-gate-admin-password');
+    const nameWrap = document.getElementById('device-gate-name-wrap');
     select.innerHTML = '<option value="">— выбрать —</option>'
       + EMPLOYEES.filter(e=>e.active).map(e=>'<option value="'+e.name+'">'+e.name+'</option>').join('')
       + '<option value="__other__">Другое имя…</option>';
@@ -1197,6 +1210,27 @@
       updatePendingBanner();
       startDevicePolling_();
     });
+    // Обход для администратора: вход по паролю прямо здесь, без заявки —
+    // это устройство не попадает в список ожидающих подтверждения.
+    adminToggle.addEventListener('click', ()=>{
+      const opening = adminWrap.style.display === 'none';
+      adminWrap.style.display = opening ? '' : 'none';
+      nameWrap.style.display = opening ? 'none' : '';
+      adminToggle.textContent = opening ? '← Я сотрудник' : 'Я администратор';
+    });
+    document.getElementById('device-gate-admin-submit').addEventListener('click', ()=>{
+      if (adminInput.value === ACCESS_PASSWORD){
+        setAccessModeStorage('full');
+        setDeviceAdminBypass_();
+        gate.style.display = 'none';
+        applyAccessMode();
+      } else {
+        errorEl.textContent = 'Неверный пароль.';
+      }
+    });
+    adminInput.addEventListener('keydown', ev=>{
+      if (ev.key === 'Enter') document.getElementById('device-gate-admin-submit').click();
+    });
     gate.style.display = 'flex';
   }
 
@@ -1212,6 +1246,9 @@
   }
 
   function initDeviceGate(){
+    if (getDeviceAdminBypass_()){
+      return; // администратор уже входил по паролю на этом устройстве — заявка не нужна
+    }
     if (!getDeviceName()){
       showDeviceGate();
     } else {
@@ -4260,20 +4297,28 @@
 
   // ---------- Уровень доступа: применение и панель ----------
   function applyAccessMode(){
-    // Полный доступ даёт ЛИБО локальный пароль на этом устройстве (как раньше,
-    // запасной вариант на случай недоступности сервера), ЛИБО одобренная с
-    // сервера роль 'full' для этого устройства (см. "Логин по устройствам" выше).
+    // Полный доступ даёт ТОЛЬКО локальный пароль на этом устройстве (введён
+    // либо через замок в шапке, либо через обход "Я администратор" на
+    // экране "Кто вы?") — запасной вариант, не зависящий от сервера.
+    // Иначе видимость вкладок = пересечение локального ограничения
+    // (getRestrictedTabs, старая функция "ограничить это устройство") и
+    // списка вкладок, который для этого устройства выдал администратор
+    // централизованно (см. "Логин по устройствам" выше) — пока заявка не
+    // одобрена (или устройство никогда не регистрировалось), это только
+    // вкладка "Сегодня".
     const passwordFull = getAccessMode() === 'full';
-    const deviceFull = getDeviceRoleCache() === 'full';
-    const effectiveFull = passwordFull || deviceFull;
-    const restricted = getRestrictedTabs();
+    const restrictedLocally = new Set(getRestrictedTabs());
+    const deviceAllowed = new Set(
+      getDeviceStatusCache() === 'approved' ? getDeviceAllowedTabsCache() : PENDING_DEVICE_TABS
+    );
     document.querySelectorAll('#payroll-root .tab').forEach(t=>{
-      const hide = !effectiveFull && restricted.includes(t.dataset.tab);
+      const id = t.dataset.tab;
+      const hide = !passwordFull && (restrictedLocally.has(id) || !deviceAllowed.has(id));
       t.style.display = hide ? 'none' : '';
     });
-    document.getElementById('access-lock-btn').innerHTML = effectiveFull ? ICON_UNLOCK : ICON_LOCK;
+    document.getElementById('access-lock-btn').innerHTML = passwordFull ? ICON_UNLOCK : ICON_LOCK;
     // Если сейчас открыта именно та вкладка, которую только что скрыли — переключаемся на "Сегодня"
-    if (!effectiveFull && restricted.includes(activeTab)){
+    if (!passwordFull && (restrictedLocally.has(activeTab) || !deviceAllowed.has(activeTab))){
       switchTab('day');
     }
   }
@@ -4339,7 +4384,7 @@
   function deviceStatusLabel_(status){
     if (status === 'approved') return 'одобрено';
     if (status === 'blocked') return 'отклонено';
-    return 'ожидает';
+    return 'ожидает (видит только «Сегодня»)';
   }
   async function renderDevicesAdminSection(){
     const box = accessPanelBody.querySelector('#access-devices-list');
@@ -4360,21 +4405,24 @@
       box.innerHTML = '<div class="sync-config-note">Пока нет ни одной заявки с устройств.</div>';
       return;
     }
-    box.innerHTML = '<div style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">'
+    box.innerHTML = '<div style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">'
       + records.map(({key, rec})=>{
           const time = rec.requestedAt ? new Date(rec.requestedAt).toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '';
-          let actions = '';
-          if (rec.status === 'approved'){
-            actions = '<button class="btn ghost" data-action="revoke" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Отозвать</button>';
-          } else {
-            actions = '<button class="btn" data-action="approve-full" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Полный</button>'
-              + '<button class="btn secondary" data-action="approve-manager" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Ограниченный</button>'
-              + '<button class="btn ghost" data-action="block" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Отклонить</button>';
-          }
+          const allowed = new Set(rec.allowedTabs && rec.allowedTabs.length ? rec.allowedTabs : PENDING_DEVICE_TABS);
           return '<div style="border:1px solid var(--border-subtle);border-radius:6px;padding:8px;">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;"><b>'+rec.name+'</b><span class="sync-config-note" style="margin:0;">'+deviceStatusLabel_(rec.status)+(rec.status==='approved' ? ' · '+(rec.role==='full'?'полный':'ограниченный') : '')+'</span></div>'
-            + '<div class="sync-config-note" style="margin:2px 0 6px;">'+time+'</div>'
-            + '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;"><b>'+rec.name+'</b></div>'
+            + '<div class="sync-config-note" style="margin:2px 0 6px;">'+deviceStatusLabel_(rec.status)+' · '+time+'</div>'
+            + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin-bottom:8px;">'
+            + ALL_TABS_FOR_ACCESS.map(t=>
+                '<label style="display:flex;align-items:center;gap:5px;font-size:12px;">'
+                + '<input type="checkbox" class="device-tab-checkbox" data-key="'+key+'" data-tab="'+t.id+'"'+(allowed.has(t.id)?' checked':'')+'/>'
+                + t.label + '</label>'
+              ).join('')
+            + '</div>'
+            + '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+            + '<button class="btn" data-action="save" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Сохранить доступ</button>'
+            + '<button class="btn ghost" data-action="block" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">'+(rec.status==='approved'?'Отозвать':'Отклонить')+'</button>'
+            + '</div>'
             + '</div>';
         }).join('')
       + '</div>';
@@ -4386,10 +4434,14 @@
         if (!raw) return;
         let rec;
         try { rec = JSON.parse(raw); } catch(e){ return; }
-        if (action === 'approve-full'){ rec.status = 'approved'; rec.role = 'full'; }
-        else if (action === 'approve-manager'){ rec.status = 'approved'; rec.role = 'manager'; }
-        else if (action === 'block'){ rec.status = 'blocked'; rec.role = 'manager'; }
-        else if (action === 'revoke'){ rec.status = 'blocked'; rec.role = 'manager'; }
+        if (action === 'save'){
+          const chosen = Array.from(box.querySelectorAll('.device-tab-checkbox[data-key="'+key+'"]'))
+            .filter(cb=>cb.checked).map(cb=>cb.dataset.tab);
+          rec.status = 'approved';
+          rec.allowedTabs = chosen.length ? chosen : PENDING_DEVICE_TABS;
+        } else if (action === 'block'){
+          rec.status = 'blocked';
+        }
         await deviceStorageSet_(key, JSON.stringify(rec));
         renderDevicesAdminSection();
       });
