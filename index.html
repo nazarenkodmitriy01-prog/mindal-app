@@ -433,6 +433,86 @@
       var(--paper);
   }
 
+  /* ---- Виолет (плоский фиолетовый fintech-дизайн — референс пользователя) ---- */
+  #payroll-root.palette-violet {
+    --ink: #14141F; --ink-soft: #6B6B80; --paper: #F7F7FB; --card: #FFFFFF; --line: #E7E6F0;
+    --rust: #6C5CE7; --rust-soft: #EEEBFD;
+    --border-card: #ECEBF5; --border-input: #E2E0F0; --bg-highlight: #FAFAFD; --bg-input: #F4F3FA;
+    --bg-subtle: #F5F4FA; --border-subtle: #EFEEF7; --bg-chip-off: #EFEDFA; --border-row: #EFEEF7;
+    --border-dashed: #D6D3EA; --text-faint: #A9A7BE;
+    --card-glass: #FFFFFF;
+    --accent-rgb: 108, 92, 231;
+    --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
+  }
+  #payroll-root.palette-violet.theme-dark {
+    color-scheme: dark;
+    --ink: #F1F0FA; --ink-soft: #A6A3C0; --paper: #0F0F14; --card: #1A1A24; --line: #2E2E3D;
+    --rust: #8B7CF6; --rust-soft: #2A2540;
+    --border-card: #2C2C3B; --border-input: #333244; --bg-highlight: #1D1D28; --bg-input: #1D1D28;
+    --bg-subtle: #17171F; --border-subtle: #26262F; --bg-chip-off: #21212D; --border-row: #26262F;
+    --border-dashed: #3A3A4D; --text-faint: #5C5A72;
+    --card-glass: #1A1A24;
+    --accent-rgb: 139, 124, 246;
+    --font-body: 'Plus Jakarta Sans', 'Roboto', -apple-system, sans-serif;
+  }
+  /* Виолет: плоский дизайн — без стекла/блюра на карточках, ровный фон без
+     углового свечения (в отличие от Бронзы/старых палитр). */
+  #payroll-root.palette-violet { background: var(--paper); }
+  #payroll-root.palette-violet .revenue-box,
+  #payroll-root.palette-violet .dept-card,
+  #payroll-root.palette-violet .receipt,
+  #payroll-root.palette-violet .task-column,
+  #payroll-root.palette-violet .chat-log,
+  #payroll-root.palette-violet .kpi-panel,
+  #payroll-root.palette-violet .adj-panel,
+  #payroll-root.palette-violet .settings-dept,
+  #payroll-root.palette-violet .add-emp-card,
+  #payroll-root.palette-violet .closing-card,
+  #payroll-root.palette-violet .topbar {
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    box-shadow: 0 1px 2px rgba(20,20,31,0.04), 0 8px 20px rgba(20,20,31,0.06);
+  }
+  #payroll-root.palette-violet.theme-dark .revenue-box,
+  #payroll-root.palette-violet.theme-dark .dept-card,
+  #payroll-root.palette-violet.theme-dark .receipt,
+  #payroll-root.palette-violet.theme-dark .task-column,
+  #payroll-root.palette-violet.theme-dark .chat-log,
+  #payroll-root.palette-violet.theme-dark .kpi-panel,
+  #payroll-root.palette-violet.theme-dark .adj-panel,
+  #payroll-root.palette-violet.theme-dark .settings-dept,
+  #payroll-root.palette-violet.theme-dark .add-emp-card,
+  #payroll-root.palette-violet.theme-dark .closing-card,
+  #payroll-root.palette-violet.theme-dark .topbar {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.28);
+  }
+  /* Крупные скругления карточек и кнопок по референсу */
+  #payroll-root.palette-violet .revenue-box,
+  #payroll-root.palette-violet .dept-card,
+  #payroll-root.palette-violet .task-column,
+  #payroll-root.palette-violet .chat-log,
+  #payroll-root.palette-violet .kpi-panel,
+  #payroll-root.palette-violet .adj-panel,
+  #payroll-root.palette-violet .settings-dept,
+  #payroll-root.palette-violet .add-emp-card,
+  #payroll-root.palette-violet .closing-card {
+    border-radius: 20px;
+  }
+  #payroll-root.palette-violet .topbar { border-radius: 22px; }
+  #payroll-root.palette-violet .btn,
+  #payroll-root.palette-violet .adj-form button {
+    border-radius: 14px;
+  }
+  /* «Hero»-карточка сводки дня — всегда тёмная, как карточка баланса в
+     референсе, независимо от переключателя светлая/тёмная тема (та же
+     идея, что у .btn.tg-mono — фиксированный вид вне палитры/темы). */
+  #payroll-root.palette-violet .revenue-box {
+    background: #17171F; border-color: #17171F; color: #F5F4FA;
+  }
+  #payroll-root.palette-violet .revenue-box .label,
+  #payroll-root.palette-violet .revenue-box .sub { color: rgba(245,244,250,0.6); }
+  #payroll-root.palette-violet .revenue-box input { color: #F5F4FA; }
+  #payroll-root.palette-violet .revenue-box.hookah { background: #201C33; border-color: #201C33; }
+
   #payroll-root.theme-dark .revenue-box.hookah { background: var(--rust-soft); }
   #payroll-root.theme-dark .month-select,
   #payroll-root.theme-dark table.month-table th { background: var(--bg-subtle); }
@@ -492,6 +572,15 @@
     .bottom-tab .bn-icon { font-size: 19px; line-height: 1; }
     .bottom-tab .bn-label { font-size: 9.5px; white-space: nowrap; }
     .bottom-tab.active { color: var(--rust); background: var(--rust-soft); }
+    #payroll-root.palette-violet .bottom-nav {
+      background: var(--card); backdrop-filter: none; -webkit-backdrop-filter: none;
+      box-shadow: 0 -1px 2px rgba(20,20,31,0.04), 0 -8px 20px rgba(20,20,31,0.06);
+    }
+    #payroll-root.palette-violet.theme-dark .bottom-nav {
+      box-shadow: 0 -1px 2px rgba(0,0,0,0.2), 0 -8px 20px rgba(0,0,0,0.28);
+    }
+    #payroll-root.palette-violet .bottom-tab { border-radius: 14px; }
+    #payroll-root.palette-violet .bottom-tab.active { color: #FFFFFF; background: var(--rust); }
 
     #payroll-root .tab { padding: 9px 12px; font-size: 13.5px; white-space: nowrap; flex-shrink: 0; }
 
@@ -612,7 +701,7 @@
   <div class="footer-note">Прототип интерфейса · формулы можно уточнять и пересчитывать в реальном времени</div>
 
   <div class="bottom-nav">
-    <button class="tab bottom-tab" data-tab="day"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/></svg></span><span class="bn-label">Сегодня</span></button>
+    <button class="tab bottom-tab active" data-tab="day"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/></svg></span><span class="bn-label">Сегодня</span></button>
     <button class="tab bottom-tab" data-tab="revenue"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9.5c0-1 1-1.5 2.2-1.5 1.4 0 2.3.7 2.3 1.7 0 2.3-4.5 1.1-4.5 3.5 0 1.1 1 1.8 2.3 1.8 1.3 0 2.2-.6 2.3-1.6M12 6.5v11"/></svg></span><span class="bn-label">Выручка</span></button>
     <button class="tab bottom-tab" data-tab="month"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg></span><span class="bn-label">Месяц</span></button>
     <button class="tab bottom-tab" data-tab="timesheet"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2.3" width="6" height="3" rx="1"/><path d="M9 11h6M9 14.5h6M9 18h4"/></svg></span><span class="bn-label">Табель</span></button>
@@ -3911,6 +4000,7 @@
   // ---------- Цветовая палитра ----------
   const PALETTES = [
     {id:'bronza',   label:'Бронза',  swatch:'#9C6B3F'},
+    {id:'violet',   label:'Виолет',  swatch:'#6C5CE7'},
   ];
   function getPalette(){
     let p;
