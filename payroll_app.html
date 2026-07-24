@@ -13,6 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- SheetJS — только для кнопки "Скачать Excel" на вкладке "Полка" -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   body { margin: 0; background: #EDEAE5; transition: background 0.2s ease; position: relative; min-height: 100vh; overflow-x: hidden; }
   body.theme-dark { background: #0D1F1F; }
@@ -731,6 +733,7 @@
     <div class="tab" data-tab="outsource">Аутсорс КАЛЬЯН</div>
     <div class="tab" data-tab="pnl">П&amp;Л</div>
     <div class="tab" data-tab="kitchen">Кухня</div>
+    <div class="tab" data-tab="shelf">Полка</div>
     <div class="tab" data-tab="analytics">Аналитика</div>
     <div class="tab" data-tab="settings">Сотрудники</div>
   </div>
@@ -744,6 +747,7 @@
   <div id="view-outsource" style="display:none"></div>
   <div id="view-pnl" style="display:none"></div>
   <div id="view-kitchen" style="display:none"></div>
+  <div id="view-shelf" style="display:none"></div>
   <div id="view-analytics" style="display:none"></div>
   <div id="view-settings" style="display:none"></div>
 
@@ -759,6 +763,7 @@
     <button class="tab bottom-tab" data-tab="outsource"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/><path d="M3 13c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/><path d="M3 18c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2"/></svg></span><span class="bn-label">Аутсорс</span></button>
     <button class="tab bottom-tab" data-tab="pnl"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><span class="bn-label">П&amp;Л</span></button>
     <button class="tab bottom-tab" data-tab="kitchen"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10a4 4 0 0 1 1-7.8A4.5 4.5 0 0 1 12 2a4.5 4.5 0 0 1 4 .2A4 4 0 0 1 17 10"/><path d="M7 10v9h10v-9"/><path d="M7 14h10"/></svg></span><span class="bn-label">Кухня</span></button>
+    <button class="tab bottom-tab" data-tab="shelf"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 10h18M3 16h18"/><path d="M7 3v7M12 10v6M17 3v7"/></svg></span><span class="bn-label">Полка</span></button>
     <button class="tab bottom-tab" data-tab="analytics"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="17" y="13" width="4" height="7" rx="1"/></svg></span><span class="bn-label">Аналитика</span></button>
     <button class="tab bottom-tab" data-tab="settings"><span class="bn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><circle cx="17" cy="8" r="2.3"/><path d="M16 15.3c2.4.4 4 2 4 4.7"/></svg></span><span class="bn-label">Сотрудники</span></button>
   </div>
@@ -1092,6 +1097,7 @@
     {id:'day', label:'Сегодня'}, {id:'revenue', label:'Выручка'}, {id:'month', label:'Месяц'},
     {id:'timesheet', label:'Табель'}, {id:'schedule', label:'График'}, {id:'teamwork', label:'Задачи и чат'},
     {id:'outsource', label:'Аутсорс КАЛЬЯН'}, {id:'pnl', label:'П&Л'}, {id:'kitchen', label:'Кухня'},
+    {id:'shelf', label:'Полка'},
     {id:'analytics', label:'Аналитика'}, {id:'settings', label:'Сотрудники'},
   ];
   function getAccessMode(){
@@ -2831,6 +2837,237 @@
     container.innerHTML = html;
   }
 
+  // ---------- Полка: цифровой учёт табаков ----------
+  // Глобальный (не помесячный) список, как EMPLOYEES/KALYAN_BRACKETS —
+  // хранится в своём ключе 'payroll-shelf', не в state/payroll-month:*.
+  let SHELF_ITEMS = [];
+  let shelfLoaded = false;
+  let shelfSearchQuery = '';
+
+  async function loadShelf(){
+    if (shelfLoaded) return;
+    try {
+      const res = await storageGet('payroll-shelf');
+      if (res && res.value) SHELF_ITEMS = JSON.parse(res.value);
+      shelfLoaded = true;
+    } catch(e){ console.error('Не удалось загрузить полку:', e); }
+  }
+  let shelfSaveTimer = null;
+  function scheduleSaveShelf(){ clearTimeout(shelfSaveTimer); shelfSaveTimer = setTimeout(saveShelf, 250); }
+  async function saveShelf(){
+    try { await storageSet('payroll-shelf', JSON.stringify(SHELF_ITEMS)); }
+    catch(e){ console.error('shelf save failed', e); }
+  }
+
+  // Отправляет фото на сервер (/tobacco/recognize), который просит Claude
+  // прочитать этикетку и вернуть {manufacturer, flavor}. Тот же base64-формат,
+  // что и в uploadFileToSheet выше — переиспользуем fileToBase64_.
+  async function recognizeTobaccoPhoto(file){
+    if (!sheetApiConfigured_()) throw new Error('Сервер не настроен');
+    const dataBase64 = await fileToBase64_(file);
+    const res = await fetch(SHEET_API_URL + '/tobacco/recognize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ imageBase64: dataBase64, mimeType: file.type || 'image/jpeg' })
+    });
+    return await res.json();
+  }
+
+  function findShelfItem_(manufacturer, flavor){
+    const m = manufacturer.trim().toLowerCase(), f = flavor.trim().toLowerCase();
+    return SHELF_ITEMS.find(it => it.manufacturer.trim().toLowerCase()===m && it.flavor.trim().toLowerCase()===f);
+  }
+  // Повторное добавление уже известной пары производитель+вкус не плодит
+  // дубли — просто возвращает существующую запись в наличие.
+  function upsertShelfItem(manufacturer, flavor, photoUrl){
+    manufacturer = (manufacturer||'').trim();
+    flavor = (flavor||'').trim();
+    if (!manufacturer || !flavor) return null;
+    let item = findShelfItem_(manufacturer, flavor);
+    if (item){
+      item.status = 'in_stock';
+      if (photoUrl) item.photoUrl = photoUrl;
+      item.addedAt = new Date().toISOString();
+    } else {
+      item = {
+        id: 'shelf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8),
+        manufacturer, flavor, photoUrl: photoUrl || null,
+        status: 'in_stock', addedAt: new Date().toISOString(),
+      };
+      SHELF_ITEMS.push(item);
+    }
+    scheduleSaveShelf();
+    return item;
+  }
+
+  function shelfMatchesSearch_(item, q){
+    if (!q) return true;
+    return (item.manufacturer + ' ' + item.flavor).toLowerCase().includes(q.toLowerCase());
+  }
+  function renderShelfItemRow_(item){
+    const actionBtn = item.status === 'in_stock'
+      ? '<button class="btn ghost" data-act="shelf-out" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Закончился</button>'
+      : '<button class="btn secondary" data-act="shelf-in" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Вернуть в наличие</button>';
+    const photo = item.photoUrl
+      ? '<img src="'+item.photoUrl+'" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:6px;flex-shrink:0;"/>'
+      : '<div style="width:38px;height:38px;border-radius:6px;background:var(--bg-subtle);flex-shrink:0;"></div>';
+    return '<div class="adj-item" style="align-items:center;gap:10px;">'
+      + photo
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-weight:700;font-size:14.5px;">'+escapeHtmlA(item.flavor)+'</div>'
+        + '<div style="font-size:12px;color:var(--ink-soft);">'+escapeHtmlA(item.manufacturer)+'</div>'
+      + '</div>'
+      + actionBtn
+      + '<span class="del" data-act="shelf-delete" data-id="'+item.id+'" title="Удалить">✕</span>'
+      + '</div>';
+  }
+
+  function renderShelfView(){
+    const q = shelfSearchQuery;
+    const filtered = SHELF_ITEMS.filter(it=>shelfMatchesSearch_(it, q));
+    const byName = (a,b)=> (a.manufacturer+a.flavor).localeCompare(b.manufacturer+b.flavor, 'ru');
+    const inStock = filtered.filter(it=>it.status==='in_stock').sort(byName);
+    const toBuy = filtered.filter(it=>it.status==='to_buy').sort(byName);
+
+    let html = '<div class="kpi-panel"><h4>Сканировать банку</h4>'
+      + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">'
+      + '<button class="btn" id="shelf-scan-btn">📷 Сканировать банку</button>'
+      + '<button class="btn ghost" id="shelf-manual-btn">Добавить вручную</button>'
+      + '<input type="file" accept="image/*" capture="environment" id="shelf-scan-input" style="display:none;"/>'
+      + '<span id="shelf-scan-status" style="font-size:12.5px;color:var(--ink-soft);"></span>'
+      + '</div>'
+      + '<div id="shelf-scan-form" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<input type="text" id="shelf-form-manufacturer" placeholder="Производитель" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
+        + '<input type="text" id="shelf-form-flavor" placeholder="Вкус" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
+        + '</div>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;">'
+        + '<button class="btn" id="shelf-form-add">Добавить в наличие</button>'
+        + '<button class="btn ghost" id="shelf-form-cancel">Отмена</button>'
+        + '</div>'
+      + '</div>'
+      + '</div>';
+
+    html += '<div style="margin:14px 0;"><input type="text" id="shelf-search-input" value="'+escapeHtmlA(q)+'" placeholder="Поиск по вкусу или производителю…" '
+      + 'style="width:100%;padding:9px 12px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;box-sizing:border-box;"/></div>';
+
+    html += '<div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn secondary" id="shelf-export-btn">⬇ Скачать Excel</button></div>';
+
+    html += '<div class="kpi-panel"><h4>В наличии ('+inStock.length+')</h4>'
+      + (inStock.length
+          ? '<div class="adj-list">'+inStock.map(renderShelfItemRow_).join('')+'</div>'
+          : '<div class="assumption-note" style="margin-top:0;">Пока пусто'+(q?' по этому запросу':' — отсканируйте первую банку выше')+'.</div>')
+      + '</div>';
+
+    html += '<div class="kpi-panel"><h4>Список закупа ('+toBuy.length+')</h4>'
+      + (toBuy.length
+          ? '<div class="adj-list">'+toBuy.map(renderShelfItemRow_).join('')+'</div>'
+          : '<div class="assumption-note" style="margin-top:0;">Пока ничего не нужно закупать'+(q?' по этому запросу':'')+'.</div>')
+      + '</div>';
+
+    document.getElementById('view-shelf').innerHTML = html;
+    attachShelfHandlers();
+  }
+
+  function attachShelfHandlers(){
+    const root = document.getElementById('view-shelf');
+    const scanBtn = root.querySelector('#shelf-scan-btn');
+    const scanInput = root.querySelector('#shelf-scan-input');
+    const statusEl = root.querySelector('#shelf-scan-status');
+    const formWrap = root.querySelector('#shelf-scan-form');
+    const mfInput = root.querySelector('#shelf-form-manufacturer');
+    const flInput = root.querySelector('#shelf-form-flavor');
+    let pendingPhotoUrl = null;
+
+    scanBtn.addEventListener('click', ()=> scanInput.click());
+    root.querySelector('#shelf-manual-btn').addEventListener('click', ()=>{
+      pendingPhotoUrl = null;
+      mfInput.value = ''; flInput.value = '';
+      statusEl.textContent = '';
+      formWrap.style.display = '';
+      mfInput.focus();
+    });
+    scanInput.addEventListener('change', async ()=>{
+      const file = scanInput.files[0];
+      if (!file) return;
+      pendingPhotoUrl = null;
+      mfInput.value = ''; flInput.value = '';
+      formWrap.style.display = 'none';
+      statusEl.textContent = 'Распознаю…';
+      try {
+        const [recognized, uploaded] = await Promise.all([
+          recognizeTobaccoPhoto(file).catch(e=>({ok:false, message:e.message})),
+          uploadFileToSheet(file).catch(()=>null),
+        ]);
+        if (uploaded && uploaded.url) pendingPhotoUrl = uploaded.url;
+        if (recognized && recognized.ok){
+          mfInput.value = recognized.manufacturer || '';
+          flInput.value = recognized.flavor || '';
+          statusEl.textContent = (recognized.manufacturer || recognized.flavor)
+            ? 'Распознано — проверьте и подтвердите'
+            : 'Не удалось распознать — заполните вручную';
+        } else {
+          statusEl.textContent = (recognized && recognized.message) || 'Не удалось распознать — заполните вручную';
+        }
+      } catch(e){
+        statusEl.textContent = 'Ошибка: ' + e.message;
+      }
+      formWrap.style.display = '';
+      scanInput.value = '';
+    });
+
+    root.querySelector('#shelf-form-cancel').addEventListener('click', ()=>{
+      formWrap.style.display = 'none';
+      statusEl.textContent = '';
+    });
+    root.querySelector('#shelf-form-add').addEventListener('click', ()=>{
+      const mf = mfInput.value.trim(), fl = flInput.value.trim();
+      if (!mf || !fl){ statusEl.textContent = 'Укажите и производителя, и вкус.'; return; }
+      upsertShelfItem(mf, fl, pendingPhotoUrl);
+      statusEl.textContent = '';
+      renderShelfView();
+    });
+
+    root.querySelector('#shelf-search-input').addEventListener('input', ev=>{
+      shelfSearchQuery = ev.target.value;
+      renderShelfView();
+    });
+
+    root.querySelectorAll('[data-act="shelf-out"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const item = SHELF_ITEMS.find(it=>it.id===btn.dataset.id);
+        if (item){ item.status = 'to_buy'; scheduleSaveShelf(); renderShelfView(); }
+      });
+    });
+    root.querySelectorAll('[data-act="shelf-in"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const item = SHELF_ITEMS.find(it=>it.id===btn.dataset.id);
+        if (item){ item.status = 'in_stock'; scheduleSaveShelf(); renderShelfView(); }
+      });
+    });
+    root.querySelectorAll('[data-act="shelf-delete"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        SHELF_ITEMS = SHELF_ITEMS.filter(it=>it.id!==el.dataset.id);
+        scheduleSaveShelf();
+        renderShelfView();
+      });
+    });
+
+    root.querySelector('#shelf-export-btn').addEventListener('click', exportShelfToExcel);
+  }
+
+  function exportShelfToExcel(){
+    if (typeof XLSX === 'undefined'){
+      alert('Модуль экспорта не загрузился — проверьте интернет-соединение и попробуйте ещё раз.');
+      return;
+    }
+    const toRows = list => list.map(it=>({ 'Производитель': it.manufacturer, 'Вкус': it.flavor }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(toRows(SHELF_ITEMS.filter(it=>it.status==='in_stock'))), 'Наличие');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(toRows(SHELF_ITEMS.filter(it=>it.status==='to_buy'))), 'Закуп');
+    XLSX.writeFile(wb, 'Полка_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  }
+
   function renderAnalyticsView(){
     const mk = monthKeyOf(state.currentDate);
     const {totals, hookahRevenueSum, totalRevenueSum, dates, adjTotals} = computeMonthTotals(mk);
@@ -4140,6 +4377,7 @@
     document.getElementById('view-outsource').style.display = tab==='outsource' ? '' : 'none';
     document.getElementById('view-pnl').style.display = tab==='pnl' ? '' : 'none';
     document.getElementById('view-kitchen').style.display = tab==='kitchen' ? '' : 'none';
+    document.getElementById('view-shelf').style.display = tab==='shelf' ? '' : 'none';
     document.getElementById('view-analytics').style.display = tab==='analytics' ? '' : 'none';
     document.getElementById('view-settings').style.display = tab==='settings' ? '' : 'none';
     if (tab==='day') renderDayView();
@@ -4151,6 +4389,7 @@
     if (tab==='outsource') { loadMonth(monthKeyOf(state.currentDate)).then(renderOutsourceView); }
     if (tab==='pnl') renderPnlView();
     if (tab==='kitchen') renderKitchenView();
+    if (tab==='shelf') { loadShelf().then(renderShelfView); }
     if (tab==='analytics') renderAnalyticsView();
     if (tab==='settings') renderSettingsView();
   }
@@ -4205,6 +4444,7 @@
     if (activeTab === 'outsource') { renderOutsourceView(); }
     if (activeTab === 'pnl') renderPnlView();
     if (activeTab === 'kitchen') renderKitchenView();
+    if (activeTab === 'shelf') { shelfLoaded = false; await loadShelf(); renderShelfView(); }
     if (activeTab === 'analytics') renderAnalyticsView();
     if (activeTab === 'settings') renderSettingsView();
   });
@@ -4456,6 +4696,7 @@
   (async function init(){
     await loadConfig();
     initDeviceGate();
+    loadShelf();
     await loadMonth(monthKeyOf(state.currentDate));
     if (state.plan[monthKeyOf(state.currentDate)] === undefined){
       state.plan[monthKeyOf(state.currentDate)] = DEFAULT_REVENUE_PLAN;
