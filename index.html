@@ -913,6 +913,18 @@
       return (data && data.keys) || [];
     } catch(e){ return []; }
   }
+  async function deviceStorageDelete_(key){
+    if (!sheetApiConfigured_()) return false;
+    try {
+      const res = await fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'delete', key: key })
+      });
+      const data = await res.json();
+      return !data.error;
+    } catch(e){ return false; }
+  }
 
   // ---------- Интеграция с iiko — тот же сервер, отдельные /iiko/* маршруты ----------
   function iikoBaseUrl_(){
@@ -4388,7 +4400,9 @@
             + '</div>'
             + '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
             + '<button class="btn" data-action="save" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">Сохранить доступ</button>'
-            + '<button class="btn ghost" data-action="block" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">'+(rec.status==='approved'?'Отозвать':'Отклонить')+'</button>'
+            + (rec.status==='blocked'
+                ? '<button class="btn ghost" data-action="delete" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;color:var(--red);">Удалить</button>'
+                : '<button class="btn ghost" data-action="block" data-key="'+key+'" style="font-size:11.5px;padding:4px 8px;">'+(rec.status==='approved'?'Отозвать':'Отклонить')+'</button>')
             + '</div>'
             + '</div>';
         }).join('')
@@ -4397,6 +4411,11 @@
       btn.addEventListener('click', async ()=>{
         const key = btn.dataset.key;
         const action = btn.dataset.action;
+        if (action === 'delete'){
+          await deviceStorageDelete_(key);
+          renderDevicesAdminSection();
+          return;
+        }
         const raw = await deviceStorageGet_(key);
         if (!raw) return;
         let rec;
@@ -4408,6 +4427,7 @@
           rec.allowedTabs = chosen.length ? chosen : PENDING_DEVICE_TABS;
         } else if (action === 'block'){
           rec.status = 'blocked';
+          rec.allowedTabs = PENDING_DEVICE_TABS;
         }
         await deviceStorageSet_(key, JSON.stringify(rec));
         renderDevicesAdminSection();
