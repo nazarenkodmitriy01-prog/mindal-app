@@ -2846,6 +2846,8 @@
   let SHELF_ITEMS = [];
   let shelfLoaded = false;
   let shelfSearchQuery = '';
+  let shelfEditingId = null;
+  let shelfCollapsedCats = new Set();
   const SHELF_CATEGORIES = ['Ягоды', 'Фрукты', 'Цитрусовые', 'Мятные', 'Десертные', 'Пряности', 'Табачные', 'Напитки', 'Другое'];
 
   async function loadShelf(){
@@ -2896,6 +2898,7 @@
     return (item.manufacturer + ' ' + item.flavor + ' ' + (item.category||'')).toLowerCase().includes(q.toLowerCase());
   }
   function renderShelfItemRow_(item){
+    if (item.id === shelfEditingId) return renderShelfItemEditRow_(item);
     const actionBtn = item.status === 'in_stock'
       ? '<button class="btn ghost" data-act="shelf-out" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Закончился</button>'
       : '<button class="btn secondary" data-act="shelf-in" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Вернуть в наличие</button>';
@@ -2905,22 +2908,41 @@
         + '<div style="font-size:12px;color:var(--ink-soft);">'+escapeHtmlA(item.manufacturer)+'</div>'
       + '</div>'
       + actionBtn
+      + '<span class="del" data-act="shelf-edit" data-id="'+item.id+'" title="Редактировать" style="cursor:pointer;">✎</span>'
       + '<span class="del" data-act="shelf-delete" data-id="'+item.id+'" title="Удалить">✕</span>'
+      + '</div>';
+  }
+  function renderShelfItemEditRow_(item){
+    return '<div class="adj-item" style="align-items:center;gap:8px;flex-wrap:wrap;">'
+      + '<input type="text" class="shelf-edit-manufacturer" value="'+escapeHtmlA(item.manufacturer)+'" placeholder="Производитель" style="flex:1;min-width:120px;padding:6px 8px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:13.5px;"/>'
+      + '<input type="text" class="shelf-edit-flavor" value="'+escapeHtmlA(item.flavor)+'" placeholder="Вкус" style="flex:1;min-width:120px;padding:6px 8px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:13.5px;"/>'
+      + '<select class="shelf-edit-category month-select" style="flex:1;min-width:120px;">'
+        + SHELF_CATEGORIES.map(c=>'<option value="'+c+'"'+(c===item.category?' selected':'')+'>'+c+'</option>').join('')
+      + '</select>'
+      + '<button class="btn" data-act="shelf-save-edit" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Сохранить</button>'
+      + '<button class="btn ghost" data-act="shelf-cancel-edit" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Отмена</button>'
       + '</div>';
   }
   // Группирует уже отфильтрованный/отсортированный список по категории вкуса,
   // с подзаголовком на каждую группу — это и есть "разделение по категориям".
-  function renderShelfGroup_(items){
+  // sectionKey ('in_stock'/'to_buy') нужен, чтобы состояние свёрнутости
+  // категории в одной секции не влияло на ту же категорию в другой.
+  function renderShelfGroup_(items, sectionKey){
     if (!items.length) return '';
     const byCat = {};
     items.forEach(it=>{
       const cat = it.category || 'Другое';
       (byCat[cat] = byCat[cat] || []).push(it);
     });
-    return Object.keys(byCat).sort((a,b)=>a.localeCompare(b,'ru')).map(cat=>
-      '<div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--ink-soft);margin:12px 0 6px;">'+escapeHtmlA(cat)+' ('+byCat[cat].length+')</div>'
-      + '<div class="adj-list">'+byCat[cat].map(renderShelfItemRow_).join('')+'</div>'
-    ).join('');
+    return Object.keys(byCat).sort((a,b)=>a.localeCompare(b,'ru')).map(cat=>{
+      const catKey = sectionKey + ':' + cat;
+      const collapsed = shelfCollapsedCats.has(catKey);
+      return '<div class="shelf-cat-header" data-cat-key="'+escapeHtmlA(catKey)+'" style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--ink-soft);margin:12px 0 6px;user-select:none;">'
+        + '<span style="display:inline-block;transition:transform .15s;transform:rotate('+(collapsed?'-90deg':'0deg')+');">▾</span>'
+        + '<span>'+escapeHtmlA(cat)+' ('+byCat[cat].length+')</span>'
+        + '</div>'
+        + (collapsed ? '' : '<div class="adj-list">'+byCat[cat].map(renderShelfItemRow_).join('')+'</div>');
+    }).join('');
   }
 
   function renderShelfView(){
@@ -2951,13 +2973,13 @@
 
     html += '<div class="kpi-panel"><h4>В наличии ('+inStock.length+')</h4>'
       + (inStock.length
-          ? renderShelfGroup_(inStock)
+          ? renderShelfGroup_(inStock, 'in_stock')
           : '<div class="assumption-note" style="margin-top:0;">Пока пусто'+(q?' по этому запросу':' — добавьте первый вкус выше')+'.</div>')
       + '</div>';
 
     html += '<div class="kpi-panel"><h4>Список закупа ('+toBuy.length+')</h4>'
       + (toBuy.length
-          ? renderShelfGroup_(toBuy)
+          ? renderShelfGroup_(toBuy, 'to_buy')
           : '<div class="assumption-note" style="margin-top:0;">Пока ничего не нужно закупать'+(q?' по этому запросу':'')+'.</div>')
       + '</div>';
 
@@ -3002,6 +3024,45 @@
       el.addEventListener('click', ()=>{
         SHELF_ITEMS = SHELF_ITEMS.filter(it=>it.id!==el.dataset.id);
         scheduleSaveShelf();
+        renderShelfView();
+      });
+    });
+
+    root.querySelectorAll('[data-act="shelf-edit"]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        shelfEditingId = el.dataset.id;
+        renderShelfView();
+      });
+    });
+    root.querySelectorAll('[data-act="shelf-cancel-edit"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        shelfEditingId = null;
+        renderShelfView();
+      });
+    });
+    root.querySelectorAll('[data-act="shelf-save-edit"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const item = SHELF_ITEMS.find(it=>it.id===btn.dataset.id);
+        if (!item) return;
+        const row = btn.closest('.adj-item');
+        const mf = row.querySelector('.shelf-edit-manufacturer').value.trim();
+        const fl = row.querySelector('.shelf-edit-flavor').value.trim();
+        const cat = row.querySelector('.shelf-edit-category').value;
+        if (!mf || !fl) return;
+        item.manufacturer = mf;
+        item.flavor = fl;
+        item.category = cat;
+        scheduleSaveShelf();
+        shelfEditingId = null;
+        renderShelfView();
+      });
+    });
+
+    root.querySelectorAll('.shelf-cat-header').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const key = el.dataset.catKey;
+        if (shelfCollapsedCats.has(key)) shelfCollapsedCats.delete(key);
+        else shelfCollapsedCats.add(key);
         renderShelfView();
       });
     });
