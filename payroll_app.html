@@ -15,9 +15,6 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <!-- SheetJS — только для кнопки "Скачать Excel" на вкладке "Полка" -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<!-- Tesseract.js — распознавание текста с фото банки прямо в браузере,
-     без сервера: фото никогда никуда не отправляется. -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   body { margin: 0; background: #EDEAE5; transition: background 0.2s ease; position: relative; min-height: 100vh; overflow-x: hidden; }
   body.theme-dark { background: #0D1F1F; }
@@ -2843,9 +2840,13 @@
   // ---------- Полка: цифровой учёт табаков ----------
   // Глобальный (не помесячный) список, как EMPLOYEES/KALYAN_BRACKETS —
   // хранится в своём ключе 'payroll-shelf', не в state/payroll-month:*.
+  // Только ручной ввод — автоматическое распознавание по фото пробовали
+  // (и серверный ИИ, и OCR в браузере), но в бою на реальных банках оно
+  // регулярно давало мусор, поэтому от него отказались.
   let SHELF_ITEMS = [];
   let shelfLoaded = false;
   let shelfSearchQuery = '';
+  const SHELF_CATEGORIES = ['Ягоды', 'Фрукты', 'Цитрусовые', 'Мятные', 'Десертные', 'Пряности', 'Табачные', 'Напитки', 'Другое'];
 
   async function loadShelf(){
     if (shelfLoaded) return;
@@ -2862,37 +2863,26 @@
     catch(e){ console.error('shelf save failed', e); }
   }
 
-  // Распознаёт текст с фото ПРЯМО В БРАУЗЕРЕ через Tesseract.js — фото
-  // никогда никуда не отправляется (ни на наш сервер, ни куда-либо ещё) и
-  // нигде не сохраняется, только используется в моменте для чтения текста.
-  // В отличие от ИИ-распознавания это просто OCR: он не отличает бренд от
-  // названия вкуса, поэтому возвращает сырой распознанный текст — форма
-  // остаётся полностью editable, чтобы разложить его по полям вручную.
-  async function recognizeTobaccoPhoto(source){
-    if (typeof Tesseract === 'undefined') throw new Error('Модуль распознавания не загрузился — проверьте интернет-соединение');
-    const { data } = await Tesseract.recognize(source, 'eng+rus');
-    const rawText = (data && data.text || '').trim();
-    return { ok: true, rawText };
-  }
-
   function findShelfItem_(manufacturer, flavor){
     const m = manufacturer.trim().toLowerCase(), f = flavor.trim().toLowerCase();
     return SHELF_ITEMS.find(it => it.manufacturer.trim().toLowerCase()===m && it.flavor.trim().toLowerCase()===f);
   }
   // Повторное добавление уже известной пары производитель+вкус не плодит
   // дубли — просто возвращает существующую запись в наличие.
-  function upsertShelfItem(manufacturer, flavor){
+  function upsertShelfItem(manufacturer, flavor, category){
     manufacturer = (manufacturer||'').trim();
     flavor = (flavor||'').trim();
+    category = category || 'Другое';
     if (!manufacturer || !flavor) return null;
     let item = findShelfItem_(manufacturer, flavor);
     if (item){
       item.status = 'in_stock';
+      item.category = category;
       item.addedAt = new Date().toISOString();
     } else {
       item = {
         id: 'shelf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8),
-        manufacturer, flavor,
+        manufacturer, flavor, category,
         status: 'in_stock', addedAt: new Date().toISOString(),
       };
       SHELF_ITEMS.push(item);
@@ -2903,7 +2893,7 @@
 
   function shelfMatchesSearch_(item, q){
     if (!q) return true;
-    return (item.manufacturer + ' ' + item.flavor).toLowerCase().includes(q.toLowerCase());
+    return (item.manufacturer + ' ' + item.flavor + ' ' + (item.category||'')).toLowerCase().includes(q.toLowerCase());
   }
   function renderShelfItemRow_(item){
     const actionBtn = item.status === 'in_stock'
@@ -2918,6 +2908,20 @@
       + '<span class="del" data-act="shelf-delete" data-id="'+item.id+'" title="Удалить">✕</span>'
       + '</div>';
   }
+  // Группирует уже отфильтрованный/отсортированный список по категории вкуса,
+  // с подзаголовком на каждую группу — это и есть "разделение по категориям".
+  function renderShelfGroup_(items){
+    if (!items.length) return '';
+    const byCat = {};
+    items.forEach(it=>{
+      const cat = it.category || 'Другое';
+      (byCat[cat] = byCat[cat] || []).push(it);
+    });
+    return Object.keys(byCat).sort((a,b)=>a.localeCompare(b,'ru')).map(cat=>
+      '<div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;color:var(--ink-soft);margin:12px 0 6px;">'+escapeHtmlA(cat)+' ('+byCat[cat].length+')</div>'
+      + '<div class="adj-list">'+byCat[cat].map(renderShelfItemRow_).join('')+'</div>'
+    ).join('');
+  }
 
   function renderShelfView(){
     const q = shelfSearchQuery;
@@ -2926,52 +2930,34 @@
     const inStock = filtered.filter(it=>it.status==='in_stock').sort(byName);
     const toBuy = filtered.filter(it=>it.status==='to_buy').sort(byName);
 
-    let html = '<div class="kpi-panel"><h4>Сканировать банку</h4>'
-      + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">'
-      + '<button class="btn" id="shelf-scan-btn">📷 Сканировать банку</button>'
-      + '<button class="btn ghost" id="shelf-manual-btn">Добавить вручную</button>'
-      + '<input type="file" accept="image/*" capture="environment" id="shelf-scan-input" style="display:none;"/>'
+    let html = '<div class="kpi-panel"><h4>Добавить вкус</h4>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<input type="text" id="shelf-form-manufacturer" placeholder="Производитель" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
+      + '<input type="text" id="shelf-form-flavor" placeholder="Вкус" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
+      + '<select id="shelf-form-category" class="month-select" style="flex:1;min-width:140px;">'
+        + SHELF_CATEGORIES.map(c=>'<option value="'+c+'">'+c+'</option>').join('')
+      + '</select>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;margin-top:10px;align-items:center;">'
+      + '<button class="btn" id="shelf-form-add">Добавить в наличие</button>'
       + '<span id="shelf-scan-status" style="font-size:12.5px;color:var(--ink-soft);"></span>'
-      + '</div>'
-      + '<div id="shelf-crop-wrap" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">'
-        + '<div class="sync-config-note" style="margin:0 0 8px;">Выделите (потяните пальцем/мышью) область с названием вкуса — обычно чистая наклейка без узоров. Так распознавание намного точнее, чем по всему фото.</div>'
-        + '<div id="shelf-crop-stage" style="position:relative;touch-action:none;max-width:100%;border-radius:8px;overflow:hidden;background:#000;user-select:none;">'
-          + '<img id="shelf-crop-img" style="display:block;width:100%;height:auto;"/>'
-          + '<div id="shelf-crop-rect" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,0.5);display:none;pointer-events:none;"></div>'
-        + '</div>'
-        + '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
-        + '<button class="btn" id="shelf-crop-recognize">Распознать выделенное</button>'
-        + '<button class="btn ghost" id="shelf-crop-skip">Распознать всё фото</button>'
-        + '<button class="btn ghost" id="shelf-crop-cancel">Отмена</button>'
-        + '</div>'
-      + '</div>'
-      + '<div id="shelf-scan-form" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">'
-        + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-        + '<input type="text" id="shelf-form-manufacturer" placeholder="Производитель" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
-        + '<input type="text" id="shelf-form-flavor" placeholder="Вкус" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
-        + '</div>'
-        + '<div id="shelf-form-rawtext" style="display:none;font-size:11.5px;color:var(--ink-soft);background:var(--bg-subtle);border-radius:6px;padding:8px 10px;margin-top:8px;white-space:pre-wrap;max-height:90px;overflow-y:auto;"></div>'
-        + '<div style="display:flex;gap:8px;margin-top:10px;">'
-        + '<button class="btn" id="shelf-form-add">Добавить в наличие</button>'
-        + '<button class="btn ghost" id="shelf-form-cancel">Отмена</button>'
-        + '</div>'
       + '</div>'
       + '</div>';
 
-    html += '<div style="margin:14px 0;"><input type="text" id="shelf-search-input" value="'+escapeHtmlA(q)+'" placeholder="Поиск по вкусу или производителю…" '
+    html += '<div style="margin:14px 0;"><input type="text" id="shelf-search-input" value="'+escapeHtmlA(q)+'" placeholder="Поиск по вкусу, производителю или категории…" '
       + 'style="width:100%;padding:9px 12px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;box-sizing:border-box;"/></div>';
 
     html += '<div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn secondary" id="shelf-export-btn">⬇ Скачать Excel</button></div>';
 
     html += '<div class="kpi-panel"><h4>В наличии ('+inStock.length+')</h4>'
       + (inStock.length
-          ? '<div class="adj-list">'+inStock.map(renderShelfItemRow_).join('')+'</div>'
-          : '<div class="assumption-note" style="margin-top:0;">Пока пусто'+(q?' по этому запросу':' — отсканируйте первую банку выше')+'.</div>')
+          ? renderShelfGroup_(inStock)
+          : '<div class="assumption-note" style="margin-top:0;">Пока пусто'+(q?' по этому запросу':' — добавьте первый вкус выше')+'.</div>')
       + '</div>';
 
     html += '<div class="kpi-panel"><h4>Список закупа ('+toBuy.length+')</h4>'
       + (toBuy.length
-          ? '<div class="adj-list">'+toBuy.map(renderShelfItemRow_).join('')+'</div>'
+          ? renderShelfGroup_(toBuy)
           : '<div class="assumption-note" style="margin-top:0;">Пока ничего не нужно закупать'+(q?' по этому запросу':'')+'.</div>')
       + '</div>';
 
@@ -2979,176 +2965,19 @@
     attachShelfHandlers();
   }
 
-  // Простой выбор прямоугольной области перетаскиванием (мышью или пальцем)
-  // поверх изображения. Возвращает объект с текущим выделением в координатах
-  // ЭКРАНА (CSS-пиксели относительно stage) через колбэк onChange.
-  function setupCropSelector_(stage, rectEl, onChange){
-    let startX=0, startY=0, dragging=false;
-    function getPos(ev){
-      const r = stage.getBoundingClientRect();
-      const t = ev.touches ? (ev.touches[0] || ev.changedTouches[0]) : ev;
-      return {
-        x: Math.min(Math.max(t.clientX - r.left, 0), r.width),
-        y: Math.min(Math.max(t.clientY - r.top, 0), r.height),
-      };
-    }
-    function update(x,y,w,h){
-      rectEl.style.left=x+'px'; rectEl.style.top=y+'px';
-      rectEl.style.width=w+'px'; rectEl.style.height=h+'px';
-      onChange({x,y,w,h});
-    }
-    function down(ev){
-      dragging = true;
-      const p = getPos(ev);
-      startX=p.x; startY=p.y;
-      rectEl.style.display='';
-      update(p.x,p.y,0,0);
-      ev.preventDefault();
-    }
-    function move(ev){
-      if (!dragging) return;
-      const p = getPos(ev);
-      update(Math.min(startX,p.x), Math.min(startY,p.y), Math.abs(p.x-startX), Math.abs(p.y-startY));
-      ev.preventDefault();
-    }
-    function up(){ dragging = false; }
-    stage.addEventListener('mousedown', down);
-    stage.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', up);
-    stage.addEventListener('touchstart', down, {passive:false});
-    stage.addEventListener('touchmove', move, {passive:false});
-    window.addEventListener('touchend', up);
-  }
-
-  // Вырезает выделенную область из исходного фото В ЕГО РЕАЛЬНОМ разрешении
-  // (screenRect — координаты на ЭКРАНЕ, пересчитываем через масштаб) и
-  // повышает контраст в оттенках серого — вместе с обрезкой это резко
-  // улучшает точность OCR на чистой наклейке с названием вкуса, убирая фон
-  // и стилизованный логотип, которые иначе забивают распознавание шумом.
-  async function cropAndPreprocess_(imgEl, screenRect){
-    const scale = imgEl.naturalWidth / imgEl.clientWidth;
-    const sx = Math.round(screenRect.x * scale), sy = Math.round(screenRect.y * scale);
-    const sw = Math.max(1, Math.round(screenRect.w * scale)), sh = Math.max(1, Math.round(screenRect.h * scale));
-    const canvas = document.createElement('canvas');
-    canvas.width = sw; canvas.height = sh;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, sw, sh);
-    const imgData = ctx.getImageData(0,0,sw,sh);
-    const d = imgData.data;
-    const contrast = 1.6, mid = 128;
-    for (let i=0;i<d.length;i+=4){
-      let gray = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
-      gray = Math.max(0, Math.min(255, (gray-mid)*contrast+mid));
-      d[i]=d[i+1]=d[i+2]=gray;
-    }
-    ctx.putImageData(imgData, 0, 0);
-    return new Promise(res => canvas.toBlob(res, 'image/png'));
-  }
-
   function attachShelfHandlers(){
     const root = document.getElementById('view-shelf');
-    const scanBtn = root.querySelector('#shelf-scan-btn');
-    const scanInput = root.querySelector('#shelf-scan-input');
     const statusEl = root.querySelector('#shelf-scan-status');
-    const formWrap = root.querySelector('#shelf-scan-form');
     const mfInput = root.querySelector('#shelf-form-manufacturer');
     const flInput = root.querySelector('#shelf-form-flavor');
-    const rawTextEl = root.querySelector('#shelf-form-rawtext');
-    const cropWrap = root.querySelector('#shelf-crop-wrap');
-    const cropStage = root.querySelector('#shelf-crop-stage');
-    const cropImg = root.querySelector('#shelf-crop-img');
-    const cropRectEl = root.querySelector('#shelf-crop-rect');
+    const catInput = root.querySelector('#shelf-form-category');
 
-    let currentFile = null;
-    let currentScreenRect = null;
-    let cropObjectUrl = null;
-    setupCropSelector_(cropStage, cropRectEl, r => { currentScreenRect = r; });
-
-    async function runRecognition(source){
-      formWrap.style.display = 'none';
-      mfInput.value = ''; flInput.value = '';
-      rawTextEl.style.display = 'none';
-      statusEl.textContent = 'Распознаю текст… это может занять несколько секунд';
-      try {
-        const recognized = await recognizeTobaccoPhoto(source);
-        const lines = (recognized.rawText || '').split('\n').map(s=>s.trim()).filter(Boolean);
-        if (lines.length){
-          // Не можем надёжно отличить бренд от вкуса по сырому OCR-тексту —
-          // подставляем первую строку как черновик "вкуса", остальное видно
-          // в блоке ниже, чтобы разложить вручную.
-          flInput.value = lines[0];
-          rawTextEl.textContent = 'Распознанный текст (проверьте и разложите по полям):\n' + lines.join('\n');
-          rawTextEl.style.display = '';
-          statusEl.textContent = 'Текст распознан — проверьте и поправьте поля ниже';
-        } else {
-          statusEl.textContent = 'Не удалось прочитать текст — заполните вручную';
-        }
-      } catch(e){
-        statusEl.textContent = 'Ошибка распознавания: ' + e.message + ' — заполните вручную';
-      }
-      formWrap.style.display = '';
-    }
-
-    scanBtn.addEventListener('click', ()=> scanInput.click());
-    root.querySelector('#shelf-manual-btn').addEventListener('click', ()=>{
-      mfInput.value = ''; flInput.value = '';
-      statusEl.textContent = '';
-      rawTextEl.style.display = 'none';
-      cropWrap.style.display = 'none';
-      formWrap.style.display = '';
-      mfInput.focus();
-    });
-    scanInput.addEventListener('change', ()=>{
-      const file = scanInput.files[0];
-      scanInput.value = '';
-      if (!file) return;
-      currentFile = file;
-      currentScreenRect = null;
-      formWrap.style.display = 'none';
-      cropRectEl.style.display = 'none';
-      if (cropObjectUrl) URL.revokeObjectURL(cropObjectUrl);
-      cropObjectUrl = URL.createObjectURL(file);
-      cropImg.src = cropObjectUrl;
-      cropWrap.style.display = '';
-      statusEl.textContent = '';
-    });
-
-    root.querySelector('#shelf-crop-recognize').addEventListener('click', async ()=>{
-      if (!currentScreenRect || currentScreenRect.w < 10 || currentScreenRect.h < 10){
-        statusEl.textContent = 'Сначала выделите область с текстом (потяните по фото).';
-        return;
-      }
-      // Важно: считаем обрезку, пока картинка ещё ВИДИМА (cropWrap ещё не
-      // скрыт) — иначе clientWidth/clientHeight у скрытого <img> станут 0,
-      // масштаб уйдёт в бесконечность и getImageData упадёт с ошибкой.
-      let blob;
-      try {
-        blob = await cropAndPreprocess_(cropImg, currentScreenRect);
-      } catch(e){
-        statusEl.textContent = 'Не удалось обработать выделение: ' + e.message;
-        return;
-      }
-      cropWrap.style.display = 'none';
-      await runRecognition(blob);
-    });
-    root.querySelector('#shelf-crop-skip').addEventListener('click', async ()=>{
-      cropWrap.style.display = 'none';
-      await runRecognition(currentFile);
-    });
-    root.querySelector('#shelf-crop-cancel').addEventListener('click', ()=>{
-      cropWrap.style.display = 'none';
-      statusEl.textContent = '';
-    });
-
-    root.querySelector('#shelf-form-cancel').addEventListener('click', ()=>{
-      formWrap.style.display = 'none';
-      statusEl.textContent = '';
-    });
     root.querySelector('#shelf-form-add').addEventListener('click', ()=>{
       const mf = mfInput.value.trim(), fl = flInput.value.trim();
       if (!mf || !fl){ statusEl.textContent = 'Укажите и производителя, и вкус.'; return; }
-      upsertShelfItem(mf, fl);
-      statusEl.textContent = '';
+      upsertShelfItem(mf, fl, catInput.value);
+      mfInput.value = ''; flInput.value = '';
+      statusEl.textContent = 'Добавлено.';
       renderShelfView();
     });
 
@@ -3185,7 +3014,7 @@
       alert('Модуль экспорта не загрузился — проверьте интернет-соединение и попробуйте ещё раз.');
       return;
     }
-    const toRows = list => list.map(it=>({ 'Производитель': it.manufacturer, 'Вкус': it.flavor }));
+    const toRows = list => list.map(it=>({ 'Категория': it.category||'Другое', 'Производитель': it.manufacturer, 'Вкус': it.flavor }));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(toRows(SHELF_ITEMS.filter(it=>it.status==='in_stock'))), 'Наличие');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(toRows(SHELF_ITEMS.filter(it=>it.status==='to_buy'))), 'Закуп');
