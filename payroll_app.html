@@ -15,6 +15,9 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <!-- SheetJS — только для кнопки "Скачать Excel" на вкладке "Полка" -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Tesseract.js — распознавание текста с фото банки прямо в браузере,
+     без сервера: фото никогда никуда не отправляется. -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   body { margin: 0; background: #EDEAE5; transition: background 0.2s ease; position: relative; min-height: 100vh; overflow-x: hidden; }
   body.theme-dark { background: #0D1F1F; }
@@ -2859,18 +2862,17 @@
     catch(e){ console.error('shelf save failed', e); }
   }
 
-  // Отправляет фото на сервер (/tobacco/recognize), который просит Claude
-  // прочитать этикетку и вернуть {manufacturer, flavor}. Тот же base64-формат,
-  // что и в uploadFileToSheet выше — переиспользуем fileToBase64_.
+  // Распознаёт текст с фото ПРЯМО В БРАУЗЕРЕ через Tesseract.js — фото
+  // никогда никуда не отправляется (ни на наш сервер, ни куда-либо ещё) и
+  // нигде не сохраняется, только используется в моменте для чтения текста.
+  // В отличие от ИИ-распознавания это просто OCR: он не отличает бренд от
+  // названия вкуса, поэтому возвращает сырой распознанный текст — форма
+  // остаётся полностью editable, чтобы разложить его по полям вручную.
   async function recognizeTobaccoPhoto(file){
-    if (!sheetApiConfigured_()) throw new Error('Сервер не настроен');
-    const dataBase64 = await fileToBase64_(file);
-    const res = await fetch(SHEET_API_URL + '/tobacco/recognize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ imageBase64: dataBase64, mimeType: file.type || 'image/jpeg' })
-    });
-    return await res.json();
+    if (typeof Tesseract === 'undefined') throw new Error('Модуль распознавания не загрузился — проверьте интернет-соединение');
+    const { data } = await Tesseract.recognize(file, 'eng+rus');
+    const rawText = (data && data.text || '').trim();
+    return { ok: true, rawText };
   }
 
   function findShelfItem_(manufacturer, flavor){
@@ -2879,19 +2881,18 @@
   }
   // Повторное добавление уже известной пары производитель+вкус не плодит
   // дубли — просто возвращает существующую запись в наличие.
-  function upsertShelfItem(manufacturer, flavor, photoUrl){
+  function upsertShelfItem(manufacturer, flavor){
     manufacturer = (manufacturer||'').trim();
     flavor = (flavor||'').trim();
     if (!manufacturer || !flavor) return null;
     let item = findShelfItem_(manufacturer, flavor);
     if (item){
       item.status = 'in_stock';
-      if (photoUrl) item.photoUrl = photoUrl;
       item.addedAt = new Date().toISOString();
     } else {
       item = {
         id: 'shelf_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8),
-        manufacturer, flavor, photoUrl: photoUrl || null,
+        manufacturer, flavor,
         status: 'in_stock', addedAt: new Date().toISOString(),
       };
       SHELF_ITEMS.push(item);
@@ -2908,11 +2909,7 @@
     const actionBtn = item.status === 'in_stock'
       ? '<button class="btn ghost" data-act="shelf-out" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Закончился</button>'
       : '<button class="btn secondary" data-act="shelf-in" data-id="'+item.id+'" style="font-size:12px;padding:5px 10px;white-space:nowrap;">Вернуть в наличие</button>';
-    const photo = item.photoUrl
-      ? '<img src="'+item.photoUrl+'" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:6px;flex-shrink:0;"/>'
-      : '<div style="width:38px;height:38px;border-radius:6px;background:var(--bg-subtle);flex-shrink:0;"></div>';
     return '<div class="adj-item" style="align-items:center;gap:10px;">'
-      + photo
       + '<div style="flex:1;min-width:0;">'
         + '<div style="font-weight:700;font-size:14.5px;">'+escapeHtmlA(item.flavor)+'</div>'
         + '<div style="font-size:12px;color:var(--ink-soft);">'+escapeHtmlA(item.manufacturer)+'</div>'
@@ -2941,6 +2938,7 @@
         + '<input type="text" id="shelf-form-manufacturer" placeholder="Производитель" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
         + '<input type="text" id="shelf-form-flavor" placeholder="Вкус" style="flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--bg-input);color:var(--ink);font-size:14px;"/>'
         + '</div>'
+        + '<div id="shelf-form-rawtext" style="display:none;font-size:11.5px;color:var(--ink-soft);background:var(--bg-subtle);border-radius:6px;padding:8px 10px;margin-top:8px;white-space:pre-wrap;max-height:90px;overflow-y:auto;"></div>'
         + '<div style="display:flex;gap:8px;margin-top:10px;">'
         + '<button class="btn" id="shelf-form-add">Добавить в наличие</button>'
         + '<button class="btn ghost" id="shelf-form-cancel">Отмена</button>'
@@ -2977,40 +2975,41 @@
     const formWrap = root.querySelector('#shelf-scan-form');
     const mfInput = root.querySelector('#shelf-form-manufacturer');
     const flInput = root.querySelector('#shelf-form-flavor');
-    let pendingPhotoUrl = null;
+    const rawTextEl = root.querySelector('#shelf-form-rawtext');
 
     scanBtn.addEventListener('click', ()=> scanInput.click());
     root.querySelector('#shelf-manual-btn').addEventListener('click', ()=>{
-      pendingPhotoUrl = null;
       mfInput.value = ''; flInput.value = '';
       statusEl.textContent = '';
+      rawTextEl.style.display = 'none';
       formWrap.style.display = '';
       mfInput.focus();
     });
     scanInput.addEventListener('change', async ()=>{
       const file = scanInput.files[0];
       if (!file) return;
-      pendingPhotoUrl = null;
       mfInput.value = ''; flInput.value = '';
+      rawTextEl.style.display = 'none';
       formWrap.style.display = 'none';
-      statusEl.textContent = 'Распознаю…';
+      //Tesseract.js читает текст ПРЯМО В БРАУЗЕРЕ — файл никуда не
+      // отправляется и после этого блока не сохраняется нигде.
+      statusEl.textContent = 'Распознаю текст с фото… это может занять несколько секунд';
       try {
-        const [recognized, uploaded] = await Promise.all([
-          recognizeTobaccoPhoto(file).catch(e=>({ok:false, message:e.message})),
-          uploadFileToSheet(file).catch(()=>null),
-        ]);
-        if (uploaded && uploaded.url) pendingPhotoUrl = uploaded.url;
-        if (recognized && recognized.ok){
-          mfInput.value = recognized.manufacturer || '';
-          flInput.value = recognized.flavor || '';
-          statusEl.textContent = (recognized.manufacturer || recognized.flavor)
-            ? 'Распознано — проверьте и подтвердите'
-            : 'Не удалось распознать — заполните вручную';
+        const recognized = await recognizeTobaccoPhoto(file);
+        const lines = (recognized.rawText || '').split('\n').map(s=>s.trim()).filter(Boolean);
+        if (lines.length){
+          // Не можем надёжно отличить бренд от вкуса по сырому OCR-тексту —
+          // подставляем первую строку как черновик "вкуса", остальное видно
+          // в блоке ниже, чтобы разложить вручную.
+          flInput.value = lines[0];
+          rawTextEl.textContent = 'Распознанный текст (проверьте и разложите по полям):\n' + lines.join('\n');
+          rawTextEl.style.display = '';
+          statusEl.textContent = 'Текст распознан — проверьте и поправьте поля ниже';
         } else {
-          statusEl.textContent = (recognized && recognized.message) || 'Не удалось распознать — заполните вручную';
+          statusEl.textContent = 'Не удалось прочитать текст с фото — заполните вручную';
         }
       } catch(e){
-        statusEl.textContent = 'Ошибка: ' + e.message;
+        statusEl.textContent = 'Ошибка распознавания: ' + e.message + ' — заполните вручную';
       }
       formWrap.style.display = '';
       scanInput.value = '';
@@ -3023,7 +3022,7 @@
     root.querySelector('#shelf-form-add').addEventListener('click', ()=>{
       const mf = mfInput.value.trim(), fl = flInput.value.trim();
       if (!mf || !fl){ statusEl.textContent = 'Укажите и производителя, и вкус.'; return; }
-      upsertShelfItem(mf, fl, pendingPhotoUrl);
+      upsertShelfItem(mf, fl);
       statusEl.textContent = '';
       renderShelfView();
     });
